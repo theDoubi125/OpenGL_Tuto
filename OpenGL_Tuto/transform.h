@@ -22,6 +22,7 @@ struct TransformManager
 	handle ids		[MAX_TRANSFORM_COUNT];
 	vec3 positions	[MAX_TRANSFORM_COUNT];
 	quat rotations	[MAX_TRANSFORM_COUNT];
+	vec3 scales		[MAX_TRANSFORM_COUNT];
 	int count = 0;
 	int nextId = 0;
 
@@ -29,9 +30,10 @@ struct TransformManager
 	{
 		vec3& position;
 		quat& rotation;
+		vec3& scale;
 	};
 
-	handle add(vec3 pos, quat rotation);
+	handle add(const vec3& pos, const quat& rotation, const vec3& scale);
 
 	entity operator[](handle id);
 };

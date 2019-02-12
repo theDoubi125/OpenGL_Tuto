@@ -17,6 +17,7 @@ using quat = glm::quat;
 #include "texture.h"
 #include "transform.h"
 #include "mesh_render.h"
+#include "point_light.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
@@ -36,9 +37,6 @@ bool firstMouse = true;
 // timing
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
-
-// lighting
-glm::vec3 lightPos(1.2f, 0.0f, 2.0f);
 
 int main()
 {
@@ -136,9 +134,32 @@ int main()
 		-0.5f,  0.5f, -0.5f,	0.0f,  1.0f,  0.0f,		0.0f,  1.0f
 	};
 
-	MeshRenderer meshRenderer;
+	MeshRenderer boxRenderer, lampRenderer;
 	MeshLibrary meshLibrary;
 	TransformManager transforms;
+	PointLightManager pointLights;
+
+	boxRenderer.shader = &lightingShader;
+	boxRenderer.transforms = &transforms;
+	pointLights.transforms = &transforms;
+
+	lampRenderer.shader = &lampShader;
+	lampRenderer.transforms = &transforms;
+
+	MeshData cubeMesh = meshLibrary.loadMesh("cube", vertices, sizeof(vertices));
+	handle transformId = transforms.add(vec3(0, 0, 0), quat(), vec3(1, 1, 1));
+	boxRenderer.add(transformId, cubeMesh);
+
+	transformId = transforms.add(vec3(2, 0, 0), quat(), vec3(1, 1, 1));
+	boxRenderer.add(transformId, cubeMesh);
+
+	handle lampId = transforms.add(vec3(0, 2, 0), quat(), vec3(0.1f, 0.1f, 0.1f));
+	lampRenderer.add(lampId, cubeMesh);
+	pointLights.add(lampId, 1, vec3(1), vec3(1));
+
+	lampId = transforms.add(vec3(0, 2, 0), quat(), vec3(0.1f, 0.1f, 0.1f));
+	lampRenderer.add(lampId, cubeMesh);
+	pointLights.add(lampId, 1, vec3(1), vec3(1));
 
 	// first, configure the cube's VAO (and VBO)
 	unsigned int VBO, cubeVAO;
@@ -180,8 +201,9 @@ int main()
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
 
-		lightPos.x = cos(currentFrame / 10);
-		lightPos.z = sin(currentFrame / 10);
+		transforms[lampId].position.x = cos(currentFrame / 10);
+		transforms[lampId].position.y = 0;
+		transforms[lampId].position.z = sin(currentFrame / 10);
 
 		// input
 		// -----
@@ -192,18 +214,22 @@ int main()
 		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		// be sure to activate shader when setting uniforms/drawing objects
+		// change material data for every object or mesh renderer ?
 		lightingShader.use();
 		lightingShader.setInt("material.ambient", 0);
 		lightingShader.setInt("material.specular", 1);
 		lightingShader.setVec3("material.diffuse", 1.0f, 0.5f, 0.31f);
 		lightingShader.setFloat("material.shininess", 30.0f);
-		lightingShader.setVec3("light.ambient", 0.1f, 0.1f, 0.1f);
+
+		// light data fixed for all renderers
+		/*lightingShader.setVec3("light.ambient", 0.1f, 0.1f, 0.1f);
 		lightingShader.setVec3("light.diffuse", 1.0f, 1.0f, 1.0f);
 		lightingShader.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
-		lightingShader.setVec3("light.position", lightPos);
+		lightingShader.setVec3("light.position", transforms[lampId].position);*/
 
-		// view/projection transformations
+		pointLights.assignShaderData(lightingShader.ID);
+
+		// view/projection transformations fixed for all renderers
 		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
 		glm::mat4 view = camera.GetViewMatrix();
 		lightingShader.setMat4("projection", projection);
@@ -219,8 +245,10 @@ int main()
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, specularMap);
 		// render the cube
-		glBindVertexArray(cubeVAO);
-		glDrawArrays(GL_TRIANGLES, 0, 36);
+		/*glBindVertexArray(cubeVAO);
+		glDrawArrays(GL_TRIANGLES, 0, 36);*/
+
+		boxRenderer.render();
 
 
 		// also draw the lamp object
@@ -228,12 +256,13 @@ int main()
 		lampShader.setMat4("projection", projection);
 		lampShader.setMat4("view", view);
 		model = glm::mat4(1.0f);
-		model = glm::translate(model, lightPos);
+		model = glm::translate(model, transforms[lampId].position);
 		model = glm::scale(model, glm::vec3(0.2f)); // a smaller cube
 		lampShader.setMat4("model", model);
 
-		glBindVertexArray(lightVAO);
-		glDrawArrays(GL_TRIANGLES, 0, 36);
+		lampRenderer.render();
+		/*glBindVertexArray(lightVAO);
+		glDrawArrays(GL_TRIANGLES, 0, 36);*/
 
 
 		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)

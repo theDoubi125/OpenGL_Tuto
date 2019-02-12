@@ -24,6 +24,9 @@
     <Filter Include="Source Files\entity">
       <UniqueIdentifier>{3835758a-1016-4e27-a5b5-9ada6ff9618e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\render\light">
+      <UniqueIdentifier>{eb2e7da4-64e7-40ed-b332-f98a00351737}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -37,6 +40,9 @@
     </ClCompile>
     <ClCompile Include="mesh_render.cpp">
       <Filter>Source Files\render</Filter>
+    </ClCompile>
+    <ClCompile Include="point_light.cpp">
+      <Filter>Source Files\render\light</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -60,6 +66,9 @@
     </ClInclude>
     <ClInclude Include="mesh_render.h">
       <Filter>Source Files\render</Filter>
+    </ClInclude>
+    <ClInclude Include="point_light.h">
+      <Filter>Source Files\render\light</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

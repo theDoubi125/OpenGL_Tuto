@@ -129,12 +129,14 @@
     <ClCompile Include="glad.c" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="mesh_render.cpp" />
+    <ClCompile Include="point_light.cpp" />
     <ClCompile Include="transform.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="camera.h" />
     <ClInclude Include="material.h" />
     <ClInclude Include="mesh_render.h" />
+    <ClInclude Include="point_light.h" />
     <ClInclude Include="shader_m.h" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="texture.h" />
