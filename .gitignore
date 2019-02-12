@@ -6,3 +6,5 @@
 *.tlog
 
 *.idb
+
+\.vs/OpenGL_Tuto/v15/Browse\.VC\.opendb
