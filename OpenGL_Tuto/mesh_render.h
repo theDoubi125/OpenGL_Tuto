@@ -5,21 +5,18 @@
 #define MAX_MESH_COUNT 100
 #define MAX_MESH_RENDER_COUNT 500
 #define MESH_DATA_BUFFER_SIZE 10000
+#define MAX_MESH_VERTEX 1000
+
+#include <map>
 
 class MeshLibrary
 {
-	float meshData[MESH_DATA_BUFFER_SIZE];
-
-	handle handles[MAX_MESH_COUNT];
-	unsigned int meshPos[MAX_MESH_COUNT];
+	std::map<const std::string, unsigned int> loadedMeshes;
 	
 
-	handle loadMesh(float* data, int size);
+	unsigned int loadMesh(const std::string& name, float* data, size_t size);
 
-	const float* operator[](handle index)
-	{
-
-	}
+	unsigned int getMesh(const std::string& name);
 };
 
 class MeshRenderer
@@ -27,20 +24,24 @@ class MeshRenderer
 	TransformManager* transforms;
 	handle handles[MAX_MESH_RENDER_COUNT];
 	handle transformIds[MAX_MESH_RENDER_COUNT];
-	handle meshIds[MAX_MESH_RENDER_COUNT];
+	unsigned int VAOs[MAX_MESH_RENDER_COUNT];
 	int count = 0;
+	handle nextHandle = { 0 };
+
+	unsigned int shader;
 
 	struct entity
 	{
 		handle& id;
 		handle& transformId;
-		handle& meshId;
+		unsigned int& VAO;
 	};
 
-	handle add(handle mesh, handle transformId, handle meshId);
+	handle add(handle transformId, unsigned int VBO);
+	void getPositions(vec3* outPos, size_t maxCount) const;
+
+	void initRender();
+	void render();
 	
-	entity operator[](int index)
-	{
-		return { handles[index], transformIds[index], meshIds[index] };
-	}
+	entity operator[](int index);
 };

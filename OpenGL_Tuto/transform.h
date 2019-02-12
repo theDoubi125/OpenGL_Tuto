@@ -2,15 +2,22 @@
 
 #define MAX_TRANSFORM_COUNT 500
 
+#include <glm/vec3.hpp>
+#include <glm/gtc/quaternion.hpp>
+
+using quat = glm::quat;
+using vec3 = glm::vec3;
+
 struct handle
 {
 	int id;
 
 	void operator=(const handle& handle);
 	bool operator<(const handle& handle) const;
+	bool operator==(const handle& handle) const;
 };
 
-class TransformManager
+struct TransformManager
 {
 	handle ids		[MAX_TRANSFORM_COUNT];
 	vec3 positions	[MAX_TRANSFORM_COUNT];
@@ -26,5 +33,5 @@ class TransformManager
 
 	handle add(vec3 pos, quat rotation);
 
-	entity operator[](int index);
+	entity operator[](handle id);
 };

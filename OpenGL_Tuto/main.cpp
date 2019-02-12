@@ -16,6 +16,7 @@ using quat = glm::quat;
 
 #include "texture.h"
 #include "transform.h"
+#include "mesh_render.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
@@ -134,6 +135,10 @@ int main()
 		-0.5f,  0.5f,  0.5f,	0.0f,  1.0f,  0.0f,		0.0f,  0.0f,
 		-0.5f,  0.5f, -0.5f,	0.0f,  1.0f,  0.0f,		0.0f,  1.0f
 	};
+
+	MeshRenderer meshRenderer;
+	MeshLibrary meshLibrary;
+	TransformManager transforms;
 
 	// first, configure the cube's VAO (and VBO)
 	unsigned int VBO, cubeVAO;

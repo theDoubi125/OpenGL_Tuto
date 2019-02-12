@@ -35,6 +35,9 @@
     <ClCompile Include="transform.cpp">
       <Filter>Source Files\entity</Filter>
     </ClCompile>
+    <ClCompile Include="mesh_render.cpp">
+      <Filter>Source Files\render</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="material.h">

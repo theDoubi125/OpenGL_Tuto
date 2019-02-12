@@ -17,6 +17,11 @@ bool handle::operator<(const handle& handle) const
 	return id < handle.id;
 }
 
+bool handle::operator==(const handle& handle) const
+{
+	return id == handle.id;
+}
+
 handle TransformManager::add(vec3 pos, quat rotation)
 {
 	if (count >= MAX_TRANSFORM_COUNT)
@@ -36,7 +41,14 @@ handle TransformManager::add(vec3 pos, quat rotation)
 	return { -1 };
 }
 
-TransformManager::entity TransformManager::operator[](int index)
+TransformManager::entity TransformManager::operator[](handle id)
 {
-	return { positions[index], rotations[index] };
+	for (int i = 0; i < count; i++)
+	{
+		if (ids[i] == id)
+		{
+			return { positions[i], rotations[i] };
+
+		}
+	}
 }

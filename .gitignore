@@ -8,3 +8,5 @@
 *.idb
 
 \.vs/OpenGL_Tuto/v15/Browse\.VC\.opendb
+OpenGL_Tuto/x64/Debug
+x64
