@@ -15,14 +15,29 @@ struct Material
 	float shininess;
 };
 
-struct Light
+struct PointLights
 {
 	int count;
-	vec3 ambient;
 
 	vec3 positions[10];
 	vec3 diffuse[10];
 	vec3 specular[10];
+};
+
+struct DirectionalLights
+{
+	int count;
+
+	vec3 directions[10];
+	vec3 diffuse[10];
+	vec3 specular[10];
+};
+
+struct Light
+{
+	vec3 ambient;
+	PointLights point;
+	DirectionalLights directional;
 };
 
 uniform Material material;
@@ -38,16 +53,29 @@ void main()
 
 	vec3 lightDiffuse = vec3(0);
 	vec3 lightSpecular = vec3(0);
-	for(int i=0; i<light.count; i++)
+
+	for(int i=0; i<light.point.count; i++)
 	{
-		vec3 lightDir = normalize(light.positions[i] - FragPos);
+		vec3 lightDir = normalize(light.point.positions[i] - FragPos);
 		float diff = max(dot(lightDir, norm), 0);
-		lightDiffuse += light.diffuse[i] * diff;
+		lightDiffuse += light.point.diffuse[i] * diff;
 		
 		vec3 reflectDir = reflect(-lightDir, norm);
 		
 		float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess) * max(dot(norm, lightDir), 0);
-		lightSpecular += light.specular[i] * spec;
+		lightSpecular += light.point.specular[i] * spec;
+	}
+
+	for(int i=0; i<light.directional.count; i++)
+	{
+		vec3 lightDir = light.directional.directions[i];
+		float diff = max(dot(lightDir, norm), 0);
+		lightDiffuse += light.directional.diffuse[i] * diff;
+		
+		vec3 reflectDir = reflect(-lightDir, norm);
+		
+		float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess) * max(dot(norm, lightDir), 0);
+		lightSpecular += light.directional.specular[i] * spec;
 	}
 
 	vec3 specular = lightSpecular * vec3(texture(material.specular, TexCoords));

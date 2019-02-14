@@ -10,7 +10,7 @@ class PointLightManager
 public:
 	TransformManager* transforms;
 
-	void add(handle transformId, float intensity, vec3 diffuse, vec3 specular);
+	handle add(handle transformId, float intensity, vec3 diffuse, vec3 specular);
 	void assignShaderData(unsigned int shader);
 
 	handle lightIds[MAX_POINT_LIGHT_COUNT];

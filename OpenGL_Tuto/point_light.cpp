@@ -1,6 +1,6 @@
 #include "point_light.h"
 
-void PointLightManager::add(handle transformId, float intensity, vec3 diffuse, vec3 specular)
+handle PointLightManager::add(handle transformId, float intensity, vec3 diffuse, vec3 specular)
 {
 	handle result = nextHandle;
 	nextHandle.id++;
@@ -10,6 +10,7 @@ void PointLightManager::add(handle transformId, float intensity, vec3 diffuse, v
 	diffuses[count] = diffuse;
 	speculars[count] = specular;
 	count++;
+	return result;
 }
 
 void PointLightManager::assignShaderData(unsigned int shader)
@@ -22,10 +23,10 @@ void PointLightManager::assignShaderData(unsigned int shader)
 		positions[i] = (*transforms)[transformIds[i]].position;
 	}
 
-	glUniform1i(glGetUniformLocation(shader, "light.count"), count);
-	glUniform3f(glGetUniformLocation(shader, "light.ambient"), 0.1f, 0.1f, 0.1f);
-	glUniform3fv(glGetUniformLocation(shader, "light.diffuse"), count, (float*)&diffuses);
-	glUniform3fv(glGetUniformLocation(shader, "light.specular"), count, (float*)&speculars);
-	glUniform1fv(glGetUniformLocation(shader, "light.intensities"), count, (float*)&intensities);
-	glUniform3fv(glGetUniformLocation(shader, "light.positions"), count, (float*)&positions);
+	glUniform1i(glGetUniformLocation(shader, "light.point.count"), count);
+	glUniform3f(glGetUniformLocation(shader, "light.point.ambient"), 0.1f, 0.1f, 0.1f);
+	glUniform3fv(glGetUniformLocation(shader, "light.point.diffuse"), count, (float*)&diffuses);
+	glUniform3fv(glGetUniformLocation(shader, "light.point.specular"), count, (float*)&speculars);
+	glUniform1fv(glGetUniformLocation(shader, "light.point.intensities"), count, (float*)&intensities);
+	glUniform3fv(glGetUniformLocation(shader, "light.point.positions"), count, (float*)&positions);
 }

@@ -15,17 +15,20 @@
     <Filter Include="Source Files\util">
       <UniqueIdentifier>{85c53ce6-6a8b-49b3-bc5b-b73512fb039e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\render">
-      <UniqueIdentifier>{b3189627-4493-402d-80be-23c3a133f998}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\external">
       <UniqueIdentifier>{d6e64568-2758-467b-b2e3-fc9651b9e858}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\entity">
       <UniqueIdentifier>{3835758a-1016-4e27-a5b5-9ada6ff9618e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\render\light">
+    <Filter Include="Source Files\external\render">
+      <UniqueIdentifier>{b3189627-4493-402d-80be-23c3a133f998}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\external\render\light">
       <UniqueIdentifier>{eb2e7da4-64e7-40ed-b332-f98a00351737}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\external\render\shadow">
+      <UniqueIdentifier>{203e3375-f361-477d-b706-7921d9e215d1}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -39,10 +42,10 @@
       <Filter>Source Files\entity</Filter>
     </ClCompile>
     <ClCompile Include="mesh_render.cpp">
-      <Filter>Source Files\render</Filter>
+      <Filter>Source Files\external\render</Filter>
     </ClCompile>
     <ClCompile Include="point_light.cpp">
-      <Filter>Source Files\render\light</Filter>
+      <Filter>Source Files\external\render\light</Filter>
     </ClCompile>
     <ClCompile Include="imgui_impl_opengl3.cpp">
       <Filter>Source Files\external</Filter>
@@ -61,6 +64,9 @@
     </ClCompile>
     <ClCompile Include="imgui_widgets.cpp">
       <Filter>Source Files\external</Filter>
+    </ClCompile>
+    <ClCompile Include="directional_light.cpp">
+      <Filter>Source Files\external\render\light</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -83,10 +89,10 @@
       <Filter>Source Files\entity</Filter>
     </ClInclude>
     <ClInclude Include="mesh_render.h">
-      <Filter>Source Files\render</Filter>
+      <Filter>Source Files\external\render</Filter>
     </ClInclude>
     <ClInclude Include="point_light.h">
-      <Filter>Source Files\render\light</Filter>
+      <Filter>Source Files\external\render\light</Filter>
     </ClInclude>
     <ClInclude Include="imgui_impl_opengl3.h">
       <Filter>Source Files\external</Filter>
@@ -111,6 +117,9 @@
     </ClInclude>
     <ClInclude Include="imgui_internal.h">
       <Filter>Source Files\external</Filter>
+    </ClInclude>
+    <ClInclude Include="directional_light.h">
+      <Filter>Source Files\external\render\light</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

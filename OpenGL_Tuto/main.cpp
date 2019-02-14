@@ -18,6 +18,7 @@ using quat = glm::quat;
 #include "transform.h"
 #include "mesh_render.h"
 #include "point_light.h"
+#include "directional_light.h"
 
 
 #include "imgui.h"
@@ -85,6 +86,7 @@ int main()
 	// configure global opengl state
 	// -----------------------------
 	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_FRAMEBUFFER_SRGB);
 	//glEnable(GL_CULL_FACE);
 
 	// build and compile our shader zprogram
@@ -145,10 +147,12 @@ int main()
 	MeshLibrary meshLibrary;
 	TransformManager transforms;
 	PointLightManager pointLights;
+	DirectionalLightManager directionalLights;
 
 	boxRenderer.shader = &lightingShader;
 	boxRenderer.transforms = &transforms;
 	pointLights.transforms = &transforms;
+	directionalLights.transforms = &transforms;
 
 	lampRenderer.shader = &lampShader;
 	lampRenderer.transforms = &transforms;
@@ -164,12 +168,14 @@ int main()
 	lampRenderer.add(lampId, cubeMesh);
 	pointLights.add(lampId, 1, vec3(1), vec3(1));
 
-	lampId = transforms.add(vec3(0, 2, 0), quat(), vec3(0.1f, 0.1f, 0.1f));
-	lampRenderer.add(lampId, cubeMesh);
-	pointLights.add(lampId, 1, vec3(1), vec3(1));
+	handle sunTransformId = transforms.add(vec3(0, 2, 0), quat(vec3(1, 1, 0)), vec3(0.1f, 0.1f, 0.1f));
+	lampRenderer.add(sunTransformId, cubeMesh);
+	directionalLights.add(sunTransformId, 1, vec3(1), vec3(1));
 
 	unsigned int fbo;
 	glGenFramebuffers(1, &fbo);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 
 	unsigned int texture;
 	glGenTextures(1, &texture);
@@ -257,6 +263,7 @@ int main()
 		lightingShader.setFloat("material.shininess", 30.0f);
 
 		pointLights.assignShaderData(lightingShader.ID);
+		directionalLights.assignShaderData(lightingShader.ID);
 
 		// view/projection transformations fixed for all renderers
 		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
@@ -295,7 +302,12 @@ int main()
 		{
 			if(ImGui::Begin("Debug Window", &showDebug));
 			{
-				ImGui::Image(&testTexture, ImVec2(400, 300));
+				static vec3 euler(0, 0, 0);
+				if (ImGui::DragFloat3("Sun direction", (float*)&euler, 0.01f))
+				{
+					transforms[sunTransformId].rotation = quat(euler);
+				}
+				ImGui::Image((ImTextureID)texture, ImVec2(400, 300));
 				if (ImGui::Button("Render to Screen"))
 				{
 					renderToBuffer = false;
