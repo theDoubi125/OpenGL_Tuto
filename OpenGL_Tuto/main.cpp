@@ -27,7 +27,7 @@ using quat = glm::quat;
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
-void processInput(GLFWwindow *window, bool& pause);
+void processInput(GLFWwindow *window);
 
 // settings
 const unsigned int SCR_WIDTH = 800;
@@ -38,7 +38,7 @@ Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
 float lastX = SCR_WIDTH / 2.0f;
 float lastY = SCR_HEIGHT / 2.0f;
 bool firstMouse = true;
-bool showDebug;
+bool showDebug = false;
 
 // timing
 float deltaTime = 0.0f;
@@ -182,10 +182,19 @@ int main()
 
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture, 0);
 
+	unsigned int rbo;
+	glGenRenderbuffers(1, &rbo);
+	glBindRenderbuffer(GL_RENDERBUFFER, rbo);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, 800, 600);
+	glBindRenderbuffer(GL_RENDERBUFFER, 0);
+
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
+
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE)
 	{
 		std::cout << "Framebuffer generated" << std::endl;
 	}
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	//IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
@@ -202,6 +211,7 @@ int main()
 	ImGui_ImplOpenGL3_Init("#version 130");
 
 	ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+	bool renderToBuffer = false;
 
 	// render loop
 	// -----------
@@ -223,7 +233,7 @@ int main()
 
 		// input
 		// -----
-		processInput(window, showDebug);
+		processInput(window);
 		if (!showDebug)
 		{
 			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -236,6 +246,7 @@ int main()
 
 		// render
 		// ------
+		glBindFramebuffer(GL_FRAMEBUFFER, renderToBuffer ? fbo : 0);
 		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -276,12 +287,30 @@ int main()
 		lampShader.setMat4("model", model);
 
 		lampRenderer.render();
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		/*glBindVertexArray(lightVAO);
 		glDrawArrays(GL_TRIANGLES, 0, 36);*/
 
-		// 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
 		if (showDebug)
-			ImGui::ShowDemoWindow(&showDebug);
+		{
+			if(ImGui::Begin("Debug Window", &showDebug));
+			{
+				ImGui::Image(&testTexture, ImVec2(400, 300));
+				if (ImGui::Button("Render to Screen"))
+				{
+					renderToBuffer = false;
+				}
+				if (ImGui::Button("Render to FrameBuffer"))
+				{
+					renderToBuffer = true;
+				}
+				if (ImGui::Checkbox("Show Debug", &showDebug))
+				{
+					ImGui::ShowDemoWindow(&showDebug);
+				}
+				ImGui::End();
+			}
+		}
 		ImGui::Render();
 
 		int display_w, display_h;
@@ -305,12 +334,12 @@ int main()
 
 // process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
 // ---------------------------------------------------------------------------------------------------------
-void processInput(GLFWwindow *window, bool& pause)
+void processInput(GLFWwindow *window)
 {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
 
-	if (!pause)
+	if (!showDebug)
 	{
 		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 			camera.ProcessKeyboard(FORWARD, deltaTime);
@@ -329,7 +358,7 @@ void processInput(GLFWwindow *window, bool& pause)
 	}
 	else if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
 	{
-		pause = !pause;
+		showDebug = !showDebug;
 		spacePressed = true;
 	}
 }
