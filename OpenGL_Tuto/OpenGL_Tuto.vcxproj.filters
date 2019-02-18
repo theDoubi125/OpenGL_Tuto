@@ -68,6 +68,9 @@
     <ClCompile Include="directional_light.cpp">
       <Filter>Source Files\external\render\light</Filter>
     </ClCompile>
+    <ClCompile Include="shadow.cpp">
+      <Filter>Source Files\external\render\shadow</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="material.h">
@@ -121,6 +124,9 @@
     <ClInclude Include="directional_light.h">
       <Filter>Source Files\external\render\light</Filter>
     </ClInclude>
+    <ClInclude Include="shadow.h">
+      <Filter>Source Files\external\render\shadow</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\simple.vert">
@@ -136,6 +142,12 @@
       <Filter>Shaders</Filter>
     </None>
     <None Include="shaders\lamp.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="shaders\shadows.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="shaders\shadows.frag">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>

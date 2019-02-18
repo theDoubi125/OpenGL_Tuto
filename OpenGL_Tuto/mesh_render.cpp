@@ -70,12 +70,7 @@ void MeshRenderer::getPositions(vec3* outPos, size_t maxCount) const
 	}
 }
 
-void MeshRenderer::initRender()
-{
-
-}
-
-void MeshRenderer::render()
+void MeshRenderer::render(unsigned int shaderId)
 {
 	for (int i = 0; i < count; i++)
 	{
@@ -84,8 +79,7 @@ void MeshRenderer::render()
 		glm::mat4 model = glm::mat4(1.0f);
 		model = glm::translate(model, entity.position);
 		model = glm::scale(model, entity.scale);
-		shader->setMat4("model", model);
-		shader->use();
+		glUniformMatrix4fv(glGetUniformLocation(shaderId, "model"), 1, false, (float*)&model);
 		glBindVertexArray(VAOs[i]);
 		glDrawArrays(GL_TRIANGLES, 0, vertexCount[i]);
 	}

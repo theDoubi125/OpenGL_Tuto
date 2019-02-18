@@ -8,6 +8,7 @@
 
 #include "shader_m.h"
 #include "camera.h"
+#include "shadow.h"
 
 #include <iostream>
 
@@ -93,6 +94,8 @@ int main()
 	// ------------------------------------
 	Shader lightingShader("./shaders/color.vert", "./shaders/color.frag");
 	Shader lampShader("./shaders/color.vert", "./shaders/lamp.frag");
+	Shader shadowShader("./shaders/shadows.vert", "./shaders/shadows.frag");
+
 	unsigned int testTexture = loadTexture("./textures/container2.png");
 	unsigned int specularMap = loadTexture("./textures/container_specular.png");
 
@@ -148,13 +151,12 @@ int main()
 	TransformManager transforms;
 	PointLightManager pointLights;
 	DirectionalLightManager directionalLights;
+	ShadowRenderManager shadowRenderer;
 
-	boxRenderer.shader = &lightingShader;
 	boxRenderer.transforms = &transforms;
 	pointLights.transforms = &transforms;
 	directionalLights.transforms = &transforms;
 
-	lampRenderer.shader = &lampShader;
 	lampRenderer.transforms = &transforms;
 
 	MeshData cubeMesh = meshLibrary.loadMesh("cube", vertices, sizeof(vertices));
@@ -171,6 +173,9 @@ int main()
 	handle sunTransformId = transforms.add(vec3(0, 2, 0), quat(vec3(1, 1, 0)), vec3(0.1f, 0.1f, 0.1f));
 	lampRenderer.add(sunTransformId, cubeMesh);
 	directionalLights.add(sunTransformId, 1, vec3(1), vec3(1));
+
+	shadowRenderer.shadowCasters = &boxRenderer;
+	shadowRenderer.init();
 
 	unsigned int fbo;
 	glGenFramebuffers(1, &fbo);
@@ -281,7 +286,7 @@ int main()
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, specularMap);
 
-		boxRenderer.render();
+		boxRenderer.render(lightingShader.ID);
 
 
 		// also draw the lamp object
@@ -293,8 +298,10 @@ int main()
 		model = glm::scale(model, glm::vec3(0.2f)); // a smaller cube
 		lampShader.setMat4("model", model);
 
-		lampRenderer.render();
+		lampRenderer.render(lampShader.ID);
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+		shadowRenderer.render(shadowShader.ID);
 		/*glBindVertexArray(lightVAO);
 		glDrawArrays(GL_TRIANGLES, 0, 36);*/
 
@@ -307,7 +314,7 @@ int main()
 				{
 					transforms[sunTransformId].rotation = quat(euler);
 				}
-				ImGui::Image((ImTextureID)texture, ImVec2(400, 300));
+				ImGui::Image((ImTextureID)shadowRenderer.depthMap, ImVec2(400, 300));
 				if (ImGui::Button("Render to Screen"))
 				{
 					renderToBuffer = false;

@@ -44,13 +44,11 @@ class MeshRenderer
 
 public:
 	TransformManager* transforms;
-	Shader* shader = nullptr;
 
 	handle add(handle transformId, const MeshData& mesh);
 	void getPositions(vec3* outPos, size_t maxCount) const;
 
-	void initRender();
-	void render();
+	void render(unsigned int shaderId);
 	
 	entity operator[](int index);
 };
