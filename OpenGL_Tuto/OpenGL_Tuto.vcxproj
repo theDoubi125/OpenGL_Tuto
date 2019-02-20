@@ -163,6 +163,8 @@
   <ItemGroup>
     <None Include="shaders\color.frag" />
     <None Include="shaders\color.vert" />
+    <None Include="shaders\gbuffer.frag" />
+    <None Include="shaders\gbuffer.vert" />
     <None Include="shaders\lamp.frag" />
     <None Include="shaders\shadows.frag" />
     <None Include="shaders\shadows.vert" />

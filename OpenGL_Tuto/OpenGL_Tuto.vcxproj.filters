@@ -150,5 +150,11 @@
     <None Include="shaders\shadows.frag">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="shaders\gbuffer.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="shaders\gbuffer.frag">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

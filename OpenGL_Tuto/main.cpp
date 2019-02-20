@@ -95,6 +95,7 @@ int main()
 	Shader lightingShader("./shaders/color.vert", "./shaders/color.frag");
 	Shader lampShader("./shaders/color.vert", "./shaders/lamp.frag");
 	Shader shadowShader("./shaders/shadows.vert", "./shaders/shadows.frag");
+	Shader gBufferShader("./shaders/gbuffer.vert", "./shaders/gbuffer.frag");
 
 	unsigned int testTexture = loadTexture("./textures/container2.png");
 	unsigned int specularMap = loadTexture("./textures/container_specular.png");
@@ -224,6 +225,39 @@ int main()
 	ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 	bool renderToBuffer = false;
 
+	unsigned int gBuffer;
+	glGenFramebuffers(1, &gBuffer);
+	glBindFramebuffer(GL_FRAMEBUFFER, gBuffer);
+	unsigned int gPosition, gNormal, gColorSpec;
+
+	// - position color buffer
+	glGenTextures(1, &gPosition);
+	glBindTexture(GL_TEXTURE_2D, gPosition);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGB, GL_FLOAT, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, gPosition, 0);
+
+	// - normal color buffer
+	glGenTextures(1, &gNormal);
+	glBindTexture(GL_TEXTURE_2D, gNormal);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGB, GL_FLOAT, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, gNormal, 0);
+
+	// - color + specular color buffer
+	glGenTextures(1, &gColorSpec);
+	glBindTexture(GL_TEXTURE_2D, gColorSpec);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, gColorSpec, 0);
+
+	// - tell OpenGL which color attachments we'll use (of this framebuffer) for rendering 
+	unsigned int attachments[3] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
+	glDrawBuffers(3, attachments);
+
 	// render loop
 	// -----------
 	while (!glfwWindowShouldClose(window))
@@ -255,12 +289,6 @@ int main()
 
 		}
 
-		// render
-		// ------
-		glBindFramebuffer(GL_FRAMEBUFFER, renderToBuffer ? fbo : 0);
-		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
 		lightingShader.use();
 		lightingShader.setInt("material.ambient", 0);
 		lightingShader.setInt("material.specular", 1);
@@ -286,7 +314,20 @@ int main()
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, specularMap);
 
-		boxRenderer.render(lightingShader.ID);
+		glBindFramebuffer(GL_FRAMEBUFFER, renderToBuffer ? fbo : 0);
+		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		gBufferShader.use();
+		boxRenderer.render(gBufferShader.ID);
+
+		/*// 2. lighting pass: use g-buffer to calculate the scene's lighting
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glClear(GL_COLOR_BUFFER_BIT);
+		lightingPassShader.use();
+		BindAllGBufferTextures();
+		SetLightingUniforms();
+		RenderQuad();*/
 
 
 		// also draw the lamp object

@@ -28,6 +28,8 @@ struct DirectionalLights
 {
 	int count;
 
+	mat4 lightMatrixes[10];
+	sampler2D lightMaps[10];
 	vec3 directions[10];
 	vec3 diffuse[10];
 	vec3 specular[10];

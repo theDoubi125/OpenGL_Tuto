@@ -18,6 +18,8 @@ public:
 	float intensities[MAX_DIRECTIONAL_LIGHT_COUNT];
 	vec3 diffuses[MAX_DIRECTIONAL_LIGHT_COUNT];
 	vec3 speculars[MAX_DIRECTIONAL_LIGHT_COUNT];
+	glm::mat4 lightMatrixes[MAX_DIRECTIONAL_LIGHT_COUNT];
+
 	int count = 0;
 	handle nextHandle = { 0 };
 };

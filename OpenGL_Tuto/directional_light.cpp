@@ -29,4 +29,5 @@ void DirectionalLightManager::assignShaderData(unsigned int shader)
 	glUniform3fv(glGetUniformLocation(shader, "light.directional.specular"), count, (float*)&speculars);
 	glUniform1fv(glGetUniformLocation(shader, "light.directional.intensities"), count, (float*)&intensities);
 	glUniform3fv(glGetUniformLocation(shader, "light.directional.directions"), count, (float*)&directions);
+	glUniformMatrix4fv(glGetUniformLocation(shader, "light.directional.lightSpaceMatrix"), count, GL_FALSE, (float*)(&lightMatrixes));
 }
