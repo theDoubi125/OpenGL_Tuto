@@ -156,5 +156,11 @@
     <None Include="shaders\gbuffer.frag">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="shaders\deferred_lighting.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="shaders\deferred_lighting.vert">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

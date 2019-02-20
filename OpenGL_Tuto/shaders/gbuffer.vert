@@ -4,8 +4,6 @@ layout (location = 1) in vec3 aNormal;
 layout (location = 2) in vec2 aTexCoords;
 
 uniform mat4 projection, view, model;
-uniform vec3 lightPos;
-uniform vec3 viewPos;
 
 out vec3 FragPos;
 out vec3 Normal;

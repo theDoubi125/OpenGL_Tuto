@@ -309,6 +309,13 @@ int main()
 		lightingShader.setMat4("model", model);
 		lightingShader.setVec3("viewPos", camera.Position);
 
+		gBufferShader.use();
+		gBufferShader.setMat4("projection", projection);
+		gBufferShader.setMat4("view", view);
+		gBufferShader.setMat4("model", model);
+		gBufferShader.setVec3("viewPos", camera.Position);
+
+
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, testTexture);
 		glActiveTexture(GL_TEXTURE1);
@@ -318,8 +325,26 @@ int main()
 		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+		glBindFramebuffer(GL_FRAMEBUFFER, gBuffer);
+		glClearColor(0, 0, 0, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 		gBufferShader.use();
 		boxRenderer.render(gBufferShader.ID);
+
+		// Lighting pass
+
+		/*glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, gPosition);
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, gNormal);
+		glActiveTexture(GL_TEXTURE2);
+		glBindTexture(GL_TEXTURE_2D, gColorSpec);*/
+		// also send light relevant uniforms
+		/*shaderLightingPass.use();
+		SendAllLightUniformsToShader(shaderLightingPass);
+		shaderLightingPass.setVec3("viewPos", camera.Position);*/
 
 		/*// 2. lighting pass: use g-buffer to calculate the scene's lighting
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -331,7 +356,7 @@ int main()
 
 
 		// also draw the lamp object
-		lampShader.use();
+		/*lampShader.use();
 		lampShader.setMat4("projection", projection);
 		lampShader.setMat4("view", view);
 		model = glm::mat4(1.0f);
@@ -339,10 +364,10 @@ int main()
 		model = glm::scale(model, glm::vec3(0.2f)); // a smaller cube
 		lampShader.setMat4("model", model);
 
-		lampRenderer.render(lampShader.ID);
+		lampRenderer.render(lampShader.ID);*/
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-		shadowRenderer.render(shadowShader.ID);
+		//shadowRenderer.render(shadowShader.ID);
 		/*glBindVertexArray(lightVAO);
 		glDrawArrays(GL_TRIANGLES, 0, 36);*/
 
@@ -351,11 +376,32 @@ int main()
 			if(ImGui::Begin("Debug Window", &showDebug));
 			{
 				static vec3 euler(0, 0, 0);
+				static unsigned int displayTexture = 0;
 				if (ImGui::DragFloat3("Sun direction", (float*)&euler, 0.01f))
 				{
 					transforms[sunTransformId].rotation = quat(euler);
 				}
-				ImGui::Image((ImTextureID)shadowRenderer.depthMap, ImVec2(400, 300));
+				ImGui::Image((ImTextureID)displayTexture, ImVec2(400, 300));
+				
+				char buffer[500];
+				sprintf_s(buffer, "%d", displayTexture);
+				if (ImGui::BeginCombo("Texture", buffer))
+				{
+					if (ImGui::Selectable("Position"))
+					{
+						displayTexture = gPosition;
+					}
+					if (ImGui::Selectable("Colors"))
+					{
+						displayTexture = gColorSpec;
+					}
+					if (ImGui::Selectable("Normal"))
+					{
+						displayTexture = gNormal;
+					}
+					ImGui::EndCombo();
+				}
+				
 				if (ImGui::Button("Render to Screen"))
 				{
 					renderToBuffer = false;
