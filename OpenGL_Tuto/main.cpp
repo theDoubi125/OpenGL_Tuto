@@ -96,6 +96,7 @@ int main()
 	Shader lampShader("./shaders/color.vert", "./shaders/lamp.frag");
 	Shader shadowShader("./shaders/shadows.vert", "./shaders/shadows.frag");
 	Shader gBufferShader("./shaders/gbuffer.vert", "./shaders/gbuffer.frag");
+	Shader deferredLightingShader("./shaders/deferred_lighting.vert", "./shaders/deferred_lighting.frag");
 
 	unsigned int testTexture = loadTexture("./textures/container2.png");
 	unsigned int specularMap = loadTexture("./textures/container_specular.png");
@@ -331,16 +332,17 @@ int main()
 
 		gBufferShader.use();
 		boxRenderer.render(gBufferShader.ID);
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 		// Lighting pass
 
-		/*glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, gPosition);
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, gNormal);
 		glActiveTexture(GL_TEXTURE2);
-		glBindTexture(GL_TEXTURE_2D, gColorSpec);*/
+		glBindTexture(GL_TEXTURE_2D, gColorSpec);
 		// also send light relevant uniforms
 		/*shaderLightingPass.use();
 		SendAllLightUniformsToShader(shaderLightingPass);

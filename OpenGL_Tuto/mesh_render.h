@@ -52,3 +52,10 @@ public:
 	
 	entity operator[](int index);
 };
+
+namespace screen_effect
+{
+	extern unsigned int vbo, vao;
+
+	void init();
+}

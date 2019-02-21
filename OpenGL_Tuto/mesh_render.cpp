@@ -85,3 +85,38 @@ void MeshRenderer::render(unsigned int shaderId)
 	}
 	glBindVertexArray(0);
 }
+
+namespace screen_effect
+{
+	unsigned int vbo;
+	unsigned int vao;
+
+	void init()
+	{
+		float quadVertices[] = {
+			0, 0, 0, 0,		1, 0, 1, 0,		1, 1, 1, 1,
+			0, 0, 0, 0,		1, 1, 1, 1,		0, 1, 0, 1
+		};
+
+		glGenBuffers(1, &vbo);
+		glGenVertexArrays(1, &vao);
+		glBindVertexArray(vao);
+
+		glBindBuffer(GL_ARRAY_BUFFER, vbo);
+
+		glBindBuffer(GL_ARRAY_BUFFER, vbo);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), quadVertices, GL_STATIC_DRAW);
+		glBindBuffer(GL_ARRAY_BUFFER, vbo);
+
+		// position attribute
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+		glEnableVertexAttribArray(1);
+		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+		glEnableVertexAttribArray(2);
+
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		glBindVertexArray(0);
+	}
+}
