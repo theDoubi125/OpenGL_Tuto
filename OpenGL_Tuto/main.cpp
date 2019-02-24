@@ -26,6 +26,8 @@ using quat = glm::quat;
 #include "imgui_impl_opengl3.h"
 #include "imgui_impl_glfw.h"
 
+#include "render/render_pipeline.h"
+
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
@@ -95,9 +97,8 @@ int main()
 	Shader lightingShader("./shaders/color.vert", "./shaders/color.frag");
 	Shader lampShader("./shaders/color.vert", "./shaders/lamp.frag");
 	Shader shadowShader("./shaders/shadows.vert", "./shaders/shadows.frag");
-	Shader gBufferShader("./shaders/gbuffer.vert", "./shaders/gbuffer.frag");
-	Shader deferredLightingShader("./shaders/deferred_lighting.vert", "./shaders/deferred_lighting.frag");
-
+	Shader pointLightShader("./shaders/point_light.vert", "./shaders/point_light.frag");
+	
 	unsigned int testTexture = loadTexture("./textures/container2.png");
 	unsigned int specularMap = loadTexture("./textures/container_specular.png");
 
@@ -179,36 +180,6 @@ int main()
 	shadowRenderer.shadowCasters = &boxRenderer;
 	shadowRenderer.init();
 
-	unsigned int fbo;
-	glGenFramebuffers(1, &fbo);
-
-	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-
-	unsigned int texture;
-	glGenTextures(1, &texture);
-	glBindTexture(GL_TEXTURE_2D, texture);
-
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 800, 600, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture, 0);
-
-	unsigned int rbo;
-	glGenRenderbuffers(1, &rbo);
-	glBindRenderbuffer(GL_RENDERBUFFER, rbo);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, 800, 600);
-	glBindRenderbuffer(GL_RENDERBUFFER, 0);
-
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
-
-	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE)
-	{
-		std::cout << "Framebuffer generated" << std::endl;
-	}
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
 	//IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 	ImGuiIO& io = ImGui::GetIO(); (void)io;
@@ -224,40 +195,9 @@ int main()
 	ImGui_ImplOpenGL3_Init("#version 130");
 
 	ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
-	bool renderToBuffer = false;
+	
 
-	unsigned int gBuffer;
-	glGenFramebuffers(1, &gBuffer);
-	glBindFramebuffer(GL_FRAMEBUFFER, gBuffer);
-	unsigned int gPosition, gNormal, gColorSpec;
-
-	// - position color buffer
-	glGenTextures(1, &gPosition);
-	glBindTexture(GL_TEXTURE_2D, gPosition);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGB, GL_FLOAT, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, gPosition, 0);
-
-	// - normal color buffer
-	glGenTextures(1, &gNormal);
-	glBindTexture(GL_TEXTURE_2D, gNormal);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGB, GL_FLOAT, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, gNormal, 0);
-
-	// - color + specular color buffer
-	glGenTextures(1, &gColorSpec);
-	glBindTexture(GL_TEXTURE_2D, gColorSpec);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, gColorSpec, 0);
-
-	// - tell OpenGL which color attachments we'll use (of this framebuffer) for rendering 
-	unsigned int attachments[3] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
-	glDrawBuffers(3, attachments);
+	render::init(SCR_WIDTH, SCR_HEIGHT);
 
 	// render loop
 	// -----------
@@ -290,128 +230,68 @@ int main()
 
 		}
 
-		lightingShader.use();
-		lightingShader.setInt("material.ambient", 0);
-		lightingShader.setInt("material.specular", 1);
-		lightingShader.setVec3("material.diffuse", 1.0f, 0.5f, 0.31f);
-		lightingShader.setFloat("material.shininess", 30.0f);
-
-		pointLights.assignShaderData(lightingShader.ID);
-		directionalLights.assignShaderData(lightingShader.ID);
-
 		// view/projection transformations fixed for all renderers
 		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
 		glm::mat4 view = camera.GetViewMatrix();
-		lightingShader.setMat4("projection", projection);
-		lightingShader.setMat4("view", view);
-
+		
 		// world transformation
 		glm::mat4 model = glm::mat4(1.0f);
-		lightingShader.setMat4("model", model);
-		lightingShader.setVec3("viewPos", camera.Position);
 
-		gBufferShader.use();
-		gBufferShader.setMat4("projection", projection);
-		gBufferShader.setMat4("view", view);
-		gBufferShader.setMat4("model", model);
-		gBufferShader.setVec3("viewPos", camera.Position);
-
+		render::clear_frame();
+		render::start_render(camera);
 
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, testTexture);
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, specularMap);
 
-		glBindFramebuffer(GL_FRAMEBUFFER, renderToBuffer ? fbo : 0);
-		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		int diffuseAttr = glGetUniformLocation(render::currentShader, "diffuse");
+		int specularAttr = glGetUniformLocation(render::currentShader, "specular");
+		int modelAttr = glGetUniformLocation(render::currentShader, "model");
+		glUniform1i(diffuseAttr, 0);
+		glUniform1i(specularAttr, 1);
+		glUniformMatrix4fv(modelAttr, 1, false, (float*)&model);
 
-		glBindFramebuffer(GL_FRAMEBUFFER, gBuffer);
-		glClearColor(0, 0, 0, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		gBufferShader.use();
-		boxRenderer.render(gBufferShader.ID);
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
+		boxRenderer.render(render::currentShader);
+		
 		// Lighting pass
+		render::start_lighting();
 
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, gPosition);
-		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, gNormal);
-		glActiveTexture(GL_TEXTURE2);
-		glBindTexture(GL_TEXTURE_2D, gColorSpec);
-		// also send light relevant uniforms
-		/*shaderLightingPass.use();
-		SendAllLightUniformsToShader(shaderLightingPass);
-		shaderLightingPass.setVec3("viewPos", camera.Position);*/
+		pointLightShader.use();
+		pointLightShader.setInt("gPosition", 0);
+		pointLightShader.setInt("gNormal", 1);
+		pointLightShader.setInt("gAlbedoSpec", 2);
+		pointLightShader.setVec3("viewPos", camera.Position);
+		vec3 lightPos[2];
+		lampRenderer.getPositions(lightPos, 1);
+		pointLightShader.setVec3("light.Position", *lightPos);
+		pointLightShader.setVec3("light.Color", vec3(1, 1, 1));
+		glDrawArrays(GL_TRIANGLES, 0, 6);
 
-		/*// 2. lighting pass: use g-buffer to calculate the scene's lighting
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		glClear(GL_COLOR_BUFFER_BIT);
-		lightingPassShader.use();
-		BindAllGBufferTextures();
-		SetLightingUniforms();
-		RenderQuad();*/
+		render::render_deferred();
 
-
-		// also draw the lamp object
-		/*lampShader.use();
+		lampShader.use();
 		lampShader.setMat4("projection", projection);
 		lampShader.setMat4("view", view);
-		model = glm::mat4(1.0f);
-		model = glm::translate(model, transforms[lampId].position);
-		model = glm::scale(model, glm::vec3(0.2f)); // a smaller cube
 		lampShader.setMat4("model", model);
+		lampShader.setVec3("viewPos", camera.Position);
+		lampRenderer.render(lampShader.ID);
 
-		lampRenderer.render(lampShader.ID);*/
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-		//shadowRenderer.render(shadowShader.ID);
-		/*glBindVertexArray(lightVAO);
-		glDrawArrays(GL_TRIANGLES, 0, 36);*/
-
+		static unsigned int displayTexture = 0;
+		render::render_screen();
 		if (showDebug)
 		{
 			if(ImGui::Begin("Debug Window", &showDebug));
 			{
 				static vec3 euler(0, 0, 0);
-				static unsigned int displayTexture = 0;
 				if (ImGui::DragFloat3("Sun direction", (float*)&euler, 0.01f))
 				{
 					transforms[sunTransformId].rotation = quat(euler);
 				}
 				ImGui::Image((ImTextureID)displayTexture, ImVec2(400, 300));
 				
-				char buffer[500];
-				sprintf_s(buffer, "%d", displayTexture);
-				if (ImGui::BeginCombo("Texture", buffer))
-				{
-					if (ImGui::Selectable("Position"))
-					{
-						displayTexture = gPosition;
-					}
-					if (ImGui::Selectable("Colors"))
-					{
-						displayTexture = gColorSpec;
-					}
-					if (ImGui::Selectable("Normal"))
-					{
-						displayTexture = gNormal;
-					}
-					ImGui::EndCombo();
-				}
+				render::debug_texture_selector(&displayTexture);
 				
-				if (ImGui::Button("Render to Screen"))
-				{
-					renderToBuffer = false;
-				}
-				if (ImGui::Button("Render to FrameBuffer"))
-				{
-					renderToBuffer = true;
-				}
 				if (ImGui::Checkbox("Show Debug", &showDebug))
 				{
 					ImGui::ShowDemoWindow(&showDebug);

@@ -137,6 +137,8 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="mesh_render.cpp" />
     <ClCompile Include="point_light.cpp" />
+    <ClCompile Include="render\render_pipeline.cpp" />
+    <ClCompile Include="render\shader.cpp" />
     <ClCompile Include="shadow.cpp" />
     <ClCompile Include="transform.cpp" />
   </ItemGroup>
@@ -154,6 +156,8 @@
     <ClInclude Include="material.h" />
     <ClInclude Include="mesh_render.h" />
     <ClInclude Include="point_light.h" />
+    <ClInclude Include="render\render_pipeline.h" />
+    <ClInclude Include="render\shader.h" />
     <ClInclude Include="shader_m.h" />
     <ClInclude Include="shadow.h" />
     <ClInclude Include="stb_image.h" />
@@ -168,6 +172,10 @@
     <None Include="shaders\gbuffer.frag" />
     <None Include="shaders\gbuffer.vert" />
     <None Include="shaders\lamp.frag" />
+    <None Include="shaders\point_light.frag" />
+    <None Include="shaders\point_light.vert" />
+    <None Include="shaders\render_quad.frag" />
+    <None Include="shaders\render_quad.vert" />
     <None Include="shaders\shadows.frag" />
     <None Include="shaders\shadows.vert" />
     <None Include="shaders\simple.frag" />

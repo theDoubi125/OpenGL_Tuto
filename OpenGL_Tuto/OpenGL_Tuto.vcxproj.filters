@@ -21,13 +21,13 @@
     <Filter Include="Source Files\entity">
       <UniqueIdentifier>{3835758a-1016-4e27-a5b5-9ada6ff9618e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\external\render">
+    <Filter Include="Source Files\render">
       <UniqueIdentifier>{b3189627-4493-402d-80be-23c3a133f998}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\external\render\light">
+    <Filter Include="Source Files\render\light">
       <UniqueIdentifier>{eb2e7da4-64e7-40ed-b332-f98a00351737}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\external\render\shadow">
+    <Filter Include="Source Files\render\shadow">
       <UniqueIdentifier>{203e3375-f361-477d-b706-7921d9e215d1}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -42,10 +42,10 @@
       <Filter>Source Files\entity</Filter>
     </ClCompile>
     <ClCompile Include="mesh_render.cpp">
-      <Filter>Source Files\external\render</Filter>
+      <Filter>Source Files\render</Filter>
     </ClCompile>
     <ClCompile Include="point_light.cpp">
-      <Filter>Source Files\external\render\light</Filter>
+      <Filter>Source Files\render\light</Filter>
     </ClCompile>
     <ClCompile Include="imgui_impl_opengl3.cpp">
       <Filter>Source Files\external</Filter>
@@ -66,10 +66,16 @@
       <Filter>Source Files\external</Filter>
     </ClCompile>
     <ClCompile Include="directional_light.cpp">
-      <Filter>Source Files\external\render\light</Filter>
+      <Filter>Source Files\render\light</Filter>
     </ClCompile>
     <ClCompile Include="shadow.cpp">
-      <Filter>Source Files\external\render\shadow</Filter>
+      <Filter>Source Files\render\shadow</Filter>
+    </ClCompile>
+    <ClCompile Include="render\render_pipeline.cpp">
+      <Filter>Source Files\render</Filter>
+    </ClCompile>
+    <ClCompile Include="render\shader.cpp">
+      <Filter>Source Files\render</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -92,10 +98,10 @@
       <Filter>Source Files\entity</Filter>
     </ClInclude>
     <ClInclude Include="mesh_render.h">
-      <Filter>Source Files\external\render</Filter>
+      <Filter>Source Files\render</Filter>
     </ClInclude>
     <ClInclude Include="point_light.h">
-      <Filter>Source Files\external\render\light</Filter>
+      <Filter>Source Files\render\light</Filter>
     </ClInclude>
     <ClInclude Include="imgui_impl_opengl3.h">
       <Filter>Source Files\external</Filter>
@@ -112,9 +118,6 @@
     <ClInclude Include="imstb_truetype.h">
       <Filter>Source Files\external</Filter>
     </ClInclude>
-    <ClInclude Include="imconfig.h">
-      <Filter>Source Files\external</Filter>
-    </ClInclude>
     <ClInclude Include="imgui.h">
       <Filter>Source Files\external</Filter>
     </ClInclude>
@@ -122,10 +125,19 @@
       <Filter>Source Files\external</Filter>
     </ClInclude>
     <ClInclude Include="directional_light.h">
-      <Filter>Source Files\external\render\light</Filter>
+      <Filter>Source Files\render\light</Filter>
     </ClInclude>
     <ClInclude Include="shadow.h">
-      <Filter>Source Files\external\render\shadow</Filter>
+      <Filter>Source Files\render\shadow</Filter>
+    </ClInclude>
+    <ClInclude Include="imconfig.h">
+      <Filter>Source Files\external</Filter>
+    </ClInclude>
+    <ClInclude Include="render\render_pipeline.h">
+      <Filter>Source Files\render</Filter>
+    </ClInclude>
+    <ClInclude Include="render\shader.h">
+      <Filter>Source Files\render</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -160,6 +172,18 @@
       <Filter>Shaders</Filter>
     </None>
     <None Include="shaders\deferred_lighting.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="shaders\point_light.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="shaders\point_light.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="shaders\render_quad.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="shaders\render_quad.vert">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>
