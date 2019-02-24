@@ -19,5 +19,5 @@ void main()
 	vec3 Light = texture(gLight, TexCoords).rgb;
     float Specular = texture(gAlbedoSpec, TexCoords).a;
     
-    FragColor = vec4(Albedo * (Light + 0.1), 1.0);
+    FragColor = vec4(Albedo, 1.0);
 }  
