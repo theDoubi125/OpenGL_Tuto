@@ -169,6 +169,8 @@
     <None Include="shaders\color.vert" />
     <None Include="shaders\deferred_lighting.frag" />
     <None Include="shaders\deferred_lighting.vert" />
+    <None Include="shaders\directional_light.frag" />
+    <None Include="shaders\directional_light.vert" />
     <None Include="shaders\gbuffer.frag" />
     <None Include="shaders\gbuffer.vert" />
     <None Include="shaders\lamp.frag" />

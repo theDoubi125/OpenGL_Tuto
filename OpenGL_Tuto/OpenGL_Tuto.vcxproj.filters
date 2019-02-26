@@ -186,5 +186,11 @@
     <None Include="shaders\render_quad.vert">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="shaders\directional_light.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="shaders\directional_light.vert">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

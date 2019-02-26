@@ -98,7 +98,8 @@ int main()
 	Shader lampShader("./shaders/color.vert", "./shaders/lamp.frag");
 	Shader shadowShader("./shaders/shadows.vert", "./shaders/shadows.frag");
 	Shader pointLightShader("./shaders/point_light.vert", "./shaders/point_light.frag");
-	
+	Shader directionalLightShader("./shaders/directional_light.vert", "./shaders/directional_light.frag");
+
 	unsigned int testTexture = loadTexture("./textures/container2.png");
 	unsigned int specularMap = loadTexture("./textures/container_specular.png");
 
@@ -267,6 +268,8 @@ int main()
 		pointLightShader.setVec3("light.Position", *lightPos);
 		pointLightShader.setVec3("light.Color", vec3(1, 1, 1));
 		glDrawArrays(GL_TRIANGLES, 0, 6);
+
+
 
 		render::render_deferred();
 
