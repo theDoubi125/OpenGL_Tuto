@@ -167,6 +167,9 @@ namespace render
 		glDisable(GL_DEPTH_TEST);
 		glDepthMask(false);
 		glBindFramebuffer(GL_FRAMEBUFFER, gLightFrameBuffer);
+
+		glClearColor(0, 0, 0, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 
 	void render_deferred()
@@ -207,32 +210,26 @@ namespace render
 
 	void debug_texture_selector(unsigned int* selectedTexture)
 	{
-		char buffer[500];
-		sprintf_s(buffer, "%d", *selectedTexture);
 
-		if (ImGui::BeginCombo("Texture", buffer))
+		if (ImGui::Selectable("Position"))
 		{
-			if (ImGui::Selectable("Position"))
-			{
-				*selectedTexture = gPosition;
-			}
-			if (ImGui::Selectable("Colors"))
-			{
-				*selectedTexture = gColorSpec;
-			}
-			if (ImGui::Selectable("Normal"))
-			{
-				*selectedTexture = gNormal;
-			}
-			if (ImGui::Selectable("Light"))
-			{
-				*selectedTexture = gLight;
-			}
-			if (ImGui::Selectable("Final"))
-			{
-				*selectedTexture = finalTexture;
-			}
-			ImGui::EndCombo();
+			*selectedTexture = gPosition;
+		}
+		if (ImGui::Selectable("Colors"))
+		{
+			*selectedTexture = gColorSpec;
+		}
+		if (ImGui::Selectable("Normal"))
+		{
+			*selectedTexture = gNormal;
+		}
+		if (ImGui::Selectable("Light"))
+		{
+			*selectedTexture = gLight;
+		}
+		if (ImGui::Selectable("Final"))
+		{
+			*selectedTexture = finalTexture;
 		}
 	}
 }

@@ -32,7 +32,6 @@ class MeshRenderer
 	handle transformIds[MAX_MESH_RENDER_COUNT];
 	unsigned int VAOs[MAX_MESH_RENDER_COUNT];
 	unsigned int vertexCount[MAX_MESH_RENDER_COUNT];
-	int count = 0;
 	handle nextHandle = { 0 };
 
 	struct entity
@@ -43,6 +42,8 @@ class MeshRenderer
 	};
 
 public:
+	int count = 0;
+
 	TransformManager* transforms;
 
 	handle add(handle transformId, const MeshData& mesh);

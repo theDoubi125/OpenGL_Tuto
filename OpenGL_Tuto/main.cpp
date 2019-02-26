@@ -8,7 +8,6 @@
 
 #include "shader_m.h"
 #include "camera.h"
-#include "shadow.h"
 
 #include <iostream>
 
@@ -27,6 +26,7 @@ using quat = glm::quat;
 #include "imgui_impl_glfw.h"
 
 #include "render/render_pipeline.h"
+#include "shadow.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
@@ -174,10 +174,13 @@ int main()
 	lampRenderer.add(lampId, cubeMesh);
 	pointLights.add(lampId, 1, vec3(1), vec3(1));
 
-	handle sunTransformId = transforms.add(vec3(0, 2, 0), quat(vec3(1, 1, 0)), vec3(0.1f, 0.1f, 0.1f));
+	handle sunTransformId = transforms.add(vec3(0, 1, 0), quat(vec3(1, 1, 0)), vec3(0.1f, 0.1f, 0.1f));
 	lampRenderer.add(sunTransformId, cubeMesh);
-	directionalLights.add(sunTransformId, 1, vec3(1), vec3(1));
+	pointLights.add(sunTransformId, 1, vec3(1), vec3(1));
 
+	vec3 sunDirection(1, 1, 1);
+
+	directionalLights.add(sunTransformId, 1, vec3(1), vec3(1));
 	shadowRenderer.shadowCasters = &boxRenderer;
 	shadowRenderer.init();
 
@@ -254,21 +257,45 @@ int main()
 		glUniformMatrix4fv(modelAttr, 1, false, (float*)&model);
 
 		boxRenderer.render(render::currentShader);
-		
+
+		shadowRenderer.render(shadowShader.ID, normalize(sunDirection));
+
 		// Lighting pass
 		render::start_lighting();
 
-		pointLightShader.use();
-		pointLightShader.setInt("gPosition", 0);
-		pointLightShader.setInt("gNormal", 1);
-		pointLightShader.setInt("gAlbedoSpec", 2);
-		pointLightShader.setVec3("viewPos", camera.Position);
-		vec3 lightPos[2];
-		lampRenderer.getPositions(lightPos, 1);
-		pointLightShader.setVec3("light.Position", *lightPos);
-		pointLightShader.setVec3("light.Color", vec3(1, 1, 1));
+
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+		for (int i = 0; i < pointLights.count; i++)
+		{
+			pointLightShader.use();
+			pointLightShader.setInt("gPosition", 0);
+			pointLightShader.setInt("gNormal", 1);
+			pointLightShader.setInt("gAlbedoSpec", 2);
+			pointLightShader.setVec3("viewPos", camera.Position);
+			vec3 position;
+			for (int j = 0; j < transforms.count; j++)
+			{
+				if (pointLights.transformIds[i] == transforms.ids[j])
+				{
+					position = transforms.positions[j];
+				}
+			}
+			pointLightShader.setVec3("light.Position", position);
+			pointLightShader.setVec3("light.Color", vec3(1, 1, 1));
+			glDrawArrays(GL_TRIANGLES, 0, 6);
+		}
+
+		directionalLightShader.use();
+		directionalLightShader.setInt("gPosition", 0);
+		directionalLightShader.setInt("gNormal", 1);
+		directionalLightShader.setInt("gAlbedoSpec", 2);
+		directionalLightShader.setVec3("viewPos", camera.Position);
+		directionalLightShader.setVec3("light.Direction", normalize(sunDirection));
+		directionalLightShader.setVec3("light.Color", vec3(1, 1, 1));
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 
+		glDisable(GL_BLEND);
 
 
 		render::render_deferred();
@@ -286,14 +313,21 @@ int main()
 		{
 			if(ImGui::Begin("Debug Window", &showDebug));
 			{
-				static vec3 euler(0, 0, 0);
-				if (ImGui::DragFloat3("Sun direction", (float*)&euler, 0.01f))
+				if (ImGui::DragFloat3("Sun direction", (float*)&sunDirection, 0.01f))
 				{
-					transforms[sunTransformId].rotation = quat(euler);
+
 				}
 				ImGui::Image((ImTextureID)displayTexture, ImVec2(400, 300));
-				
-				render::debug_texture_selector(&displayTexture);
+
+				char buffer[500];
+				sprintf_s(buffer, "%d", displayTexture);
+				if (ImGui::BeginCombo("Texture", buffer))
+				{
+					render::debug_texture_selector(&displayTexture);
+					if (ImGui::Selectable("Shadow"))
+						displayTexture = shadowRenderer.depthMap;
+					ImGui::EndCombo();
+				}
 				
 				if (ImGui::Checkbox("Show Debug", &showDebug))
 				{

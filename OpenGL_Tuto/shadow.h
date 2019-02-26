@@ -6,7 +6,7 @@ class ShadowRenderManager
 {
 public:
 	void init();
-	void render(unsigned int depthMapShader);
+	void render(unsigned int depthMapShader, const vec3& lightDirection);
 
 	MeshRenderer* shadowCasters;
 
