@@ -186,7 +186,7 @@ int main()
 	lampRenderer.add(testTransformId, cubeMesh);
 	//pointLights.add(sunTransformId, 1, vec3(1), vec3(1));
 
-	vec3 sunDirection(1, 0, 0);
+	vec3 sunDirection(1, 0.7f, 0.45f);
 
 	directionalLights.add(sunTransformId, 1, vec3(1), vec3(1));
 	shadowRenderer.shadowCasters = &boxRenderer;

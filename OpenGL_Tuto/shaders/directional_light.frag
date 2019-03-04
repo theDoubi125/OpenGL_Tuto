@@ -41,9 +41,20 @@ void main()
 	float bias = max(0.05 * (1.0 - dot(Normal, lightDir)), 0.005); 
 	vec4 proj4 = lightMatrix * vec4(FragPos, 1.0);
 	vec3 proj = proj4.xyz/proj4.w;
-	float closestDepth = texture(shadowMap, proj.xy / 2 + 0.5).x;
+	vec2 projCoords = proj.xy / 2 + 0.5;
 	float currentDepth = proj.z;
-	float shadow = (currentDepth + 1) / 2 - bias > closestDepth ? 1 : 0;
+	vec2 texelSize = 1.0 / textureSize(shadowMap, 0);
+	float shadow = 0;
+	for(int x = -2; x <= 2; ++x)
+	{
+		for(int y = -2; y <= 2; ++y)
+		{
+			float closestDepth = texture(shadowMap, projCoords + vec2(x, y) * texelSize).x;
+			shadow += (currentDepth + 1) / 2 - bias > closestDepth ? 1.0 : 0.0;        
+		}    
+	}
+	shadow /= 16.0;
+	//float shadow = currentDepth < 1.0 && (currentDepth + 1) / 2 - bias > closestDepth ? 1 : 0;
 	float displayValue = shadow;
     FragColor = vec4(lighting * (1 - shadow), 1.0);
 }  
