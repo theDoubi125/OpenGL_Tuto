@@ -31,7 +31,7 @@ void main()
 	vec3 norm = normalize(Normal);
 	
 	float dist = distance(light.Position, FragPos);
-    vec3 diffuse = max((1 - dist), 0) * max((1 - dist), 0) * max(dot(norm, lightDir), 0.0) * light.Color;
+    vec3 diffuse = max((1 - dist), 0) * max(dot(norm, lightDir), 0.0) * light.Color;
 	vec3 reflectDir = reflect(-lightDir, norm);
 	float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32.0f) * max(dot(norm, lightDir), 0) * Specular;
     lighting += spec + diffuse;

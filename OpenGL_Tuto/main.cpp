@@ -89,7 +89,6 @@ int main()
 	// configure global opengl state
 	// -----------------------------
 	glEnable(GL_DEPTH_TEST);
-	//qglEnable(GL_FRAMEBUFFER_SRGB);
 	//glEnable(GL_CULL_FACE);
 
 	// build and compile our shader zprogram
@@ -170,6 +169,9 @@ int main()
 	transformId = transforms.add(vec3(2, 0, 0), quat(), vec3(1, 1, 1));
 	boxRenderer.add(transformId, cubeMesh);
 
+	transformId = transforms.add(vec3(-2, 0, 0), quat(), vec3(1, 1, 1));
+	boxRenderer.add(transformId, cubeMesh);
+
 	handle lampId = transforms.add(vec3(0, 2, 0), quat(), vec3(0.1f, 0.1f, 0.1f));
 	lampRenderer.add(lampId, cubeMesh);
 	pointLights.add(lampId, 1, vec3(1), vec3(1));
@@ -207,7 +209,6 @@ int main()
 	// -----------
 	while (!glfwWindowShouldClose(window))
 	{
-
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
@@ -259,6 +260,7 @@ int main()
 		boxRenderer.render(render::currentShader);
 
 		shadowRenderer.render(shadowShader.ID, normalize(sunDirection));
+		glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
 
 		// Lighting pass
 		render::start_lighting();

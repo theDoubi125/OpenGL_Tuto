@@ -83,7 +83,7 @@ namespace render
 		// - color + specular color buffer
 		glGenTextures(1, &gColorSpec);
 		glBindTexture(GL_TEXTURE_2D, gColorSpec);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_SRGB_ALPHA, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, gColorSpec, 0);
@@ -197,6 +197,7 @@ namespace render
 
 	void render_screen()
 	{
+		glEnable(GL_FRAMEBUFFER_SRGB);
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glUseProgram(renderQuadShader);
 		currentShader = renderQuadShader;
@@ -206,6 +207,7 @@ namespace render
 		glBindVertexArray(screenRenderVao);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 		glBindVertexArray(0);
+		glDisable(GL_FRAMEBUFFER_SRGB);
 	}
 
 	void debug_texture_selector(unsigned int* selectedTexture)
