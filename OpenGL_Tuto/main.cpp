@@ -172,15 +172,18 @@ int main()
 	transformId = transforms.add(vec3(-2, 0, 0), quat(), vec3(1, 1, 1));
 	boxRenderer.add(transformId, cubeMesh);
 
+	transformId = transforms.add(vec3(0, -1, 0), quat(), vec3(10, 1, 10));
+	boxRenderer.add(transformId, cubeMesh);
+
 	handle lampId = transforms.add(vec3(0, 2, 0), quat(), vec3(0.1f, 0.1f, 0.1f));
 	lampRenderer.add(lampId, cubeMesh);
-	pointLights.add(lampId, 1, vec3(1), vec3(1));
+	//pointLights.add(lampId, 1, vec3(1), vec3(1));
 
 	handle sunTransformId = transforms.add(vec3(0, 1, 0), quat(vec3(1, 1, 0)), vec3(0.1f, 0.1f, 0.1f));
 	lampRenderer.add(sunTransformId, cubeMesh);
-	pointLights.add(sunTransformId, 1, vec3(1), vec3(1));
+	//pointLights.add(sunTransformId, 1, vec3(1), vec3(1));
 
-	vec3 sunDirection(1, 1, 1);
+	vec3 sunDirection(1, 0, 0);
 
 	directionalLights.add(sunTransformId, 1, vec3(1), vec3(1));
 	shadowRenderer.shadowCasters = &boxRenderer;
@@ -259,7 +262,7 @@ int main()
 
 		boxRenderer.render(render::currentShader);
 
-		shadowRenderer.render(shadowShader.ID, normalize(sunDirection));
+		shadowRenderer.render(shadowShader.ID, getLightMatrix(normalize(sunDirection)));
 		glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
 
 		// Lighting pass
@@ -295,6 +298,11 @@ int main()
 		directionalLightShader.setVec3("viewPos", camera.Position);
 		directionalLightShader.setVec3("light.Direction", normalize(sunDirection));
 		directionalLightShader.setVec3("light.Color", vec3(1, 1, 1));
+
+		glActiveTexture(GL_TEXTURE4);
+		glBindTexture(GL_TEXTURE_2D, shadowRenderer.depthMap);
+		directionalLightShader.setInt("shadowMap", 4);
+		directionalLightShader.setMat4("lightMatrix", getLightMatrix(normalize(sunDirection)));
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 
 		glDisable(GL_BLEND);
@@ -309,8 +317,8 @@ int main()
 		lampShader.setVec3("viewPos", camera.Position);
 		lampRenderer.render(lampShader.ID);
 
-		static unsigned int displayTexture = 0;
-		render::render_screen();
+		static unsigned int displayTexture = render::finalTexture;
+		render::render_screen(displayTexture);
 		if (showDebug)
 		{
 			if(ImGui::Begin("Debug Window", &showDebug));

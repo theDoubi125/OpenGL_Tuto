@@ -2,11 +2,13 @@
 
 class MeshRenderer;
 
+glm::mat4 getLightMatrix(const vec3& lightDirection);
+
 class ShadowRenderManager
 {
 public:
 	void init();
-	void render(unsigned int depthMapShader, const vec3& lightDirection);
+	void render(unsigned int depthMapShader, const glm::mat4& lightSpaceMatrix);
 
 	MeshRenderer* shadowCasters;
 

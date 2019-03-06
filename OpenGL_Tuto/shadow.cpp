@@ -24,14 +24,8 @@ void ShadowRenderManager::init()
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void ShadowRenderManager::render(unsigned int depthMapShader, const vec3& lightDirection)
+void ShadowRenderManager::render(unsigned int depthMapShader, const glm::mat4& lightSpaceMatrix)
 {
-	float near_plane = 1.0f, far_plane = 7.5f;
-	glm::mat4 lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, near_plane, far_plane);
-	glm::mat4 lightView = glm::lookAt(glm::vec3(lightDirection),
-		glm::vec3(0.0f, 0.0f, 0.0f),
-		glm::vec3(0.0f, 1.0f, 0.0f));
-	glm::mat4 lightSpaceMatrix = lightProjection * lightView;
 	glUseProgram(depthMapShader);
 	glUniformMatrix4fv(glGetUniformLocation(depthMapShader, "lightSpaceMatrix"), 1, GL_FALSE, (float*)(&lightSpaceMatrix));
 
@@ -43,4 +37,14 @@ void ShadowRenderManager::render(unsigned int depthMapShader, const vec3& lightD
 	shadowCasters->render(depthMapShader);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+glm::mat4 getLightMatrix(const vec3& lightDirection)
+{
+	float near_plane = 1.0f, far_plane = 7.5f;
+	glm::mat4 lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, near_plane, far_plane);
+	glm::mat4 lightView = glm::lookAt(glm::vec3(lightDirection) * 5.0f,
+		glm::vec3(0.0f, 0.0f, 0.0f),
+		glm::vec3(0.0f, 1.0f, 0.0f));
+	return lightProjection * lightView;
 }

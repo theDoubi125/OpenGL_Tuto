@@ -83,7 +83,7 @@ namespace render
 		// - color + specular color buffer
 		glGenTextures(1, &gColorSpec);
 		glBindTexture(GL_TEXTURE_2D, gColorSpec);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_SRGB_ALPHA, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, gColorSpec, 0);
@@ -195,7 +195,7 @@ namespace render
 		glDepthMask(true);
 	}
 
-	void render_screen()
+	void render_screen(int texture)
 	{
 		glEnable(GL_FRAMEBUFFER_SRGB);
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -203,7 +203,7 @@ namespace render
 		currentShader = renderQuadShader;
 
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, finalTexture);
+		glBindTexture(GL_TEXTURE_2D, texture);
 		glBindVertexArray(screenRenderVao);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 		glBindVertexArray(0);

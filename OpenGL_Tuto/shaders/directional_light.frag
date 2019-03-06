@@ -6,6 +6,8 @@ in vec2 TexCoords;
 uniform sampler2D gPosition;
 uniform sampler2D gNormal;
 uniform sampler2D gAlbedoSpec;
+uniform sampler2D shadowMap;
+uniform mat4 lightMatrix;
 
 struct Light {
     vec3 Direction;
@@ -36,5 +38,11 @@ void main()
 	float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32.0f) * max(dot(norm, lightDir), 0) * Specular;
     lighting += spec + diffuse;
     
-    FragColor = vec4(lighting, 1.0);
+	vec4 proj4 = lightMatrix * vec4(FragPos, 1.0);
+	vec3 proj = proj4.xyz/proj4.w;
+	float closestDepth = texture(shadowMap, proj.xy / 2 + 0.5).x;
+	float currentDepth = proj.z;
+	float shadow = currentDepth - 0.005 > closestDepth ? 1: 0;
+	float displayValue =  - currentDepth + closestDepth;
+    FragColor = vec4 (displayValue, displayValue, displayValue, 1);
 }  
