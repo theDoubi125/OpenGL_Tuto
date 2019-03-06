@@ -181,6 +181,9 @@ int main()
 
 	handle sunTransformId = transforms.add(vec3(0, 1, 0), quat(vec3(1, 1, 0)), vec3(0.1f, 0.1f, 0.1f));
 	lampRenderer.add(sunTransformId, cubeMesh);
+
+	handle testTransformId = transforms.add(vec3(0, 0, 0), quat(), vec3(0.1f, 0.1f, 0.1f));
+	lampRenderer.add(testTransformId, cubeMesh);
 	//pointLights.add(sunTransformId, 1, vec3(1), vec3(1));
 
 	vec3 sunDirection(1, 0, 0);
@@ -241,7 +244,7 @@ int main()
 		// view/projection transformations fixed for all renderers
 		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
 		glm::mat4 view = camera.GetViewMatrix();
-		
+		static glm::vec4 testVec(0, 0, 0, 1);
 		// world transformation
 		glm::mat4 model = glm::mat4(1.0f);
 
@@ -343,6 +346,17 @@ int main()
 				{
 					ImGui::ShowDemoWindow(&showDebug);
 				}
+
+				
+				ImGui::DragFloat3("Z", (float*)&testVec, 0.1);
+				char buf[500];
+				glm::mat4 lightMatrix = getLightMatrix(normalize(sunDirection));
+				glm::vec4 prod = lightMatrix * testVec;
+				transforms[testTransformId].position.x = testVec.x / testVec.w;
+				transforms[testTransformId].position.y = testVec.y / testVec.w;
+				transforms[testTransformId].position.z = testVec.z / testVec.w;
+				sprintf_s(buf, "%f, %f, %f", prod.x / prod.w, prod.y / prod.w, prod.z / prod.w);
+				ImGui::Text(buf);
 				ImGui::End();
 			}
 		}

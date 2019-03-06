@@ -38,11 +38,12 @@ void main()
 	float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32.0f) * max(dot(norm, lightDir), 0) * Specular;
     lighting += spec + diffuse;
     
+	float bias = max(0.05 * (1.0 - dot(Normal, lightDir)), 0.005); 
 	vec4 proj4 = lightMatrix * vec4(FragPos, 1.0);
 	vec3 proj = proj4.xyz/proj4.w;
 	float closestDepth = texture(shadowMap, proj.xy / 2 + 0.5).x;
 	float currentDepth = proj.z;
-	float shadow = currentDepth - 0.005 > closestDepth ? 1: 0;
-	float displayValue =  - currentDepth + closestDepth;
-    FragColor = vec4 (displayValue, displayValue, displayValue, 1);
+	float shadow = (currentDepth + 1) / 2 - bias > closestDepth ? 1 : 0;
+	float displayValue = shadow;
+    FragColor = vec4(lighting * (1 - shadow), 1.0);
 }  
