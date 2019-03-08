@@ -30,6 +30,12 @@
     <Filter Include="Source Files\render\shadow">
       <UniqueIdentifier>{203e3375-f361-477d-b706-7921d9e215d1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\gameplay">
+      <UniqueIdentifier>{683e3f7e-1c87-4227-9a03-1f37b9fac7ee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\gameplay\movement">
+      <UniqueIdentifier>{4fba7f1e-bd4d-4398-925b-7f98e029a021}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -76,6 +82,9 @@
     </ClCompile>
     <ClCompile Include="render\shader.cpp">
       <Filter>Source Files\render</Filter>
+    </ClCompile>
+    <ClCompile Include="gameplay\movement\anchored_rotation.cpp">
+      <Filter>Source Files\gameplay\movement</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -138,6 +147,9 @@
     </ClInclude>
     <ClInclude Include="render\shader.h">
       <Filter>Source Files\render</Filter>
+    </ClInclude>
+    <ClInclude Include="gameplay\movement\anchored_rotation.h">
+      <Filter>Source Files\gameplay\movement</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
