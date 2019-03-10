@@ -30,6 +30,9 @@
     <Filter Include="Source Files\render\shadow">
       <UniqueIdentifier>{203e3375-f361-477d-b706-7921d9e215d1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\gameplay">
+      <UniqueIdentifier>{c0797f39-0211-4312-a438-3beab375cc8f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -76,6 +79,9 @@
     </ClCompile>
     <ClCompile Include="render\shader.cpp">
       <Filter>Source Files\render</Filter>
+    </ClCompile>
+    <ClCompile Include="gameplay\rotation.cpp">
+      <Filter>Source Files\gameplay</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -138,6 +144,9 @@
     </ClInclude>
     <ClInclude Include="render\shader.h">
       <Filter>Source Files\render</Filter>
+    </ClInclude>
+    <ClInclude Include="gameplay\rotation.h">
+      <Filter>Source Files\gameplay</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -36,4 +36,6 @@ struct TransformManager
 	handle add(const vec3& pos, const quat& rotation, const vec3& scale);
 
 	entity operator[](handle id);
+
+	int indexOf(handle id) const;
 };

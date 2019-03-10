@@ -5,7 +5,10 @@ using vec3 = glm::vec3;
 #include "mesh_render.h"
 #include <cstring>
 #include <cmath>
-#include <glm/gtc/matrix_transform.hpp>
+
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/transform.hpp>
+
 
 MeshData MeshLibrary::loadMesh(const std::string& name, float* data, size_t size)
 {
@@ -77,8 +80,10 @@ void MeshRenderer::render(unsigned int shaderId)
 		TransformManager::entity entity = (*transforms)[transformIds[i]];
 		// world transformation
 		glm::mat4 model = glm::mat4(1.0f);
-		model = glm::translate(model, entity.position);
-		model = glm::scale(model, entity.scale);
+		glm::mat4 translate = glm::translate(entity.position);
+		glm::mat4 scale = glm::scale(entity.scale);
+		glm::mat4 rotation = model * glm::mat4_cast(entity.rotation);
+		model = translate * scale * rotation;
 		glUniformMatrix4fv(glGetUniformLocation(shaderId, "model"), 1, false, (float*)&model);
 		glBindVertexArray(VAOs[i]);
 		glDrawArrays(GL_TRIANGLES, 0, vertexCount[i]);

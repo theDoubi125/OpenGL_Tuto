@@ -53,3 +53,15 @@ TransformManager::entity TransformManager::operator[](handle id)
 		}
 	}
 }
+
+int TransformManager::indexOf(handle id) const
+{
+	for (int i = 0; i < count; i++)
+	{
+		if (ids[i] == id)
+		{
+			return i;
+		}
+	}
+	return -1;
+}

@@ -27,11 +27,13 @@ using quat = glm::quat;
 
 #include "render/render_pipeline.h"
 #include "shadow.h"
+#include "gameplay/rotation.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void processInput(GLFWwindow *window);
+
 
 // settings
 const unsigned int SCR_WIDTH = 800;
@@ -155,10 +157,14 @@ int main()
 	PointLightManager pointLights;
 	DirectionalLightManager directionalLights;
 	ShadowRenderManager shadowRenderer;
+	AnchoredRotationTable rotationTable;
+	AnimatedRotationTable animRotationTable;
 
 	boxRenderer.transforms = &transforms;
 	pointLights.transforms = &transforms;
 	directionalLights.transforms = &transforms;
+	rotationTable.transforms = &transforms;
+	animRotationTable.transforms = &transforms;
 
 	lampRenderer.transforms = &transforms;
 
@@ -174,6 +180,11 @@ int main()
 
 	transformId = transforms.add(vec3(0, -1, 0), quat(), vec3(10, 1, 10));
 	boxRenderer.add(transformId, cubeMesh);
+
+	handle characterTransformId = transforms.add(vec3(0, 0, 2), quat(), vec3(1, 1, 1));
+	boxRenderer.add(characterTransformId, cubeMesh);
+	rotationTable.add(characterTransformId, vec3(0.5, -0.5, 0), vec3(0.5, -0.5, 0));
+	animRotationTable.add(characterTransformId, 10, quat(), quat(vec3(0, 0, -glm::pi<float>() / 2)));
 
 	handle lampId = transforms.add(vec3(0, 2, 0), quat(), vec3(0.1f, 0.1f, 0.1f));
 	lampRenderer.add(lampId, cubeMesh);
@@ -247,6 +258,9 @@ int main()
 		static glm::vec4 testVec(0, 0, 0, 1);
 		// world transformation
 		glm::mat4 model = glm::mat4(1.0f);
+
+		animRotationTable.update(deltaTime);
+		rotationTable.update();
 
 		render::clear_frame();
 		render::start_render(camera);
@@ -357,6 +371,10 @@ int main()
 				transforms[testTransformId].position.z = testVec.z / testVec.w;
 				sprintf_s(buf, "%f, %f, %f", prod.x / prod.w, prod.y / prod.w, prod.z / prod.w);
 				ImGui::Text(buf);
+
+				quat characterRotation = transforms[characterTransformId].rotation;
+				vec3 euler = glm::eulerAngles(characterRotation);
+				ImGui::DragFloat3("Rotation", (float*)&euler, 0.02f);
 				ImGui::End();
 			}
 		}
