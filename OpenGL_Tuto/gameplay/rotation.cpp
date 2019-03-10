@@ -44,7 +44,6 @@ void AnimatedRotationTable::update(float deltaTime)
 		int transformIndex = transforms->indexOf(transformHandles[i]);
 		times[i] += deltaTime;
 		float animRatio = times[i] / durations[i];
-		transforms->rotations[transformIndex] = glm::lerp(startRotations[i], targetRotations[i], animRatio < 1 ? animRatio : 1);
-		std::cout << glm::eulerAngles(transforms->rotations[transformIndex]).x << std::endl;
+		transforms->rotations[transformIndex] = glm::mix(glm::normalize(startRotations[i]), glm::normalize(targetRotations[i]), animRatio < 1 ? animRatio : 1);
 	}
 }

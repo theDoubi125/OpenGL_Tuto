@@ -259,6 +259,11 @@ int main()
 		// world transformation
 		glm::mat4 model = glm::mat4(1.0f);
 
+		if (showDebug)
+		{
+			deltaTime = 0;
+		}
+
 		animRotationTable.update(deltaTime);
 		rotationTable.update();
 
@@ -332,7 +337,7 @@ int main()
 		lampShader.setMat4("view", view);
 		lampShader.setMat4("model", model);
 		lampShader.setVec3("viewPos", camera.Position);
-		lampRenderer.render(lampShader.ID);
+		//lampRenderer.render(lampShader.ID);
 
 		static unsigned int displayTexture = render::finalTexture;
 		render::render_screen(displayTexture);
