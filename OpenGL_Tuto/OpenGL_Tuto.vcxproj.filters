@@ -33,6 +33,9 @@
     <Filter Include="Source Files\gameplay">
       <UniqueIdentifier>{c0797f39-0211-4312-a438-3beab375cc8f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\scene">
+      <UniqueIdentifier>{1507aa65-7af8-46f9-ba2a-005bb856205d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -82,6 +85,9 @@
     </ClCompile>
     <ClCompile Include="gameplay\rotation.cpp">
       <Filter>Source Files\gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="scene\scene.cpp">
+      <Filter>Source Files\scene</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -147,6 +153,9 @@
     </ClInclude>
     <ClInclude Include="gameplay\rotation.h">
       <Filter>Source Files\gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="scene\scene.h">
+      <Filter>Source Files\scene</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
