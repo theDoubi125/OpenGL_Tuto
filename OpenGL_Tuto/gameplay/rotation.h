@@ -1,13 +1,26 @@
 #pragma once
 #include <vector>
 #include "../transform.h"
+#include "../util/table.h"
 
 struct AnchoredRotationTable
 {
-	std::vector<handle> handles;
-	std::vector<handle> transformHandles;
-	std::vector<vec3> offsets;
-	std::vector<vec3> anchorPoints;
+	AnchoredRotationTable();
+
+	Column<handle> handles;
+	Column<handle> transformHandles;
+	Column<vec3> offsets;
+	Column<vec3> anchorPoints;
+
+	struct data {
+		handle h;
+		handle transformHandle;
+		vec3 offset;
+		vec3 anchorPoint;
+	};
+
+	Table dataTable;
+
 	handle nextHandle = { 0 };
 
 	TransformManager* transforms;

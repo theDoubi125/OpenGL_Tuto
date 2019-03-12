@@ -4,18 +4,10 @@
 
 #include <glm/vec3.hpp>
 #include <glm/gtc/quaternion.hpp>
+#include "util/table.h"
 
 using quat = glm::quat;
 using vec3 = glm::vec3;
-
-struct handle
-{
-	int id;
-
-	void operator=(const handle& handle);
-	bool operator<(const handle& handle) const;
-	bool operator==(const handle& handle) const;
-};
 
 struct TransformManager
 {

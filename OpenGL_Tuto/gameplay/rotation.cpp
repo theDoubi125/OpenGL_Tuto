@@ -1,9 +1,18 @@
 #include "rotation.h"
 #include <iostream>
 
+AnchoredRotationTable::AnchoredRotationTable()
+{
+	handles = dataTable.addColumn<handle>();
+	transformHandles = dataTable.addColumn<handle>();
+	offsets = dataTable.addColumn<vec3>();
+	anchorPoints = dataTable.addColumn<vec3>();
+	dataTable.allocate(10);
+}
+
 void AnchoredRotationTable::update()
 {
-	for (int i = 0; i < handles.size(); i++)
+	for (int i = 0; i < dataTable.count; i++)
 	{
 		int transformIndex = transforms->indexOf(transformHandles[i]);
 		quat rotation = transforms->rotations[transformIndex];
@@ -15,10 +24,7 @@ void AnchoredRotationTable::update()
 handle AnchoredRotationTable::add(handle transformHandle, vec3 offset, vec3 anchorPoint)
 {
 	handle result = nextHandle;
-	handles.push_back(result);
-	transformHandles.push_back(transformHandle);
-	offsets.push_back(offset);
-	anchorPoints.push_back(anchorPoint);
+	dataTable.push<data>({ result, transformHandle, offset, anchorPoint });
 	
 	nextHandle.id++;
 	return result;
