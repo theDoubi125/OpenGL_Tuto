@@ -22,6 +22,15 @@ bool handle::operator==(const handle& handle) const
 	return id == handle.id;
 }
 
+TransformManager::TransformManager()
+{
+	ids = dataTable.addColumn<handle>();
+	positions = dataTable.addColumn<vec3>();
+	rotations = dataTable.addColumn<quat>();
+	scales = dataTable.addColumn<vec3>();
+	dataTable.allocate(500);
+}
+
 handle TransformManager::add(const vec3& pos, const quat& rotation, const vec3& scale)
 {
 	if (count >= MAX_TRANSFORM_COUNT)

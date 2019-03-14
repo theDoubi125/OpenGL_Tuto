@@ -22,6 +22,10 @@ struct Column
 	{
 		return table->column<T>(columnIndex)[index];
 	}
+	const T& operator[](int index) const
+	{
+		return table->column<T>(columnIndex)[index];
+	}
 
 	void operator=(const Column<T>& other)
 	{

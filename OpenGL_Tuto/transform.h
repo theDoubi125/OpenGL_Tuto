@@ -11,12 +11,14 @@ using vec3 = glm::vec3;
 
 struct TransformManager
 {
-	handle ids		[MAX_TRANSFORM_COUNT];
-	vec3 positions	[MAX_TRANSFORM_COUNT];
-	quat rotations	[MAX_TRANSFORM_COUNT];
-	vec3 scales		[MAX_TRANSFORM_COUNT];
+	Column<handle> ids;
+	Column<vec3> positions;
+	Column<quat> rotations;
+	Column<vec3> scales;
 	int count = 0;
 	int nextId = 0;
+
+	Table dataTable;
 
 	struct entity
 	{
@@ -25,9 +27,30 @@ struct TransformManager
 		vec3& scale;
 	};
 
+	TransformManager();
+
 	handle add(const vec3& pos, const quat& rotation, const vec3& scale);
 
 	entity operator[](handle id);
 
 	int indexOf(handle id) const;
 };
+
+namespace transform
+{
+	struct entity
+	{
+		vec3& position;
+		quat& rotation;
+		vec3& scale;
+	};
+
+	extern Column<handle> ids;
+	extern Column<vec3> positions;
+	extern Column<quat> rotations;
+	extern Column<vec3> scales;
+
+	handle add(const vec3& pos, const quat& rotation, const vec3& scale);
+
+	int indexOf(handle id);
+}
