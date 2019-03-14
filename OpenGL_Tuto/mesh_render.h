@@ -44,8 +44,6 @@ class MeshRenderer
 public:
 	int count = 0;
 
-	TransformManager* transforms;
-
 	handle add(handle transformId, const MeshData& mesh);
 	void getPositions(vec3* outPos, size_t maxCount) const;
 

@@ -70,7 +70,8 @@ void MeshRenderer::getPositions(vec3* outPos, size_t maxCount) const
 {
 	for (int i = 0; i < count; i++)
 	{
-		outPos[i] = ((*transforms)[transformIds[i]]).position;
+		int transformIndex = transform::indexOf(transformIds[i]);
+		outPos[i] = transform::positions[transformIndex];
 	}
 }
 
@@ -78,11 +79,11 @@ void MeshRenderer::render(unsigned int shaderId)
 {
 	for (int i = 0; i < count; i++)
 	{
-		TransformManager::entity entity = (*transforms)[transformIds[i]];
+		int transformIndex = transform::indexOf(transformIds[i]);
 		// world transformation
-		glm::mat4 translation = glm::translate(entity.position);
-		glm::mat4 scale = glm::scale(entity.scale);
-		glm::mat4 rotation = glm::toMat4(entity.rotation);
+		glm::mat4 translation = glm::translate(transform::positions[transformIndex]);
+		glm::mat4 scale = glm::scale(transform::scales[transformIndex]);
+		glm::mat4 rotation = glm::toMat4(transform::rotations[transformIndex]);
 		glm::mat4 model = translation * rotation * scale;
 
 		glUniformMatrix4fv(glGetUniformLocation(shaderId, "model"), 1, false, (float*)&model);

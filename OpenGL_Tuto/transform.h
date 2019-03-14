@@ -9,33 +9,6 @@
 using quat = glm::quat;
 using vec3 = glm::vec3;
 
-struct TransformManager
-{
-	Column<handle> ids;
-	Column<vec3> positions;
-	Column<quat> rotations;
-	Column<vec3> scales;
-	int count = 0;
-	int nextId = 0;
-
-	Table dataTable;
-
-	struct entity
-	{
-		vec3& position;
-		quat& rotation;
-		vec3& scale;
-	};
-
-	TransformManager();
-
-	handle add(const vec3& pos, const quat& rotation, const vec3& scale);
-
-	entity operator[](handle id);
-
-	int indexOf(handle id) const;
-};
-
 namespace transform
 {
 	struct entity
@@ -50,7 +23,11 @@ namespace transform
 	extern Column<quat> rotations;
 	extern Column<vec3> scales;
 
+	void init();
+
 	handle add(const vec3& pos, const quat& rotation, const vec3& scale);
 
 	int indexOf(handle id);
+
+	int count();
 }

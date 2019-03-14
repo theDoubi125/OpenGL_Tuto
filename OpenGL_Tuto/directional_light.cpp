@@ -20,7 +20,8 @@ void DirectionalLightManager::assignShaderData(unsigned int shader)
 	vec3 directions[MAX_DIRECTIONAL_LIGHT_COUNT];
 	for (int i = 0; i < count; i++)
 	{
-		directions[i] = (*transforms)[transformIds[i]].rotation * vec3(0, 0, 1);
+		int transformIndex = transform::indexOf(transformIds[i]);
+		directions[i] = transform::rotations[transformIndex] * vec3(0, 0, 1);
 	}
 
 	glUniform1i(glGetUniformLocation(shader, "light.directional.count"), count);

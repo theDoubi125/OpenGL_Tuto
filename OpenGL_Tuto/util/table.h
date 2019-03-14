@@ -34,6 +34,22 @@ struct Column
 	}
 };
 
+struct TableElement
+{
+	Table* table;
+	int elementIndex;
+	int columnCursor = 0;
+
+	template<typename T>
+	TableElement& operator[](const T& data)
+	{
+		T* column = table->column<T>(columnCursor);
+		column[elementIndex] = data;
+		columnCursor++;
+		return *this;
+	}
+};
+
 struct Table
 {
 	char* columns[MAX_COLUMN_COUNT];
@@ -96,6 +112,13 @@ struct Table
 			dataCursor += columnElementSize[i];
 		}
 		handle result = { count };
+		count++;
+		return result;
+	}
+
+	TableElement push()
+	{
+		TableElement result = { this, count };
 		count++;
 		return result;
 	}

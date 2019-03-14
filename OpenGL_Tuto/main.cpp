@@ -153,47 +153,40 @@ int main()
 
 	MeshRenderer boxRenderer, lampRenderer;
 	MeshLibrary meshLibrary;
-	TransformManager transforms;
 	PointLightManager pointLights;
 	DirectionalLightManager directionalLights;
 	ShadowRenderManager shadowRenderer;
 	AnchoredRotationTable rotationTable;
 	AnimatedRotationTable animRotationTable;
 
-	boxRenderer.transforms = &transforms;
-	pointLights.transforms = &transforms;
-	directionalLights.transforms = &transforms;
-	rotationTable.transforms = &transforms;
-	animRotationTable.transforms = &transforms;
-
-	lampRenderer.transforms = &transforms;
+	transform::init();
 
 	MeshData cubeMesh = meshLibrary.loadMesh("cube", vertices, sizeof(vertices));
-	handle transformId = transforms.add(vec3(0, 0, 0), quat(), vec3(1, 1, 1));
+	handle transformId = transform::add(vec3(0, 0, 0), quat(), vec3(1, 1, 1));
 	boxRenderer.add(transformId, cubeMesh);
 
-	transformId = transforms.add(vec3(2, 0, 0), quat(), vec3(1, 1, 1));
+	transformId = transform::add(vec3(2, 0, 0), quat(), vec3(1, 1, 1));
 	boxRenderer.add(transformId, cubeMesh);
 
-	transformId = transforms.add(vec3(-2, 0, 0), quat(), vec3(1, 1, 1));
+	transformId = transform::add(vec3(-2, 0, 0), quat(), vec3(1, 1, 1));
 	boxRenderer.add(transformId, cubeMesh);
 
-	transformId = transforms.add(vec3(0, -1, 0), quat(), vec3(10, 1, 10));
+	transformId = transform::add(vec3(0, -1, 0), quat(), vec3(10, 1, 10));
 	boxRenderer.add(transformId, cubeMesh);
 
-	handle characterTransformId = transforms.add(vec3(0, 0, 2), quat(), vec3(1, 1, 1));
+	handle characterTransformId = transform::add(vec3(0, 0, 2), quat(), vec3(1, 1, 1));
 	boxRenderer.add(characterTransformId, cubeMesh);
 	rotationTable.add(characterTransformId, vec3(0.5, -0.5, 0), vec3(0.5, -0.5, 0));
 	animRotationTable.add(characterTransformId, 10, quat(), quat(vec3(0, 0, -glm::pi<float>() / 2)));
 
-	handle lampId = transforms.add(vec3(0, 2, 0), quat(), vec3(0.1f, 0.1f, 0.1f));
+	handle lampId = transform::add(vec3(0, 2, 0), quat(), vec3(0.1f, 0.1f, 0.1f));
 	lampRenderer.add(lampId, cubeMesh);
 	//pointLights.add(lampId, 1, vec3(1), vec3(1));
 
-	handle sunTransformId = transforms.add(vec3(0, 1, 0), quat(vec3(1, 1, 0)), vec3(0.1f, 0.1f, 0.1f));
+	handle sunTransformId = transform::add(vec3(0, 1, 0), quat(vec3(1, 1, 0)), vec3(0.1f, 0.1f, 0.1f));
 	lampRenderer.add(sunTransformId, cubeMesh);
 
-	handle testTransformId = transforms.add(vec3(0, 0, 0), quat(), vec3(0.1f, 0.1f, 0.1f));
+	handle testTransformId = transform::add(vec3(0, 0, 0), quat(), vec3(0.1f, 0.1f, 0.1f));
 	lampRenderer.add(testTransformId, cubeMesh);
 	//pointLights.add(sunTransformId, 1, vec3(1), vec3(1));
 
@@ -235,9 +228,11 @@ int main()
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
 
-		transforms[lampId].position.x = cos(currentFrame / 10);
-		transforms[lampId].position.y = 0;
-		transforms[lampId].position.z = sin(currentFrame / 10);
+		int transformIndex = transform::indexOf(lampId);
+		vec3& position = transform::positions[transformIndex];
+		position.x = cos(currentFrame / 10);
+		position.y = 0;
+		position.z = sin(currentFrame / 10);
 
 		// input
 		// -----
@@ -301,13 +296,7 @@ int main()
 			pointLightShader.setInt("gAlbedoSpec", 2);
 			pointLightShader.setVec3("viewPos", camera.Position);
 			vec3 position;
-			for (int j = 0; j < transforms.count; j++)
-			{
-				if (pointLights.transformIds[i] == transforms.ids[j])
-				{
-					position = transforms.positions[j];
-				}
-			}
+			position = transform::positions[transform::indexOf(pointLights.transformIds[i])];
 			pointLightShader.setVec3("light.Position", position);
 			pointLightShader.setVec3("light.Color", vec3(1, 1, 1));
 			glDrawArrays(GL_TRIANGLES, 0, 6);
@@ -371,15 +360,25 @@ int main()
 				char buf[500];
 				glm::mat4 lightMatrix = getLightMatrix(normalize(sunDirection));
 				glm::vec4 prod = lightMatrix * testVec;
+				/*
 				transforms[testTransformId].position.x = testVec.x / testVec.w;
 				transforms[testTransformId].position.y = testVec.y / testVec.w;
 				transforms[testTransformId].position.z = testVec.z / testVec.w;
+				*/
 				sprintf_s(buf, "%f, %f, %f", prod.x / prod.w, prod.y / prod.w, prod.z / prod.w);
 				ImGui::Text(buf);
 
-				quat characterRotation = transforms[characterTransformId].rotation;
+				int transformIndex = transform::indexOf(characterTransformId);
+				quat characterRotation = transform::rotations[transformIndex];
 				vec3 euler = glm::eulerAngles(characterRotation);
 				ImGui::DragFloat3("Rotation", (float*)&euler, 0.02f);
+
+				for (int i = 0; i < transform::count(); i++)
+				{
+					char buffer[500];
+					sprintf_s(buffer, "%d", transform::ids[i].id);
+					ImGui::Text(buffer);
+				}
 				ImGui::End();
 			}
 		}

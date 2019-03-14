@@ -20,7 +20,8 @@ void PointLightManager::assignShaderData(unsigned int shader)
 	vec3 positions[MAX_POINT_LIGHT_COUNT];
 	for (int i = 0; i < count; i++)
 	{
-		positions[i] = (*transforms)[transformIds[i]].position;
+		int transformIndex = transform::indexOf(transformIds[i]);
+		positions[i] = transform::positions[transformIndex];
 	}
 
 	glUniform1i(glGetUniformLocation(shader, "light.point.count"), count);

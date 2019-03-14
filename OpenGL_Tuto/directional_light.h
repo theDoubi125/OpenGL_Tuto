@@ -8,8 +8,6 @@
 class DirectionalLightManager
 {
 public:
-	TransformManager* transforms;
-
 	handle add(handle transformId, float intensity, vec3 diffuse, vec3 specular);
 	void assignShaderData(unsigned int shader);
 

@@ -22,55 +22,46 @@ bool handle::operator==(const handle& handle) const
 	return id == handle.id;
 }
 
-TransformManager::TransformManager()
+namespace transform
 {
-	ids = dataTable.addColumn<handle>();
-	positions = dataTable.addColumn<vec3>();
-	rotations = dataTable.addColumn<quat>();
-	scales = dataTable.addColumn<vec3>();
-	dataTable.allocate(500);
-}
+	Table table;
 
-handle TransformManager::add(const vec3& pos, const quat& rotation, const vec3& scale)
-{
-	if (count >= MAX_TRANSFORM_COUNT)
-	{
-		std::cerr << "Transform manager full" << std::endl;
-	}
-	else
-	{
-		handle id = { nextId };
-		ids[count] = id;
-		positions[count] = pos;
-		rotations[count] = rotation;
-		scales[count] = scale;
-		count++;
-		nextId++;
-		return id;
-	}
-	return { -1 };
-}
+	Column<handle> ids;
+	Column<vec3> positions;
+	Column<quat> rotations;
+	Column<vec3> scales;
 
-TransformManager::entity TransformManager::operator[](handle id)
-{
-	for (int i = 0; i < count; i++)
+	handle nextHandle = {0};
+
+	void init()
 	{
-		if (ids[i] == id)
+		ids = table.addColumn<handle>();
+		positions = table.addColumn<vec3>();
+		rotations = table.addColumn<quat>();
+		scales = table.addColumn<vec3>();
+		table.allocate(500);
+	}
+
+	handle add(const vec3& pos, const quat& rotation, const vec3& scale)
+	{
+		handle result = nextHandle;
+		(table.push())[result][pos][rotation][scale];
+		nextHandle.id++;
+		return result;
+	}
+
+	int indexOf(handle id)
+	{
+		for (int i = 0; i < table.count; i++)
 		{
-			return { positions[i], rotations[i], scales[i] };
-
+			if (ids[i] == id)
+				return i;
 		}
+		return -1;
 	}
-}
 
-int TransformManager::indexOf(handle id) const
-{
-	for (int i = 0; i < count; i++)
+	int count()
 	{
-		if (ids[i] == id)
-		{
-			return i;
-		}
+		return table.count;
 	}
-	return -1;
 }

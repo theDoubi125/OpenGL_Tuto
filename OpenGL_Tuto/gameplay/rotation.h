@@ -23,14 +23,12 @@ struct AnchoredRotationTable
 
 	handle nextHandle = { 0 };
 
-	TransformManager* transforms;
 	handle add(handle transformHandle, vec3 offset, vec3 anchorPoint);
 	void update();
 };
 
 struct AnimatedRotationTable
 {
-	TransformManager* transforms;
 	std::vector<handle> transformHandles;
 	std::vector<float> durations;
 	std::vector<float> times;

@@ -10,7 +10,6 @@ namespace scene
 {
 	MeshRenderer boxRenderer, lampRenderer;
 	MeshLibrary meshLibrary;
-	TransformManager transforms;
 	PointLightManager pointLights;
 	ShadowRenderManager shadowRenderer;
 	AnchoredRotationTable rotationTable;
@@ -87,38 +86,32 @@ namespace scene
 		SCR_WIDTH = screenWidth;
 		SCR_HEIGHT = screenHeight;
 
-		boxRenderer.transforms = &transforms;
-		pointLights.transforms = &transforms;
-		rotationTable.transforms = &transforms;
-		animRotationTable.transforms = &transforms;
-		lampRenderer.transforms = &transforms;
-
 		MeshData cubeMesh = meshLibrary.loadMesh("cube", vertices, sizeof(vertices));
-		handle transformId = transforms.add(vec3(0, 0, 0), quat(), vec3(1, 1, 1));
+		handle transformId = transform::add(vec3(0, 0, 0), quat(), vec3(1, 1, 1));
 		boxRenderer.add(transformId, cubeMesh);
 
-		transformId = transforms.add(vec3(2, 0, 0), quat(), vec3(1, 1, 1));
+		transformId = transform::add(vec3(2, 0, 0), quat(), vec3(1, 1, 1));
 		boxRenderer.add(transformId, cubeMesh);
 
-		transformId = transforms.add(vec3(-2, 0, 0), quat(), vec3(1, 1, 1));
+		transformId = transform::add(vec3(-2, 0, 0), quat(), vec3(1, 1, 1));
 		boxRenderer.add(transformId, cubeMesh);
 
-		transformId = transforms.add(vec3(0, -1, 0), quat(), vec3(10, 1, 10));
+		transformId = transform::add(vec3(0, -1, 0), quat(), vec3(10, 1, 10));
 		boxRenderer.add(transformId, cubeMesh);
 
-		handle characterTransformId = transforms.add(vec3(0, 0, 2), quat(), vec3(1, 1, 1));
+		handle characterTransformId = transform::add(vec3(0, 0, 2), quat(), vec3(1, 1, 1));
 		boxRenderer.add(characterTransformId, cubeMesh);
 		rotationTable.add(characterTransformId, vec3(0.5, -0.5, 0), vec3(0.5, -0.5, 0));
 		animRotationTable.add(characterTransformId, 10, quat(), quat(vec3(0, 0, -glm::pi<float>() / 2)));
 
-		handle lampId = transforms.add(vec3(0, 2, 0), quat(), vec3(0.1f, 0.1f, 0.1f));
+		handle lampId = transform::add(vec3(0, 2, 0), quat(), vec3(0.1f, 0.1f, 0.1f));
 		lampRenderer.add(lampId, cubeMesh);
 		//pointLights.add(lampId, 1, vec3(1), vec3(1));
 
-		handle sunTransformId = transforms.add(vec3(0, 1, 0), quat(vec3(1, 1, 0)), vec3(0.1f, 0.1f, 0.1f));
+		handle sunTransformId = transform::add(vec3(0, 1, 0), quat(vec3(1, 1, 0)), vec3(0.1f, 0.1f, 0.1f));
 		lampRenderer.add(sunTransformId, cubeMesh);
 
-		handle testTransformId = transforms.add(vec3(0, 0, 0), quat(), vec3(0.1f, 0.1f, 0.1f));
+		handle testTransformId = transform::add(vec3(0, 0, 0), quat(), vec3(0.1f, 0.1f, 0.1f));
 		lampRenderer.add(testTransformId, cubeMesh);
 
 		vec3 sunDirection(1, 0.7f, 0.45f);
@@ -178,13 +171,8 @@ namespace scene
 			pointLightShader->setInt("gAlbedoSpec", 2);
 			pointLightShader->setVec3("viewPos", camera.Position);
 			vec3 position;
-			for (int j = 0; j < transforms.count; j++)
-			{
-				if (pointLights.transformIds[i] == transforms.ids[j])
-				{
-					position = transforms.positions[j];
-				}
-			}
+
+			position = transform::positions[transform::indexOf(pointLights.transformIds[i])];
 			pointLightShader->setVec3("light.Position", position);
 			pointLightShader->setVec3("light.Color", vec3(1, 1, 1));
 			glDrawArrays(GL_TRIANGLES, 0, 6);

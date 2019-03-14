@@ -14,9 +14,9 @@ void AnchoredRotationTable::update()
 {
 	for (int i = 0; i < dataTable.count; i++)
 	{
-		int transformIndex = transforms->indexOf(transformHandles[i]);
-		quat rotation = transforms->rotations[transformIndex];
-		transforms->positions[transformIndex] = anchorPoints[i] - rotation * offsets[i];
+		int transformIndex = transform::indexOf(transformHandles[i]);
+		quat rotation = transform::rotations[transformIndex];
+		transform::positions[transformIndex] = anchorPoints[i] - rotation * offsets[i];
 	}
 }
 
@@ -47,9 +47,9 @@ void AnimatedRotationTable::update(float deltaTime)
 {
 	for (int i = 0; i < transformHandles.size(); i++)
 	{
-		int transformIndex = transforms->indexOf(transformHandles[i]);
+		int transformIndex = transform::indexOf(transformHandles[i]);
 		times[i] += deltaTime;
 		float animRatio = times[i] / durations[i];
-		transforms->rotations[transformIndex] = glm::mix(glm::normalize(startRotations[i]), glm::normalize(targetRotations[i]), animRatio < 1 ? animRatio : 1);
+		transform::rotations[transformIndex] = glm::mix(glm::normalize(startRotations[i]), glm::normalize(targetRotations[i]), animRatio < 1 ? animRatio : 1);
 	}
 }
