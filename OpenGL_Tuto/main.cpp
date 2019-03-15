@@ -177,7 +177,7 @@ int main()
 	handle characterTransformId = transform::add(vec3(0, 0, 2), quat(), vec3(1, 1, 1));
 	boxRenderer.add(characterTransformId, cubeMesh);
 	rotationTable.add(characterTransformId, vec3(0.5, -0.5, 0), vec3(0.5, -0.5, 0));
-	animRotationTable.add(characterTransformId, 10, quat(), quat(vec3(0, 0, -glm::pi<float>() / 2)));
+	animRotationTable.add(characterTransformId, 20, quat(), quat(vec3(0, 0, -glm::pi<float>() / 2)));
 
 	handle lampId = transform::add(vec3(0, 2, 0), quat(), vec3(0.1f, 0.1f, 0.1f));
 	lampRenderer.add(lampId, cubeMesh);
@@ -215,6 +215,8 @@ int main()
 
 	render::init(SCR_WIDTH, SCR_HEIGHT);
 
+	lastFrame = glfwGetTime();
+
 	// render loop
 	// -----------
 	while (!glfwWindowShouldClose(window))
@@ -224,19 +226,20 @@ int main()
 		ImGui::NewFrame();
 		// per-frame time logic
 		// --------------------
+
 		float currentFrame = glfwGetTime();
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
+
+		// input
+		// -----
+		processInput(window);
 
 		int transformIndex = transform::indexOf(lampId);
 		vec3& position = transform::positions[transformIndex];
 		position.x = cos(currentFrame / 10);
 		position.y = 0;
 		position.z = sin(currentFrame / 10);
-
-		// input
-		// -----
-		processInput(window);
 		if (!showDebug)
 		{
 			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);

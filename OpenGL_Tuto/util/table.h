@@ -41,7 +41,7 @@ struct TableElement
 	int columnCursor = 0;
 
 	template<typename T>
-	TableElement& operator[](const T& data)
+	TableElement& operator<<(const T& data)
 	{
 		T* column = table->column<T>(columnCursor);
 		column[elementIndex] = data;
@@ -81,6 +81,13 @@ struct Table
 		{
 			delete columnsBackup[i];
 		}
+	}
+
+	template<typename T>
+	TableElement& operator+=(const T& data)
+	{
+		TableElement result = {this, count};
+		return *this;
 	}
 
 	template<typename T>

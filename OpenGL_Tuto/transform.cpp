@@ -45,7 +45,7 @@ namespace transform
 	handle add(const vec3& pos, const quat& rotation, const vec3& scale)
 	{
 		handle result = nextHandle;
-		(table.push())[result][pos][rotation][scale];
+		table.push() << result << pos << rotation << scale;
 		nextHandle.id++;
 		return result;
 	}
