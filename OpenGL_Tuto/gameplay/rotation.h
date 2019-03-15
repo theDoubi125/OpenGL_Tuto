@@ -3,39 +3,30 @@
 #include "../transform.h"
 #include "../util/table.h"
 
-struct AnchoredRotationTable
+namespace rotation
 {
-	AnchoredRotationTable();
+	namespace anchor
+	{
+		extern Column<handle> handles;
+		extern Column<handle> transformHandles;
+		extern Column<vec3> offsets;
+		extern Column<vec3> anchorPoints;
 
-	Column<handle> handles;
-	Column<handle> transformHandles;
-	Column<vec3> offsets;
-	Column<vec3> anchorPoints;
+		void init();
+		void update();
+		handle add(handle transformHandle, vec3 offset, vec3 anchorPoint);
+	}
 
-	struct data {
-		handle h;
-		handle transformHandle;
-		vec3 offset;
-		vec3 anchorPoint;
-	};
+	namespace animation
+	{
+		extern Column<handle> transformHandles;
+		extern Column<float> durations;
+		extern Column<float> times;
+		extern Column<quat> startRotations;
+		extern Column<quat> targetRotations;
 
-	Table dataTable;
-
-	handle nextHandle = { 0 };
-
-	handle add(handle transformHandle, vec3 offset, vec3 anchorPoint);
-	void update();
-};
-
-struct AnimatedRotationTable
-{
-	std::vector<handle> transformHandles;
-	std::vector<float> durations;
-	std::vector<float> times;
-	std::vector<quat> startRotations;
-	std::vector<quat> targetRotations;
-	handle nextHandle = { 0 };
-
-	handle add(handle transformHandle, float duration, quat startRotation, quat targetRotation);
-	void update(float deltaTime);
-};
+		void init();
+		handle add(handle transformHandle, float duration, quat startRotation, quat targetRotation);
+		void update(float deltaTime);
+	}
+}
