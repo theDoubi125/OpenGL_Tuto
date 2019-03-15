@@ -39,15 +39,6 @@ struct TableElement
 	Table* table;
 	int elementIndex;
 	int columnCursor = 0;
-
-	template<typename T>
-	TableElement& operator<<(const T& data)
-	{
-		T* column = table->column<T>(columnCursor);
-		column[elementIndex] = data;
-		columnCursor++;
-		return *this;
-	}
 };
 
 struct Table
@@ -125,9 +116,7 @@ struct Table
 
 	TableElement push()
 	{
-		TableElement result = { this, count };
-		count++;
-		return result;
+		return { this, count++ };
 	}
 
 	template<typename T>
@@ -135,4 +124,27 @@ struct Table
 	{
 		return (T*)columns[columnIndex];
 	}
+
+
+
+	template<typename T>
+	Table& operator>>(Column<T>& column)
+	{
+		column = addColumn<T>();
+		return *this;
+	}
 };
+
+template<typename T>
+TableElement& operator<<(TableElement& tableElement, const T& data)
+{
+	Table& table = *tableElement.table;
+	if (table.columnElementSize[tableElement.columnCursor] != sizeof(data))
+	{
+		std::cerr << "Error on table push : element size mismatch" << std::endl;
+	}
+	T* column = table.column<T>(tableElement.columnCursor);
+	column[tableElement.elementIndex] = data;
+	tableElement.columnCursor++;
+	return tableElement;
+}

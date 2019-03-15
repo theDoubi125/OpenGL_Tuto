@@ -35,17 +35,15 @@ namespace transform
 
 	void init()
 	{
-		ids = table.addColumn<handle>();
-		positions = table.addColumn<vec3>();
-		rotations = table.addColumn<quat>();
-		scales = table.addColumn<vec3>();
+		table >> ids >> positions >> rotations >> scales;
 		table.allocate(500);
 	}
 
 	handle add(const vec3& pos, const quat& rotation, const vec3& scale)
 	{
 		handle result = nextHandle;
-		table.push() << result << pos << rotation << scale;
+		TableElement elt = table.push();
+		elt << result << pos << rotation << scale;
 		nextHandle.id++;
 		return result;
 	}

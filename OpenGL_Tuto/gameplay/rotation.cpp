@@ -14,10 +14,7 @@ namespace rotation
 
 		void init()
 		{
-			handles = dataTable.addColumn<handle>();
-			transformHandles = dataTable.addColumn<handle>();
-			offsets = dataTable.addColumn<vec3>();
-			anchorPoints = dataTable.addColumn<vec3>();
+			dataTable >> handles >> transformHandles >> offsets >> anchorPoints;
 			dataTable.allocate(100);
 		}
 
@@ -34,7 +31,8 @@ namespace rotation
 		handle add(handle transformHandle, vec3 offset, vec3 anchorPoint)
 		{
 			handle result = nextHandle;
-			dataTable.push() << result << transformHandle << offset << anchorPoint;
+			TableElement elt = dataTable.push();
+			elt << result << transformHandle << offset << anchorPoint;
 
 			nextHandle.id++;
 			return result;
@@ -55,19 +53,15 @@ namespace rotation
 
 		void init()
 		{
-			handles = dataTable.addColumn<handle>();
-			transformHandles = dataTable.addColumn<handle>();
-			durations = dataTable.addColumn<float>();
-			times = dataTable.addColumn<float>();
-			startRotations = dataTable.addColumn<quat>();
-			targetRotations = dataTable.addColumn<quat>();
+			dataTable >> handles >> transformHandles >> durations >> times >> startRotations >> targetRotations;
 			dataTable.allocate(50);
 		}
 
 		handle add(handle transformHandle, float duration, quat startRotation, quat targetRotation)
 		{
 			handle result = nextHandle;
-			dataTable.push() << result << transformHandle << duration << startRotation << targetRotation;
+			TableElement elt = dataTable.push();
+			elt << result << transformHandle << duration << 0 << startRotation << targetRotation;
 			nextHandle.id++;
 			return result;
 		}
@@ -79,6 +73,8 @@ namespace rotation
 				int transformIndex = transform::indexOf(transformHandles[i]);
 				times[i] += deltaTime;
 				float animRatio = times[i] / durations[i];
+				quat startRotation = startRotations[i];
+				quat targetRotation = targetRotations[i];
 				transform::rotations[transformIndex] = glm::mix(glm::normalize(startRotations[i]), glm::normalize(targetRotations[i]), animRatio < 1 ? animRatio : 1);
 			}
 		}

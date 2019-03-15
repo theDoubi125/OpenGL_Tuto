@@ -162,7 +162,7 @@ int main()
 	rotation::animation::init();
 
 	MeshData cubeMesh = meshLibrary.loadMesh("cube", vertices, sizeof(vertices));
-	handle transformId = transform::add(vec3(0, 0, 0), quat(), vec3(1, 1, 1));
+	handle transformId = transform::add(vec3(0, 0, 0), quat(vec3(0, 0, -glm::pi<float>() / 3)), vec3(1, 1, 1));
 	boxRenderer.add(transformId, cubeMesh);
 
 	transformId = transform::add(vec3(2, 0, 0), quat(), vec3(1, 1, 1));
