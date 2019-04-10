@@ -72,6 +72,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IncludePath>$(SolutionDir)libs;$(SolutionDir)libs\glfw-3.2.1.bin.WIN64\include;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)libs\glfw-3.2.1.bin.WIN64\lib-vc2015;$(LibraryPath)</LibraryPath>
+    <SourcePath>$(SourcePath)</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>G:\Documents\Julien\Projets\C++\OpenGL_Tuto\libs;G:\Documents\Julien\Projets\C++\OpenGL_Tuto\libs\glfw-3.2.1.bin.WIN64\include;$(IncludePath)</IncludePath>
@@ -91,6 +92,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(ProjectDir)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <AdditionalDependencies>opengl32.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -127,6 +129,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="directional_light.cpp" />
+    <ClCompile Include="gameplay\input.cpp" />
+    <ClCompile Include="gameplay\movement\cube_movement.cpp" />
     <ClCompile Include="gameplay\rotation.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="imgui.cpp" />
@@ -144,11 +148,15 @@
     <ClCompile Include="shadow.cpp" />
     <ClCompile Include="texture.cpp" />
     <ClCompile Include="transform.cpp" />
+    <ClCompile Include="util\bit_array.cpp" />
+    <ClCompile Include="util\debug\table_display.cpp" />
     <ClCompile Include="util\table.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="camera.h" />
     <ClInclude Include="directional_light.h" />
+    <ClInclude Include="gameplay\input.h" />
+    <ClInclude Include="gameplay\movement\cube_movement.h" />
     <ClInclude Include="gameplay\rotation.h" />
     <ClInclude Include="imconfig.h" />
     <ClInclude Include="imgui.h" />
@@ -169,7 +177,11 @@
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="texture.h" />
     <ClInclude Include="transform.h" />
+    <ClInclude Include="util\bit_array.h" />
+    <ClInclude Include="util\debug\table_display.h" />
+    <ClInclude Include="util\sort.h" />
     <ClInclude Include="util\table.h" />
+    <ClInclude Include="util\table\join.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\color.frag" />

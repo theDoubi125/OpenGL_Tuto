@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 
+#define MAX_ELEMENT_SIZE 128
 #define MAX_COLUMN_COUNT 10
 
 struct handle
@@ -22,6 +23,7 @@ struct Column
 	{
 		return table->column<T>(columnIndex)[index];
 	}
+
 	const T& operator[](int index) const
 	{
 		return table->column<T>(columnIndex)[index];
@@ -119,13 +121,16 @@ struct Table
 		return { this, count++ };
 	}
 
+	TableElement element(int index)
+	{
+		return { this, index };
+	}
+
 	template<typename T>
 	T* column(int columnIndex)
 	{
 		return (T*)columns[columnIndex];
 	}
-
-
 
 	template<typename T>
 	Table& operator>>(Column<T>& column)
@@ -133,6 +138,10 @@ struct Table
 		column = addColumn<T>();
 		return *this;
 	}
+
+	void remove(int index);
+
+	void swap(int indexA, int indexB);
 };
 
 template<typename T>

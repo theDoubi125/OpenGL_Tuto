@@ -7,7 +7,6 @@ namespace rotation
 {
 	namespace anchor
 	{
-		extern Column<handle> handles;
 		extern Column<handle> transformHandles;
 		extern Column<vec3> offsets;
 		extern Column<vec3> anchorPoints;
@@ -15,6 +14,8 @@ namespace rotation
 		void init();
 		void update();
 		handle add(handle transformHandle, vec3 offset, vec3 anchorPoint);
+
+		void showDebug();
 	}
 
 	namespace animation
@@ -25,8 +26,12 @@ namespace rotation
 		extern Column<quat> startRotations;
 		extern Column<quat> targetRotations;
 
+		extern std::vector<handle> removed; // all animations finished or manually removed this frame
+
 		void init();
-		handle add(handle transformHandle, float duration, quat startRotation, quat targetRotation);
+		handle add(handle transformHandle, vec3 offset, vec3 anchorPoint, float duration, quat startRotation, quat targetRotation);
 		void update(float deltaTime);
+
+		void showDebug();
 	}
 }

@@ -28,6 +28,10 @@ using quat = glm::quat;
 #include "render/render_pipeline.h"
 #include "shadow.h"
 #include "gameplay/rotation.h"
+#include "util/bit_array.h"
+
+#include "util/debug/table_display.h"
+#include "gameplay/movement/cube_movement.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
@@ -45,6 +49,7 @@ float lastX = SCR_WIDTH / 2.0f;
 float lastY = SCR_HEIGHT / 2.0f;
 bool firstMouse = true;
 bool showDebug = false;
+bool pauseGame = false;
 
 // timing
 float deltaTime = 0.0f;
@@ -160,6 +165,7 @@ int main()
 	transform::init();
 	rotation::anchor::init();
 	rotation::animation::init();
+	movement::cube::init();
 
 	MeshData cubeMesh = meshLibrary.loadMesh("cube", vertices, sizeof(vertices));
 	handle transformId = transform::add(vec3(0, 0, 0), quat(vec3(0, 0, -glm::pi<float>() / 3)), vec3(1, 1, 1));
@@ -176,8 +182,8 @@ int main()
 
 	handle characterTransformId = transform::add(vec3(0, 0, 2), quat(), vec3(1, 1, 1));
 	boxRenderer.add(characterTransformId, cubeMesh);
-	rotation::anchor::add(characterTransformId, vec3(0.5, -0.5, 0), vec3(0.5, -0.5, 0));
-	rotation::animation::add(characterTransformId, 20, quat(), quat(vec3(0, 0, -glm::pi<float>() / 2)));
+	handle cubeMovementId = movement::cube::add(characterTransformId, 0.5f);
+	//rotation::animation::add(characterTransformId, vec3(0.5, -0.5, 0), vec3(0.5, -0.5, 0), 3, quat(), quat(vec3(0, 0, -glm::pi<float>() / 2)));
 
 	handle lampId = transform::add(vec3(0, 2, 0), quat(), vec3(0.1f, 0.1f, 0.1f));
 	lampRenderer.add(lampId, cubeMesh);
@@ -257,13 +263,29 @@ int main()
 		// world transformation
 		glm::mat4 model = glm::mat4(1.0f);
 
-		if (showDebug)
+		if (pauseGame)
 		{
 			deltaTime = 0;
 		}
 
+		vec3 input(0, 0, 0);
+		if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
+			input.z = -1;
+		else if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
+			input.z = 1;
+		else
+			input.z = 0;
+		if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
+			input.x = -1;
+		else if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
+			input.x = 1;
+		else
+			input.x = 0;
+		movement::cube::cubeInput[cubeMovementId.id] = -camera.Front * input.z + camera.Right * input.x;
+
 		rotation::animation::update(deltaTime);
 		rotation::anchor::update();
+		movement::cube::update();
 
 		render::clear_frame();
 		render::start_render(camera);
@@ -337,51 +359,51 @@ int main()
 		{
 			if(ImGui::Begin("Debug Window", &showDebug));
 			{
-				if (ImGui::DragFloat3("Sun direction", (float*)&sunDirection, 0.01f))
-				{
+				ImGui::Checkbox("Pause :", &pauseGame);
 
-				}
-				ImGui::Image((ImTextureID)displayTexture, ImVec2(400, 300));
-
-				char buffer[500];
-				sprintf_s(buffer, "%d", displayTexture);
-				if (ImGui::BeginCombo("Texture", buffer))
+				if (ImGui::BeginTabBar("Test Tab Bar"))
 				{
-					render::debug_texture_selector(&displayTexture);
-					if (ImGui::Selectable("Shadow"))
-						displayTexture = shadowRenderer.depthMap;
-					ImGui::EndCombo();
+					if (ImGui::BeginTabItem("Anchored Rotation"))
+					{
+						rotation::anchor::showDebug();
+						ImGui::EndTabItem();
+					}
+					if (ImGui::BeginTabItem("Rotation Animation"))
+					{
+						rotation::animation::showDebug();
+						ImGui::EndTabItem();
+					}
+					if (ImGui::BeginTabItem("Cube Movement"))
+					{
+						ImGui::DragFloat3("Cube Input", (float*)&movement::cube::cubeInput[cubeMovementId.id], 0.1f);
+						ImGui::EndTabItem();
+					}
+					if (ImGui::BeginTabItem("Render Textures"))
+					{
+						char buffer[500];
+						sprintf_s(buffer, "%d", displayTexture);
+						if (ImGui::BeginCombo("Texture", buffer))
+						{
+							render::debug_texture_selector(&displayTexture);
+							if (ImGui::Selectable("Shadow"))
+								displayTexture = shadowRenderer.depthMap;
+							ImGui::EndCombo();
+						}
+						ImGui::Image((ImTextureID)displayTexture, ImVec2(400, 300));
+
+						ImGui::EndTabItem();
+					}
+					ImGui::EndTabBar();
 				}
 				
-				if (ImGui::Checkbox("Show Debug", &showDebug))
-				{
-					ImGui::ShowDemoWindow(&showDebug);
-				}
+				ImGui::Checkbox("Show Debug", &showDebug);
 
+				static bool showDemoWindow = false;
+				ImGui::Checkbox("Show Demo Window", &showDemoWindow);
 				
-				ImGui::DragFloat3("Z", (float*)&testVec, 0.1);
-				char buf[500];
-				glm::mat4 lightMatrix = getLightMatrix(normalize(sunDirection));
-				glm::vec4 prod = lightMatrix * testVec;
-				/*
-				transforms[testTransformId].position.x = testVec.x / testVec.w;
-				transforms[testTransformId].position.y = testVec.y / testVec.w;
-				transforms[testTransformId].position.z = testVec.z / testVec.w;
-				*/
-				sprintf_s(buf, "%f, %f, %f", prod.x / prod.w, prod.y / prod.w, prod.z / prod.w);
-				ImGui::Text(buf);
-
-				int transformIndex = transform::indexOf(characterTransformId);
-				quat characterRotation = transform::rotations[transformIndex];
-				vec3 euler = glm::eulerAngles(characterRotation);
-				ImGui::DragFloat3("Rotation", (float*)&euler, 0.02f);
-
-				for (int i = 0; i < transform::count(); i++)
-				{
-					char buffer[500];
-					sprintf_s(buffer, "%d", transform::ids[i].id);
-					ImGui::Text(buffer);
-				}
+				if(showDemoWindow)
+					ImGui::ShowDemoWindow(&showDemoWindow);
+			
 				ImGui::End();
 			}
 		}

@@ -36,6 +36,18 @@
     <Filter Include="Source Files\scene">
       <UniqueIdentifier>{1507aa65-7af8-46f9-ba2a-005bb856205d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\util\container">
+      <UniqueIdentifier>{5f5f71c0-7897-4a38-ac53-de17c0e23d06}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\util\container\debug">
+      <UniqueIdentifier>{5e861ea0-c522-4534-9c7b-b1d0c8948a7a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\gameplay\cube">
+      <UniqueIdentifier>{f408d482-a214-4700-8bcd-1954d854a6c6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\util\table">
+      <UniqueIdentifier>{38badd99-11e7-4535-b025-7c12229b7927}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -89,11 +101,23 @@
     <ClCompile Include="scene\scene.cpp">
       <Filter>Source Files\scene</Filter>
     </ClCompile>
-    <ClCompile Include="util\table.cpp">
-      <Filter>Source Files\util</Filter>
-    </ClCompile>
     <ClCompile Include="texture.cpp">
       <Filter>Source Files\util</Filter>
+    </ClCompile>
+    <ClCompile Include="util\table.cpp">
+      <Filter>Source Files\util\container</Filter>
+    </ClCompile>
+    <ClCompile Include="util\bit_array.cpp">
+      <Filter>Source Files\util\container</Filter>
+    </ClCompile>
+    <ClCompile Include="util\debug\table_display.cpp">
+      <Filter>Source Files\util\container\debug</Filter>
+    </ClCompile>
+    <ClCompile Include="gameplay\input.cpp">
+      <Filter>Source Files\gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="gameplay\movement\cube_movement.cpp">
+      <Filter>Source Files\gameplay\cube</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -164,7 +188,25 @@
       <Filter>Source Files\scene</Filter>
     </ClInclude>
     <ClInclude Include="util\table.h">
-      <Filter>Source Files\util</Filter>
+      <Filter>Source Files\util\container</Filter>
+    </ClInclude>
+    <ClInclude Include="util\sort.h">
+      <Filter>Source Files\util\container</Filter>
+    </ClInclude>
+    <ClInclude Include="util\bit_array.h">
+      <Filter>Source Files\util\container</Filter>
+    </ClInclude>
+    <ClInclude Include="util\debug\table_display.h">
+      <Filter>Source Files\util\container\debug</Filter>
+    </ClInclude>
+    <ClInclude Include="gameplay\input.h">
+      <Filter>Source Files\gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="gameplay\movement\cube_movement.h">
+      <Filter>Source Files\gameplay\cube</Filter>
+    </ClInclude>
+    <ClInclude Include="util\table\join.h">
+      <Filter>Source Files\util\container</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -1,6 +1,7 @@
 #include <iostream>
 #include <glm/vec3.hpp>
 #include <glm/gtc/quaternion.hpp>
+#include "util/bit_array.h"
 
 using vec3 = glm::vec3;
 using quat = glm::quat;
@@ -26,40 +27,51 @@ namespace transform
 {
 	Table table;
 
+	std::vector<handle> toRemove;
+
 	Column<handle> ids;
 	Column<vec3> positions;
 	Column<quat> rotations;
 	Column<vec3> scales;
-
-	handle nextHandle = {0};
+	BitArray bitArray;
 
 	void init()
 	{
 		table >> ids >> positions >> rotations >> scales;
 		table.allocate(500);
+		bitArray.init(500);
 	}
 
 	handle add(const vec3& pos, const quat& rotation, const vec3& scale)
 	{
-		handle result = nextHandle;
-		TableElement elt = table.push();
+		int index = bitArray.allocate();
+		handle result = { index };
+		TableElement elt = table.element(index);
 		elt << result << pos << rotation << scale;
-		nextHandle.id++;
 		return result;
 	}
 
 	int indexOf(handle id)
 	{
-		for (int i = 0; i < table.count; i++)
-		{
-			if (ids[i] == id)
-				return i;
-		}
-		return -1;
+		return id.id;
 	}
 
 	int count()
 	{
 		return table.count;
+	}
+
+	void remove(handle id)
+	{
+		toRemove.push_back(id);
+	}
+
+	void update()
+	{
+		for (handle toRemoveHandle : toRemove)
+		{
+			bitArray.free(toRemoveHandle.id);
+		}
+		toRemove.clear();
 	}
 }

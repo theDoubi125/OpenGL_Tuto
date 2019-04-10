@@ -99,8 +99,7 @@ namespace scene
 
 		handle characterTransformId = transform::add(vec3(0, 0, 2), quat(), vec3(1, 1, 1));
 		boxRenderer.add(characterTransformId, cubeMesh);
-		rotation::anchor::add(characterTransformId, vec3(0.5, -0.5, 0), vec3(0.5, -0.5, 0));
-		rotation::animation::add(characterTransformId, 10, quat(), quat(vec3(0, 0, -glm::pi<float>() / 2)));
+		rotation::animation::add(characterTransformId, vec3(0.5, -0.5, 0), vec3(0.5, -0.5, 0), 10, quat(), quat(vec3(0, 0, -glm::pi<float>() / 2)));
 
 		handle lampId = transform::add(vec3(0, 2, 0), quat(), vec3(0.1f, 0.1f, 0.1f));
 		lampRenderer.add(lampId, cubeMesh);

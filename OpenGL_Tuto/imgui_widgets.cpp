@@ -1938,7 +1938,7 @@ bool ImGui::DragScalarN(const char* label, ImGuiDataType data_type, void* v, int
     }
     PopID();
 
-    TextUnformatted(label, FindRenderedTextEnd(label));
+    //TextUnformatted(label, FindRenderedTextEnd(label));
     EndGroup();
     return value_changed;
 }

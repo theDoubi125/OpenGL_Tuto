@@ -26,6 +26,9 @@ namespace transform
 	void init();
 
 	handle add(const vec3& pos, const quat& rotation, const vec3& scale);
+	void remove(handle id);
+
+	void update();
 
 	int indexOf(handle id);
 
