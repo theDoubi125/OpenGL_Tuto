@@ -132,6 +132,7 @@
     <ClCompile Include="gameplay\input.cpp" />
     <ClCompile Include="gameplay\movement\cube_movement.cpp" />
     <ClCompile Include="gameplay\rotation.cpp" />
+    <ClCompile Include="gameplay\world\voxel.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="imgui.cpp" />
     <ClCompile Include="imgui_demo.cpp" />
@@ -158,6 +159,7 @@
     <ClInclude Include="gameplay\input.h" />
     <ClInclude Include="gameplay\movement\cube_movement.h" />
     <ClInclude Include="gameplay\rotation.h" />
+    <ClInclude Include="gameplay\world\voxel.h" />
     <ClInclude Include="imconfig.h" />
     <ClInclude Include="imgui.h" />
     <ClInclude Include="imgui_impl_glfw.h" />
@@ -177,6 +179,7 @@
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="texture.h" />
     <ClInclude Include="transform.h" />
+    <ClInclude Include="types.h" />
     <ClInclude Include="util\bit_array.h" />
     <ClInclude Include="util\debug\table_display.h" />
     <ClInclude Include="util\sort.h" />
