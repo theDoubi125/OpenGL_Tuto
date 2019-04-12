@@ -48,7 +48,7 @@
     <Filter Include="Source Files\util\table">
       <UniqueIdentifier>{38badd99-11e7-4535-b025-7c12229b7927}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\world">
+    <Filter Include="Source Files\gameplay\world">
       <UniqueIdentifier>{02a392a1-e9be-4134-b8d1-88f0ec181f2e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -123,7 +123,7 @@
       <Filter>Source Files\gameplay\cube</Filter>
     </ClCompile>
     <ClCompile Include="gameplay\world\voxel.cpp">
-      <Filter>Source Files\world</Filter>
+      <Filter>Source Files\gameplay\world</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -215,7 +215,7 @@
       <Filter>Source Files\util\container</Filter>
     </ClInclude>
     <ClInclude Include="gameplay\world\voxel.h">
-      <Filter>Source Files\world</Filter>
+      <Filter>Source Files\gameplay\world</Filter>
     </ClInclude>
     <ClInclude Include="types.h">
       <Filter>Source Files\util</Filter>

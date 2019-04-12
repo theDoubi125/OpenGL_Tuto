@@ -118,23 +118,36 @@ int main()
 	rotation::animation::init();
 	movement::cube::init();
 
-	float dataBuffer[50000];
+	float* dataBuffer = new float[5000000];
 	for (int i = 0; i < 6; i++) {
-		voxel::computeFaceMesh(vec3(0, 0, 0), (voxel::FaceDir)i, &(dataBuffer[6 * 8 * i]), 1);
+		voxel::computeFaceMesh(vec3(0, 0, 0), (voxel::FaceDir)i, dataBuffer, 6 * 8 * i, 1);
 
 	}
 
 	MeshData cubeMesh = meshLibrary.loadMesh("cube", dataBuffer, 6 * 8 * 6 * sizeof(float));
 
 	voxel::Chunk chunk(0);
-	chunk[ivec3(0, 0, 0)] = 1;
-	chunk[ivec3(0, 1, 1)] = 1;
-	chunk[ivec3(1, 1, 1)] = 1;
+	int testSize = CHUNK_SIZE;
+	for (int i = 0; i < testSize; i++)
+	{
+		for (int j = 0; j < testSize; j++)
+		{
+			for (int k = 0; k < testSize; k++)
+			{
+				if (rand() % 2)
+				{
+					chunk[ivec3(i, j, k)] = 1;
+				}
+			}
+		}
+
+	}
 	int chunkMeshSize = 0;
 
 	voxel::computeChunkMesh(chunk, dataBuffer, chunkMeshSize);
 	MeshData chunkMesh = meshLibrary.loadMesh("chunk", dataBuffer, chunkMeshSize);
 
+	delete dataBuffer;
 
 	//MeshData faceMesh = meshLibrary.loadMesh("face", dataBuffer, 6 * 8 * 6 * sizeof(float));
 	handle transformId = transform::add(vec3(0, 1, 0), quat(), vec3(1, 1, 1));

@@ -22,11 +22,12 @@ namespace voxel
 	}
 
 	vec3 normalVecs[] = { vec3(1, 0, 0), vec3(-1, 0, 0), vec3(0, 1, 0), vec3(0, -1, 0), vec3(0, 0, 1), vec3(0, 0, -1) };
+	ivec3 inormalVecs[] = { ivec3(1, 0, 0), ivec3(-1, 0, 0), ivec3(0, 1, 0), ivec3(0, -1, 0), ivec3(0, 0, 1), ivec3(0, 0, -1) };
 	vec3 facesX[] = { vec3(0, 1, 0), vec3(0, -1, 0), vec3(1, 0, 0), vec3(-1, 0, 0), vec3(1, 0, 0), vec3(-1, 0, 0) };
 	vec3 factors[] = { vec3(-1, -1, 1), vec3(1, 1, 1), vec3(1, -1, 1), vec3(-1, -1, 1), vec3(-1, 1, 1), vec3(1, 1, 1) };
 	float uvs[] = { 0, 0,  1.0f, 1.0f,  1.0f, 0.0f,  0, 0,  0, 1.0f,  1.0f, 1.0f };
 
-	void computeFaceMesh(vec3 center, FaceDir direction, float* outData, float cellSize)
+	void computeFaceMesh(vec3 center, FaceDir direction, float* outData, int dataCursor, float cellSize)
 	{
 		vec3 x = facesX[(int)direction];
 		vec3 z = normalVecs[(int)direction];
@@ -37,16 +38,17 @@ namespace voxel
 			vec3 test = factors[i].y * y;
 			vec3 vertex = center + (factors[i].x * x + factors[i].y * y + factors[i].z * z) * cellSize / 2.0f;
 			vec3 normal = z;
-			memcpy(&(outData[8 * i]), &vertex, sizeof(vec3));
-			memcpy(&(outData[8 * i + 3]), &normal, sizeof(vec3));
-			memcpy(&(outData[8 * i + 6]), &(uvs[i * 2]), sizeof(float) * 2);
+			memcpy(&(outData[dataCursor + 8 * i]), &vertex, sizeof(vec3));
+			memcpy(&(outData[dataCursor + 8 * i + 3]), &normal, sizeof(vec3));
+			memcpy(&(outData[dataCursor + 8 * i + 6]), &(uvs[i * 2]), sizeof(float) * 2);
 		}
 	}
 
 
 	void computeChunkMesh(const Chunk& chunk, float* outData, int& outDataSize)
 	{
-		float* dataCursor = outData;
+		int count = 0;
+		int dataCursor = 0;
 		for (int i = 0; i < CHUNK_SIZE; i++)
 		{
 			for (int j = 0; j < CHUNK_SIZE; j++)
@@ -56,9 +58,14 @@ namespace voxel
 					if (chunk[ivec3(i, j, k)] > 0)
 					{
 						for (int l = 0; l < 6; l++) {
-							voxel::computeFaceMesh(vec3((float)i, (float)j, (float)k), (voxel::FaceDir)l, &(dataCursor[6 * 8 * l]), 1);
+							ivec3 neighbour = ivec3(i, j, k) + inormalVecs[l];
+							if (neighbour.x < 0 || neighbour.y < 0 || neighbour.z < 0 || neighbour.x >= CHUNK_SIZE || neighbour.y >= CHUNK_SIZE || neighbour.z >= CHUNK_SIZE || chunk[neighbour] == 0)
+							{
+								count++;
+								voxel::computeFaceMesh(vec3((float)i, (float)j, (float)k), (voxel::FaceDir)l, outData, dataCursor + 6 * 8 * l, 1);
+							}
 						}
-						dataCursor = &(dataCursor[6 * 8 * 6]);
+						dataCursor += 6 * 8 * 6;
 						outDataSize += 6 * 8 * 6 * sizeof(float);
 					}
 				}

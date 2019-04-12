@@ -1,6 +1,6 @@
 #pragma once
 
-#define CHUNK_SIZE 64
+#define CHUNK_SIZE 16
 #include "types.h"
 
 namespace voxel
@@ -25,7 +25,7 @@ namespace voxel
 
 	};
 
-	void computeFaceMesh(vec3 center, FaceDir direction, float* outData, float cellSize);
+	void computeFaceMesh(vec3 center, FaceDir direction, float* outData, int dataCursor, float cellSize);
 	void computeChunkMesh(const Chunk& chunk, float* outData, int& outDataSize);
 
 }
