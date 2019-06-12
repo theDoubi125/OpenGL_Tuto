@@ -1,6 +1,8 @@
 #pragma once
 #include "transform.h"
 
+namespace voxel { struct Chunk; }
+
 namespace movement
 {
 	namespace cube
@@ -11,6 +13,6 @@ namespace movement
 
 		void init();
 		handle add(handle transformId, float cubeSize);
-		void update();
+		void update(const voxel::Chunk& collisionData, float deltaTime);
 	}
 }

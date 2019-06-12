@@ -2,6 +2,8 @@
 #include <glm/vec3.hpp>
 #include <glm/gtc/quaternion.hpp>
 #include "util/bit_array.h"
+#include "imgui.h"
+#include "util/debug/table_display.h"
 
 using vec3 = glm::vec3;
 using quat = glm::quat;
@@ -37,8 +39,7 @@ namespace transform
 
 	void init()
 	{
-		table >> ids >> positions >> rotations >> scales;
-		table.allocate(500);
+		table.init(500, ids + positions + rotations + scales);
 		bitArray.init(500);
 	}
 
@@ -73,5 +74,38 @@ namespace transform
 			bitArray.free(toRemoveHandle.id);
 		}
 		toRemove.clear();
+	}
+
+	void showDebug()
+	{
+		static int bounds[2] = { 0, 10 };
+		ImGui::DragInt2("Min Max", bounds);
+		if (bounds[1] <= bounds[0])
+			bounds[1] = bounds[0] + 1;
+		ImGui::Columns(3);
+		ImGui::Text("positions");
+		ImGui::NextColumn();
+		ImGui::Text("rotations");
+		ImGui::NextColumn();
+		ImGui::Text("scales");
+		ImGui::NextColumn();
+
+		for (int i = bounds[0]; i < bounds[1]; i++)
+		{
+			char idBuffer[10];
+			sprintf_s(idBuffer, "%d", i);
+			ImGui::PushID(idBuffer);
+				bool isActive = bitArray.value(i);
+				debug::displayElement("positions", positions[i]);
+				ImGui::NextColumn();
+				debug::displayElement("rotations", rotations[i]);
+				ImGui::NextColumn();
+				debug::displayElement("scales", scales[i]);
+				ImGui::NextColumn();
+			ImGui::PopID();
+		}
+		ImGui::Columns();
+
+
 	}
 }

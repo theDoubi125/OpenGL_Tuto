@@ -5,101 +5,95 @@
 #include "../gameplay/rotation.h"
 #include "../texture.h"
 #include "../camera.h"
+#include "gameplay/movement/cube_movement.h"
+
+#include "gameplay/world/voxel.h"
+#include "directional_light.h"
 
 namespace scene
 {
-	MeshRenderer boxRenderer, lampRenderer;
+	voxel::Chunk chunk(0);
 	MeshLibrary meshLibrary;
+	MeshRenderer boxRenderer, lampRenderer;
 	PointLightManager pointLights;
+	DirectionalLightManager directionalLights;
 	ShadowRenderManager shadowRenderer;
 
+	handle cubeMovementId;
 
-	Shader *lightingShader;
-	Shader *lampShader;
-	Shader *shadowShader;
-	Shader *pointLightShader;
-	Shader *directionalLightShader;
+	Shader* lightingShader;
+	Shader* lampShader;
+	Shader* shadowShader;
+	Shader* pointLightShader;
+	Shader* directionalLightShader;
 
 	unsigned int testTexture;
 	unsigned int specularMap;
 
-	vec3 sunDirection(1, 0.7f, 0.45f);
-
 	int SCR_WIDTH, SCR_HEIGHT;
 
-	Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
-
-	float vertices[] = {
-		// positions			// normals				// texture coords
-		-0.5f, -0.5f, -0.5f,	0.0f,  0.0f, -1.0f,		0.0f,  0.0f,
-		 0.5f, -0.5f, -0.5f,	0.0f,  0.0f, -1.0f,		1.0f,  0.0f,
-		 0.5f,  0.5f, -0.5f,	0.0f,  0.0f, -1.0f,		1.0f,  1.0f,
-		 0.5f,  0.5f, -0.5f,	0.0f,  0.0f, -1.0f,		1.0f,  1.0f,
-		-0.5f,  0.5f, -0.5f,	0.0f,  0.0f, -1.0f,		0.0f,  1.0f,
-		-0.5f, -0.5f, -0.5f,	0.0f,  0.0f, -1.0f,		0.0f,  0.0f,
-
-		-0.5f, -0.5f,  0.5f,	0.0f,  0.0f,  1.0f,		0.0f,  0.0f,
-		 0.5f, -0.5f,  0.5f,	0.0f,  0.0f,  1.0f,		1.0f,  0.0f,
-		 0.5f,  0.5f,  0.5f,	0.0f,  0.0f,  1.0f,		1.0f,  1.0f,
-		 0.5f,  0.5f,  0.5f,	0.0f,  0.0f,  1.0f,		1.0f,  1.0f,
-		-0.5f,  0.5f,  0.5f,	0.0f,  0.0f,  1.0f,		0.0f,  1.0f,
-		-0.5f, -0.5f,  0.5f,	0.0f,  0.0f,  1.0f,		0.0f,  0.0f,
-
-		-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,		1.0f,  0.0f,
-		-0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,		1.0f,  1.0f,
-		-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,		0.0f,  1.0f,
-		-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,		0.0f,  1.0f,
-		-0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,		0.0f,  0.0f,
-		-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,		1.0f,  0.0f,
-
-		 0.5f,  0.5f,  0.5f,	1.0f,  0.0f,  0.0f,		1.0f,  0.0f,
-		 0.5f,  0.5f, -0.5f,	1.0f,  0.0f,  0.0f,		1.0f,  1.0f,
-		 0.5f, -0.5f, -0.5f,	1.0f,  0.0f,  0.0f,		0.0f,  1.0f,
-		 0.5f, -0.5f, -0.5f,	1.0f,  0.0f,  0.0f,		0.0f,  1.0f,
-		 0.5f, -0.5f,  0.5f,	1.0f,  0.0f,  0.0f,		0.0f,  0.0f,
-		 0.5f,  0.5f,  0.5f,	1.0f,  0.0f,  0.0f,		1.0f,  0.0f,
-
-		-0.5f, -0.5f, -0.5f,	0.0f, -1.0f,  0.0f,		0.0f,  1.0f,
-		 0.5f, -0.5f, -0.5f,	0.0f, -1.0f,  0.0f,		1.0f,  1.0f,
-		 0.5f, -0.5f,  0.5f,	0.0f, -1.0f,  0.0f,		1.0f,  0.0f,
-		 0.5f, -0.5f,  0.5f,	0.0f, -1.0f,  0.0f,		1.0f,  0.0f,
-		-0.5f, -0.5f,  0.5f,	0.0f, -1.0f,  0.0f,		0.0f,  0.0f,
-		-0.5f, -0.5f, -0.5f,	0.0f, -1.0f,  0.0f,		0.0f,  1.0f,
-
-		-0.5f,  0.5f, -0.5f,	0.0f,  1.0f,  0.0f,		0.0f,  1.0f,
-		 0.5f,  0.5f, -0.5f,	0.0f,  1.0f,  0.0f,		1.0f,  1.0f,
-		 0.5f,  0.5f,  0.5f,	0.0f,  1.0f,  0.0f,		1.0f,  0.0f,
-		 0.5f,  0.5f,  0.5f,	0.0f,  1.0f,  0.0f,		1.0f,  0.0f,
-		-0.5f,  0.5f,  0.5f,	0.0f,  1.0f,  0.0f,		0.0f,  0.0f,
-		-0.5f,  0.5f, -0.5f,	0.0f,  1.0f,  0.0f,		0.0f,  1.0f
-	};
-
-	void spawnEntities()
-	{
-
-	}
+	vec3 sunDirection(1, 0.7f, 0.45f);
+	float sunPovDistance = 1;
 
 	void init(int screenWidth, int screenHeight)
 	{
 		SCR_WIDTH = screenWidth;
 		SCR_HEIGHT = screenHeight;
+		lightingShader = new Shader("./shaders/color.vert", "./shaders/color.frag");
+		lampShader = new Shader("./shaders/color.vert", "./shaders/lamp.frag");
+		shadowShader = new Shader("./shaders/shadows.vert", "./shaders/shadows.frag");
+		pointLightShader = new Shader("./shaders/point_light.vert", "./shaders/point_light.frag");
+		directionalLightShader = new Shader("./shaders/directional_light.vert", "./shaders/directional_light.frag");
 
-		MeshData cubeMesh = meshLibrary.loadMesh("cube", vertices, sizeof(vertices));
+		testTexture = loadTexture("./textures/container2.png");
+		specularMap = loadTexture("./textures/container_specular.png");
+
+		float* dataBuffer = new float[5000000];
+		for (int i = 0; i < 6; i++) {
+			voxel::computeFaceMesh(vec3(0, 0, 0), (voxel::FaceDir)i, dataBuffer, 6 * 8 * i, 1);
+		}
+
+		MeshData cubeMesh = meshLibrary.loadMesh("cube", dataBuffer, 6 * 8 * 6 * sizeof(float));
+
+		int testSize = CHUNK_SIZE;
+		for (int i = 0; i < testSize; i++)
+		{
+			for (int j = 0; j < testSize; j++)
+			{
+				chunk[ivec3(i, 0, j)] = 1;
+			}
+			for (int j = i + 1; j < testSize; j++)
+			{
+				chunk[ivec3(i, 1, j)] = 1;
+			}
+
+		}
+		int chunkMeshSize = 0;
+
+		voxel::computeChunkMesh(chunk, dataBuffer, chunkMeshSize);
+		MeshData chunkMesh = meshLibrary.loadMesh("chunk", dataBuffer, chunkMeshSize);
+
+		delete[] dataBuffer;
+
+		transform::init();
+		movement::cube::init();
+		rotation::anchor::init();
+		rotation::animation::init();
+		
+
 		handle transformId = transform::add(vec3(0, 0, 0), quat(), vec3(1, 1, 1));
-		boxRenderer.add(transformId, cubeMesh);
+		boxRenderer.add(transformId, chunkMesh);
 
 		transformId = transform::add(vec3(2, 0, 0), quat(), vec3(1, 1, 1));
 		boxRenderer.add(transformId, cubeMesh);
 
-		transformId = transform::add(vec3(-2, 0, 0), quat(), vec3(1, 1, 1));
+		transformId = transform::add(vec3(5, 1, 3), quat(), vec3(1, 1, 1));
 		boxRenderer.add(transformId, cubeMesh);
 
-		transformId = transform::add(vec3(0, -1, 0), quat(), vec3(10, 1, 10));
-		boxRenderer.add(transformId, cubeMesh);
-
-		handle characterTransformId = transform::add(vec3(0, 0, 2), quat(), vec3(1, 1, 1));
+		handle characterTransformId = transform::add(vec3(5, 1, 5), quat(), vec3(1, 1, 1));
 		boxRenderer.add(characterTransformId, cubeMesh);
-		rotation::animation::add(characterTransformId, vec3(0.5, -0.5, 0), vec3(0.5, -0.5, 0), 10, quat(), quat(vec3(0, 0, -glm::pi<float>() / 2)));
+		cubeMovementId = movement::cube::add(characterTransformId, 0.5f);
+		//rotation::animation::add(characterTransformId, vec3(0.5, -0.5, 0), vec3(0.5, -0.5, 0), 3, quat(), quat(vec3(0, 0, -glm::pi<float>() / 2)));
 
 		handle lampId = transform::add(vec3(0, 2, 0), quat(), vec3(0.1f, 0.1f, 0.1f));
 		lampRenderer.add(lampId, cubeMesh);
@@ -110,29 +104,33 @@ namespace scene
 
 		handle testTransformId = transform::add(vec3(0, 0, 0), quat(), vec3(0.1f, 0.1f, 0.1f));
 		lampRenderer.add(testTransformId, cubeMesh);
+		//pointLights.add(sunTransformId, 1, vec3(1), vec3(1));
 
-		vec3 sunDirection(1, 0.7f, 0.45f);
 
+		directionalLights.add(sunTransformId, 1, vec3(1), vec3(1));
 		shadowRenderer.shadowCasters = &boxRenderer;
 		shadowRenderer.init();
-
-		testTexture = loadTexture("./textures/container2.png");
-		specularMap = loadTexture("./textures/container_specular.png");
-
-		lightingShader = new Shader("./shaders/color.vert", "./shaders/color.frag");
-		lampShader = new Shader("./shaders/color.vert", "./shaders/lamp.frag");
-		shadowShader = new Shader("./shaders/shadows.vert", "./shaders/shadows.frag");
-		pointLightShader = new Shader("./shaders/point_light.vert", "./shaders/point_light.frag");
-		directionalLightShader = new Shader("./shaders/directional_light.vert", "./shaders/directional_light.frag");
 	}
 
-	void update(float deltaTime)
+	void update(float deltaTime, vec3 input, Camera& camera)
 	{
-
+		movement::cube::cubeInput[cubeMovementId.id] = -camera.Front * input.z + camera.Right * input.x;
+		rotation::animation::update(deltaTime);
+		rotation::anchor::update();
+		movement::cube::update(chunk, deltaTime);
 	}
 
-	void render()
+	void render(Camera& camera)
 	{
+		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+		glm::mat4 view = camera.GetViewMatrix();
+		static glm::vec4 testVec(0, 0, 0, 1);
+		// world transformation
+		glm::mat4 model = glm::mat4(1.0f);
+
+		render::clear_frame();
+		render::start_render(camera);
+
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, testTexture);
 		glActiveTexture(GL_TEXTURE1);
@@ -143,20 +141,14 @@ namespace scene
 		int modelAttr = glGetUniformLocation(render::currentShader, "model");
 		glUniform1i(diffuseAttr, 0);
 		glUniform1i(specularAttr, 1);
-
-		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
-		glm::mat4 view = camera.GetViewMatrix();
-		glm::mat4 model = glm::mat4(1.0f);
 		glUniformMatrix4fv(modelAttr, 1, false, (float*)&model);
 
 		boxRenderer.render(render::currentShader);
 
-		shadowRenderer.render(shadowShader->ID, getLightMatrix(normalize(sunDirection)));
+		shadowRenderer.render(shadowShader->ID, getLightMatrix(normalize(sunDirection), sunPovDistance));
 		glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
 
-		// Lighting pass
 		render::start_lighting();
-
 
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE);
@@ -168,7 +160,6 @@ namespace scene
 			pointLightShader->setInt("gAlbedoSpec", 2);
 			pointLightShader->setVec3("viewPos", camera.Position);
 			vec3 position;
-
 			position = transform::positions[transform::indexOf(pointLights.transformIds[i])];
 			pointLightShader->setVec3("light.Position", position);
 			pointLightShader->setVec3("light.Color", vec3(1, 1, 1));
@@ -186,7 +177,7 @@ namespace scene
 		glActiveTexture(GL_TEXTURE4);
 		glBindTexture(GL_TEXTURE_2D, shadowRenderer.depthMap);
 		directionalLightShader->setInt("shadowMap", 4);
-		directionalLightShader->setMat4("lightMatrix", getLightMatrix(normalize(sunDirection)));
+		directionalLightShader->setMat4("lightMatrix", getLightMatrix(normalize(sunDirection), sunPovDistance));
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 
 		glDisable(GL_BLEND);
@@ -199,5 +190,6 @@ namespace scene
 		lampShader->setMat4("view", view);
 		lampShader->setMat4("model", model);
 		lampShader->setVec3("viewPos", camera.Position);
+
 	}
 };

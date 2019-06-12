@@ -3,6 +3,8 @@
 #define CHUNK_SIZE 16
 #include "types.h"
 
+class MeshLibrary;
+
 namespace voxel
 {
 	enum class FaceDir
@@ -27,5 +29,7 @@ namespace voxel
 
 	void computeFaceMesh(vec3 center, FaceDir direction, float* outData, int dataCursor, float cellSize);
 	void computeChunkMesh(const Chunk& chunk, float* outData, int& outDataSize);
+
+	void chunkEditor(Chunk& chunk, MeshLibrary& meshLibrary);
 
 }

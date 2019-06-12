@@ -3,6 +3,9 @@
 #include <glad/glad.h>
 #include "transform.h"
 
+#include "imgui.h"
+#include "mesh_render.h"
+
 
 namespace voxel
 {
@@ -70,6 +73,39 @@ namespace voxel
 					}
 				}
 			}
+		}
+	}
+
+	void chunkEditor(Chunk& chunk, MeshLibrary& meshLibrary)
+	{
+		static int layer = 0;
+		ImGui::SliderInt("layer", &layer, 0, CHUNK_SIZE);
+
+		bool mustUpdateDisplay = false;
+		char nameBuffer[500];
+		ImGui::Columns(CHUNK_SIZE);
+		for (int x = 0; x < CHUNK_SIZE; x++)
+		{
+			for (int y = 0; y < CHUNK_SIZE; y++)
+			{
+				int voxelValue = chunk[vec3(x, layer, y)];
+				sprintf_s(nameBuffer, "voxel %d %d", x, y);
+				if (ImGui::SliderInt(nameBuffer, &voxelValue, 0, 1));
+				{
+					chunk[vec3(x, layer, y)] = voxelValue;
+					mustUpdateDisplay = true;
+				}
+				ImGui::NextColumn();
+			}
+		}
+		ImGui::Columns(1);
+		if (mustUpdateDisplay)
+		{
+			float *dataBuffer = new float[5000000];
+			int chunkMeshSize = 0;
+			voxel::computeChunkMesh(chunk, dataBuffer, chunkMeshSize);
+			meshLibrary.replaceMesh("chunk", dataBuffer, chunkMeshSize);
+			delete[] dataBuffer;
 		}
 	}
 }

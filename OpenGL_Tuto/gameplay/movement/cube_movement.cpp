@@ -3,6 +3,9 @@
 #include "util/bit_array.h"
 #include <GLFW/glfw3.h>
 #include "gameplay/rotation.h"
+#include "../world/voxel.h"
+#include <cmath>
+#define GRAVITY 10
 
 namespace movement
 {
@@ -21,16 +24,24 @@ namespace movement
 		Column<handle> activeCubeIds;
 		Column<handle> rotationAnimIds;
 
+		Table fallingTable;
+		BitArray fallingBitArray;
+		Column<int> fallingIndexes;
+		Column<float> fallingSpeeds;
+
+
 		void init()
 		{
-			cubeDataTable >> transformIds >> cubeSizes >> cubeInput;
+			cubeDataTable.init(32, transformIds + cubeSizes + cubeInput);
 			bitArray.init(32);
 			inactiveFlags.init(32);
 			activeBitArray.init(32);
 			cubeDataTable.allocate(32);
 
-			activeTable >> activeCubeIds >> rotationAnimIds;
-			activeTable.allocate(10);
+			activeTable.init(10, activeCubeIds + rotationAnimIds);
+
+			fallingBitArray.init(32);
+			fallingTable.init(32, fallingIndexes + fallingSpeeds);
 		}
 
 		handle add(handle transformId, float size)
@@ -42,34 +53,98 @@ namespace movement
 			return result;
 		}
 
-		void update()
+		void handleActivations(const voxel::Chunk& collisionData, const std::vector<int>& toActivate, const std::vector<vec3>& toActivateDirection)
 		{
-			std::vector<int> toActivate;
-			std::vector<vec3> toActivateDirection;
-			std::vector<int> toDisactivate;
-			for (int index : inactiveFlags)
+			for (int index : toActivate)
 			{
-				vec3 input = cubeInput[index];
-				if (input.x != 0 || input.y != 0 || input.z != 0)
+				vec3 pos = transform::positions[transformIds[index].id];
+				vec3 direction = toActivateDirection[index];
+				vec3 targetPos = pos + direction;
+				ivec3 itargetPos(round(targetPos.x), round(targetPos.y), round(targetPos.z));
+
+				if (collisionData[itargetPos] == 0)
 				{
-					toActivate.push_back(index);
-					toActivateDirection.push_back(abs(input.x) > abs(input.z) ? vec3(input.x / abs(input.x), 0, 0) : vec3(0, 0, input.z / abs(input.z)));
+					handle activeId = { activeBitArray.allocate() };
+					TableElement elt = activeTable.element(activeId.id);
+					handle element = { index };
+					quat rot = transform::rotations[transformIds[index].id];
+					quat inverseRot = glm::inverse(normalize(rot));
+					vec3 anchorLocalPoint = (vec3(0, -0.5f, 0) + direction / 2.0f) * normalize(rot);
+					quat targetRot = quat(glm::cross(vec3(0, 1, 0), direction) * glm::pi<float>() / 2.0f) * normalize(rot);
+					elt << element << rotation::animation::add(transformIds[index], anchorLocalPoint, pos + vec3(0, -0.5f, 0) + toActivateDirection[index] / 2.0f, 0.5f, rot, targetRot);
+				}
+				else
+				{
+					handle activeId = { activeBitArray.allocate() };
+					TableElement elt = activeTable.element(activeId.id);
+					handle element = { index };
+					quat rot = transform::rotations[transformIds[index].id];
+					quat inverseRot = glm::inverse(normalize(rot));
+					vec3 anchorLocalPoint = (vec3(0, 0.5f, 0) + direction / 2.0f) * normalize(rot);
+					quat targetRot = quat(glm::cross(vec3(0, 1, 0), direction) * glm::pi<float>()) * normalize(rot);
+					elt << element << rotation::animation::add(transformIds[index], anchorLocalPoint, pos + vec3(0, 0.5f, 0) + toActivateDirection[index] / 2.0f, 1, rot, targetRot);
 				}
 			}
-			for(int index : toActivate)
+		}
+
+		void handleFalling(const voxel::Chunk& collisionData, float deltaTime) 
+		{
+			std::vector<int> toRemove;
+			for (int index : fallingBitArray)
 			{
-				inactiveFlags.free(index);
-				handle activeId = { activeBitArray.allocate() };
-				TableElement elt = activeTable.element(activeId.id);
-				handle element = { index };
-				vec3 pos = transform::positions[transformIds[index].id];
-				quat rot = transform::rotations[transformIds[index].id];
-				quat inverseRot = glm::inverse(normalize(rot));
-				vec3 direction = toActivateDirection[index];
-				vec3 anchorLocalPoint = (vec3(0, -0.5f, 0) + direction / 2.0f) * normalize(rot);
-				quat targetRot = quat(glm::cross(vec3(0, 1, 0), direction) * glm::pi<float>() / 2.0f) * normalize(rot);
- 				elt << element << rotation::animation::add(transformIds[index], anchorLocalPoint, pos + vec3(0, -0.5f, 0) + toActivateDirection[index]/2.0f, 1, rot, targetRot);
+				int fallingIndex = fallingIndexes[index];
+				vec3& pos = transform::positions[transformIds[fallingIndex].id];
+				fallingSpeeds[fallingIndex] = fallingSpeeds[fallingIndex] + deltaTime * GRAVITY;
+				float deltaY = fallingSpeeds[fallingIndex] * deltaTime;
+				bool cellChange = floor(pos.y) != floor(pos.y - deltaY);
+				pos.y -= deltaY;
+				if (cellChange && collisionData[pos - vec3(0, deltaY, 0)] != 0)
+				{
+					toRemove.push_back(index);
+					pos.y = round(pos.y);
+				}
 			}
+			for (int index : toRemove)
+			{
+				fallingBitArray.free(index);
+				inactiveFlags.allocate(index);
+			}
+		}
+
+		void update(const voxel::Chunk& collisionData, float deltaTime)
+		{
+			std::vector<int> toActivate;
+			std::vector<int> toMove;
+			std::vector<vec3> toMoveDirection;
+			std::vector<int> toDisactivate;
+
+			for (int index : inactiveFlags)
+			{
+				vec3 pos = transform::positions[transformIds[index].id];
+				vec3 input = cubeInput[index];
+				ivec3 igroundPos(round(pos.x), round(pos.y) - 1, round(pos.z));
+
+				if (collisionData[igroundPos] == 0)
+				{
+					int fallingElement = fallingBitArray.allocate();
+					TableElement elt = fallingTable.element(fallingElement);
+					elt << index << 0;
+					toActivate.push_back(index);
+				}
+				else if (input.x != 0 || input.y != 0 || input.z != 0)
+				{
+					toActivate.push_back(index);
+					toMove.push_back(index);
+					toMoveDirection.push_back(abs(input.x) > abs(input.z) ? vec3(input.x / abs(input.x), 0, 0) : vec3(0, 0, input.z / abs(input.z)));
+				}
+			}
+			for(int toActivateIndex : toActivate)
+			{
+				inactiveFlags.free(toActivateIndex);
+			}
+			handleActivations(collisionData, toMove, toMoveDirection);
+			handleFalling(collisionData, deltaTime);
+
 			for (int index : activeBitArray)
 			{
 				for (handle removedRotation : rotation::animation::removed)

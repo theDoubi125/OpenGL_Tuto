@@ -2,7 +2,7 @@
 
 namespace scene
 {
-	void init();
-	void update(float deltaTime);
-	void render();
+	void init(int screenWidth, int screenHeight);
+	void update(float deltaTime, vec3 input, Camera& camera);
+	void render(Camera& camera);
 }

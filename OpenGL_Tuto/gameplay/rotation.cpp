@@ -31,7 +31,6 @@ namespace rotation
 				quat rotation = transform::rotations[transformIndex];
 				transform::positions[transformIndex] = anchorPoints[*it] - rotation * offsets[*it];
 				vec3 position = transform::positions[transformIndex];
-				std::cout << position.x << " " << position.y << " " << position.z << std::endl;
 			}
 			for (handle element : toRemove)
 			{
@@ -85,8 +84,6 @@ namespace rotation
 				ImGui::NextColumn();
 			}
 			ImGui::Columns();
-			
-			
 		}
 	}
 
@@ -106,8 +103,7 @@ namespace rotation
 
 		void init()
 		{
-			dataTable >> anchorHandles >> transformHandles >> durations >> times >> startRotations >> targetRotations;
-			dataTable.allocate(50);
+			dataTable.init(50, anchorHandles + transformHandles + durations + times + startRotations + targetRotations);
 			bitArray.init(50);
 		}
 

@@ -200,6 +200,8 @@
     <None Include="shaders\point_light.vert" />
     <None Include="shaders\render_quad.frag" />
     <None Include="shaders\render_quad.vert" />
+    <None Include="shaders\render_silhouette.frag" />
+    <None Include="shaders\render_silhouette.vert" />
     <None Include="shaders\shadows.frag" />
     <None Include="shaders\shadows.vert" />
     <None Include="shaders\simple.frag" />

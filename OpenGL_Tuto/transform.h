@@ -33,4 +33,6 @@ namespace transform
 	int indexOf(handle id);
 
 	int count();
+
+	void showDebug();
 }

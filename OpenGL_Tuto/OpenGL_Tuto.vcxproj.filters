@@ -273,5 +273,11 @@
     <None Include="shaders\directional_light.vert">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="shaders\render_silhouette.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="shaders\render_silhouette.vert">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

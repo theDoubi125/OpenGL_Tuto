@@ -13,6 +13,19 @@ struct handle
 	bool operator==(const handle& handle) const;
 };
 
+struct ColumnTypeList
+{
+	unsigned int sizes[MAX_COLUMN_COUNT];
+	void* outputColumns[MAX_COLUMN_COUNT];
+	unsigned int count;
+};
+
+struct AnonymousColumn
+{
+	int columnIndex;
+	struct Table* table;
+};
+
 template<typename T>
 struct Column
 {
@@ -76,11 +89,20 @@ struct Table
 		}
 	}
 
-	template<typename T>
-	TableElement& operator+=(const T& data)
+	void init(int allocSize, ColumnTypeList columnList)
 	{
-		TableElement result = {this, count};
-		return *this;
+		addColumns(columnList);
+		allocate(allocSize);
+	}
+
+	void addColumns(ColumnTypeList typeList)
+	{
+		for (int i = 0; i < typeList.count; i++)
+		{
+			AnonymousColumn addedColumn = addColumn(typeList.sizes[i]);
+			((AnonymousColumn*)typeList.outputColumns[i])->columnIndex = addedColumn.columnIndex;
+			((AnonymousColumn*)typeList.outputColumns[i])->table = addedColumn.table;
+		}
 	}
 
 	template<typename T>
@@ -88,6 +110,14 @@ struct Table
 	{
 		int columnIndex = columnCount;
 		columnElementSize[columnCount] = sizeof(T);
+		columnCount++;
+		return { columnIndex, this };
+	}
+
+	AnonymousColumn addColumn(unsigned int size)
+	{
+		int columnIndex = columnCount;
+		columnElementSize[columnCount] = size;
 		columnCount++;
 		return { columnIndex, this };
 	}
@@ -139,6 +169,13 @@ struct Table
 		return *this;
 	}
 
+	template<typename T>
+	Table& operator+=(Column<T>& column)
+	{
+		column = addColumn<T>();
+		return *this;
+	}
+
 	void remove(int index);
 
 	void swap(int indexA, int indexB);
@@ -156,4 +193,25 @@ TableElement& operator<<(TableElement& tableElement, const T& data)
 	column[tableElement.elementIndex] = data;
 	tableElement.columnCursor++;
 	return tableElement;
+}
+
+template<typename T, typename U>
+ColumnTypeList operator+(Column<T>& col1, Column<U>& col2)
+{
+	ColumnTypeList result;
+	result.count = 2;
+	result.sizes[0] = sizeof(T);
+	result.sizes[1] = sizeof(U);
+	result.outputColumns[0] = &col1;
+	result.outputColumns[1] = &col2;
+	return result;
+}
+
+template<typename T>
+ColumnTypeList operator+(ColumnTypeList list, Column<T>& col)
+{
+	list.sizes[list.count] = sizeof(T);
+	list.outputColumns[list.count] = &col;
+	list.count++;
+	return list;
 }

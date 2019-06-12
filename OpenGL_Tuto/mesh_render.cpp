@@ -27,6 +27,21 @@ MeshData MeshLibrary::loadMesh(const std::string& name, float* data, size_t size
 	return loadedMeshes[name];
 }
 
+MeshData MeshLibrary::replaceMesh(const std::string& name, float* data, size_t size)
+{
+	if (loadedMeshes.count(name) != 0)
+	{
+		unsigned int VBO = loadedMeshes[name].vbo;
+
+		glBindBuffer(GL_ARRAY_BUFFER, VBO);
+		glBufferData(GL_ARRAY_BUFFER, size, data, GL_STATIC_DRAW);
+		glBindBuffer(GL_ARRAY_BUFFER, VBO);
+		loadedMeshes[name] = { VBO, size / 8 / sizeof(float) };
+	}
+
+	return loadedMeshes[name];
+}
+
 MeshData MeshLibrary::getMesh(const std::string& name)
 {
 	return loadedMeshes[name];

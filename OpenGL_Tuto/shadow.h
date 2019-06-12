@@ -2,7 +2,7 @@
 
 class MeshRenderer;
 
-glm::mat4 getLightMatrix(const vec3& lightDirection);
+glm::mat4 getLightMatrix(const vec3& lightDirection, float povDistance);
 
 class ShadowRenderManager
 {
@@ -12,7 +12,7 @@ public:
 
 	MeshRenderer* shadowCasters;
 
-	unsigned int SHADOW_WIDTH = 1024, SHADOW_HEIGHT = 1024;
+	unsigned int SHADOW_WIDTH = 4096, SHADOW_HEIGHT = 4096;
 	unsigned int depthMapFBO;
 	unsigned int depthMap;
 };

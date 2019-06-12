@@ -22,6 +22,7 @@ class MeshLibrary
 	
 public:
 	MeshData loadMesh(const std::string& name, float* data, size_t size);
+	MeshData replaceMesh(const std::string& name, float* data, size_t size);
 
 	MeshData getMesh(const std::string& name);
 };
