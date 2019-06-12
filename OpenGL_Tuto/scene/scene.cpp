@@ -9,6 +9,7 @@
 
 #include "gameplay/world/voxel.h"
 #include "directional_light.h"
+#include "gameplay/input.h"
 
 namespace scene
 {
@@ -112,9 +113,9 @@ namespace scene
 		shadowRenderer.init();
 	}
 
-	void update(float deltaTime, vec3 input, Camera& camera)
+	void update(float deltaTime, Camera& camera)
 	{
-		movement::cube::cubeInput[cubeMovementId.id] = -camera.Front * input.z + camera.Right * input.x;
+		movement::cube::cubeInput[cubeMovementId.id] = -camera.Front * input::input.z + camera.Right * input::input.x;
 		rotation::animation::update(deltaTime);
 		rotation::anchor::update();
 		movement::cube::update(chunk, deltaTime);

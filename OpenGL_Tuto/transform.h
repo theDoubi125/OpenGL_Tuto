@@ -8,6 +8,7 @@
 
 using quat = glm::quat;
 using vec3 = glm::vec3;
+using vec2 = glm::vec2;
 
 namespace transform
 {

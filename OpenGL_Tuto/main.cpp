@@ -33,6 +33,8 @@
 
 #include "scene/scene.h"
 
+#include "gameplay/input.h"
+
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
@@ -112,6 +114,8 @@ int main()
 	ImGui_ImplGlfw_InitForOpenGL(window, true);
 	ImGui_ImplOpenGL3_Init("#version 130");
 
+	input::window = window;
+
 	ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 	
 
@@ -155,21 +159,10 @@ int main()
 			deltaTime = 0;
 		}
 
-		vec3 input(0, 0, 0);
-		if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
-			input.z = -1;
-		else if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
-			input.z = 1;
-		else
-			input.z = 0;
-		if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
-			input.x = -1;
-		else if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
-			input.x = 1;
-		else
-			input.x = 0;
+		
+		input::update();
 
-		scene::update(deltaTime, input, camera);
+		scene::update(deltaTime, camera);
 
 		
 
