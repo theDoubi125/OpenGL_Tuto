@@ -125,6 +125,9 @@
     <ClCompile Include="gameplay\world\voxel.cpp">
       <Filter>Source Files\gameplay\world</Filter>
     </ClCompile>
+    <ClCompile Include="camera.cpp">
+      <Filter>Source Files\util</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="material.h">

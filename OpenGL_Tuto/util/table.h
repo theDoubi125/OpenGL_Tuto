@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <iostream>
 
 #define MAX_ELEMENT_SIZE 128
 #define MAX_COLUMN_COUNT 10

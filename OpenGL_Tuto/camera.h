@@ -4,6 +4,7 @@
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include "util/table.h"
 
 #include <vector>
 
@@ -21,6 +22,16 @@ const float PITCH = 0.0f;
 const float SPEED = 2.5f;
 const float SENSITIVITY = 0.1f;
 const float ZOOM = 45.0f;
+
+namespace camera
+{
+	void init();
+	handle add(handle transformId, float zoom);
+	void remove(handle cameraHandle);
+	float getZoom(handle cameraHandle);
+	glm::mat4 getViewMatrix(handle cameraHandle);
+	glm::vec3 getCameraPos(handle cameraHandle);
+};
 
 
 // An abstract camera class that processes input and calculates the corresponding Euler Angles, Vectors and Matrices for use in OpenGL
@@ -50,6 +61,7 @@ public:
 		Pitch = pitch;
 		updateCameraVectors();
 	}
+
 	// Constructor with scalar values
 	Camera(float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch) : Front(glm::vec3(0.0f, 0.0f, -1.0f)), MovementSpeed(SPEED), MouseSensitivity(SENSITIVITY), Zoom(ZOOM)
 	{

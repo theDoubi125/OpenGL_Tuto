@@ -10,6 +10,7 @@
 #include "gameplay/world/voxel.h"
 #include "directional_light.h"
 #include "gameplay/input.h"
+#include "camera.h"
 
 namespace scene
 {
@@ -35,6 +36,10 @@ namespace scene
 
 	vec3 sunDirection(1, 0.7f, 0.45f);
 	float sunPovDistance = 1;
+	handle spaceInputHandle;
+
+	handle cameraTransform;
+	handle cameraId;
 
 	void init(int screenWidth, int screenHeight)
 	{
@@ -111,11 +116,18 @@ namespace scene
 		directionalLights.add(sunTransformId, 1, vec3(1), vec3(1));
 		shadowRenderer.shadowCasters = &boxRenderer;
 		shadowRenderer.init();
+
+		input::init();
+		spaceInputHandle = input::registerKey(GLFW_KEY_SPACE);
+
+		camera::init();
+		cameraTransform = transform::add(vec3(0, 0, 0), quat(), vec3(1, 1, 1));
+		cameraId = camera::add(characterTransformId, 1);
 	}
 
 	void update(float deltaTime, Camera& camera)
 	{
-		movement::cube::cubeInput[cubeMovementId.id] = -camera.Front * input::input.z + camera.Right * input::input.x;
+		movement::cube::cubeInput[cubeMovementId.id] = -camera.Front * input::movementInput.z + camera.Right * input::movementInput.x;
 		rotation::animation::update(deltaTime);
 		rotation::anchor::update();
 		movement::cube::update(chunk, deltaTime);

@@ -1,24 +1,72 @@
 #include "input.h"
 #include <iostream>
+#include "util/table.h"
 
 namespace input
 {
-	vec3 input;
+	vec3 movementInput;
+	vec3 cameraInput;
 	GLFWwindow* window = nullptr;
+
+	Table inputTable;
+	Column<int> keys;
+	Column<KeyState> states;
+
+	handle spaceStateHandle;
+
+	void init()
+	{
+		inputTable.init(50, keys + states);
+	}
 
 	void update()
 	{
 		if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
-			input.z = -1;
+			movementInput.z = -1;
 		else if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
-			input.z = 1;
+			movementInput.z = 1;
 		else
-			input.z = 0;
+			movementInput.z = 0;
 		if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
-			input.x = -1;
+			movementInput.x = -1;
 		else if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
-			input.x = 1;
+			movementInput.x = 1;
 		else
-			input.x = 0;
+			movementInput.x = 0;
+
+		if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+			glfwSetWindowShouldClose(window, true);
+
+		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+			cameraInput.y = 1;
+		else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+			cameraInput.y = -1;
+		else cameraInput.y = 0;
+		if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+			cameraInput.x = -1;
+		else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+			cameraInput.x = 1;
+		else cameraInput.x = 0;
+
+		for (int i = 0; i < inputTable.count; i++)
+		{
+			int isDown = (glfwGetKey(window, keys[i]) == GLFW_PRESS) ? 1 : 0;
+			int wasDown = ((int)states[i] & 1);
+			
+			states[i] = (KeyState)(isDown + (wasDown != isDown ? 2 : 0));
+		}
+	}
+
+	handle registerKey(int keyCode)
+	{
+		TableElement element = inputTable.push();
+		element << keyCode << KeyState::UP;
+		return { element.elementIndex };
+
+	}
+
+	KeyState getState(handle key)
+	{
+		return states[key.id];
 	}
 }

@@ -8,6 +8,8 @@
 
 #include "../imgui.h"
 
+#include "scene/scene.h"
+
 namespace render
 {
 	unsigned int gBufferShader = 0, deferredLightingShader = 0;
@@ -139,15 +141,16 @@ namespace render
 		glUseProgram(gBufferShader);
 		currentShader = gBufferShader;
 
-		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)render_width / (float)render_height, 0.1f, 100.0f);
-		glm::mat4 view = camera.GetViewMatrix();
+		glm::mat4 projection = glm::perspective(glm::radians(camera::getZoom(scene::cameraId)), (float)render_width / (float)render_height, 0.1f, 100.0f);
+		glm::mat4 view = camera::getViewMatrix(scene::cameraId);
 
 		int projectionMatrixAttr = glGetUniformLocation(gBufferShader, "projection");
 		int viewMatrixAttr = glGetUniformLocation(gBufferShader, "view");
 		int viewPosAttr = glGetUniformLocation(gBufferShader, "viewPos");
 		glUniformMatrix4fv(projectionMatrixAttr, 1, false, (float*)&projection);
 		glUniformMatrix4fv(viewMatrixAttr, 1, false, (float*)&view);
-		glUniform3f(viewPosAttr, camera.Position.x, camera.Position.y, camera.Position.z);
+		glm::vec3 cameraPos = camera::getCameraPos(scene::cameraId);
+		glUniform3f(viewPosAttr, cameraPos.x, cameraPos.y, cameraPos.z);
 		glBindFramebuffer(GL_FRAMEBUFFER, gBuffer);
 		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

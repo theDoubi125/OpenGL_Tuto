@@ -46,7 +46,7 @@ const unsigned int SCR_WIDTH = 1920;
 const unsigned int SCR_HEIGHT = 1080;
 
 // camera
-Camera camera(glm::vec3(0.0f, 2.0f, 3.0f));
+Camera mainCamera(glm::vec3(0.0f, 2.0f, 3.0f));
 float lastX = SCR_WIDTH / 2.0f;
 float lastY = SCR_HEIGHT / 2.0f;
 bool firstMouse = true;
@@ -162,11 +162,11 @@ int main()
 		
 		input::update();
 
-		scene::update(deltaTime, camera);
+		scene::update(deltaTime, mainCamera);
 
 		
 
-		scene::render(camera);
+		scene::render(mainCamera);
 
 		// Lighting pass
 
@@ -274,31 +274,7 @@ int main()
 // ---------------------------------------------------------------------------------------------------------
 void processInput(GLFWwindow *window)
 {
-	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-		glfwSetWindowShouldClose(window, true);
-
-	if (!showDebug)
-	{
-		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-			camera.ProcessKeyboard(FORWARD, deltaTime);
-		if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-			camera.ProcessKeyboard(BACKWARD, deltaTime);
-		if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-			camera.ProcessKeyboard(LEFT, deltaTime);
-		if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-			camera.ProcessKeyboard(RIGHT, deltaTime);
-	}
-	static bool spacePressed = false;
-	if (spacePressed)
-	{
-		if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_RELEASE)
-			spacePressed = false;
-	}
-	else if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
-	{
-		showDebug = !showDebug;
-		spacePressed = true;
-	}
+	
 }
 
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes
@@ -330,7 +306,7 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 
 	if (!showDebug)
 	{
-		camera.ProcessMouseMovement(xoffset, yoffset);
+		mainCamera.ProcessMouseMovement(xoffset, yoffset);
 	}
 }
 
@@ -338,5 +314,5 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 // ----------------------------------------------------------------------
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
-	camera.ProcessMouseScroll(yoffset);
+	mainCamera.ProcessMouseScroll(yoffset);
 }

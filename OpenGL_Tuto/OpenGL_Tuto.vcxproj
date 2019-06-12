@@ -128,6 +128,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="camera.cpp" />
     <ClCompile Include="directional_light.cpp" />
     <ClCompile Include="gameplay\input.cpp" />
     <ClCompile Include="gameplay\movement\cube_movement.cpp" />
