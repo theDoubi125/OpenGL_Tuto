@@ -46,4 +46,10 @@ namespace camera
 		handle transformId = transformIds[cameraHandle.id];
 		return transform::positions[transformId.id];
 	}
+
+	quat getCameraRot(handle cameraHandle)
+	{
+		handle transformId = transformIds[cameraHandle.id];
+		return transform::rotations[transformId.id];
+	}
 }

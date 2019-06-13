@@ -136,7 +136,7 @@ namespace render
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 
-	void start_render(const Camera& camera)
+	void start_render()
 	{
 		glUseProgram(gBufferShader);
 		currentShader = gBufferShader;

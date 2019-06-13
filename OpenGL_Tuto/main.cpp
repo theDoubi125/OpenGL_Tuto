@@ -46,7 +46,6 @@ const unsigned int SCR_WIDTH = 1920;
 const unsigned int SCR_HEIGHT = 1080;
 
 // camera
-Camera mainCamera(glm::vec3(0.0f, 2.0f, 3.0f));
 float lastX = SCR_WIDTH / 2.0f;
 float lastY = SCR_HEIGHT / 2.0f;
 bool firstMouse = true;
@@ -162,11 +161,11 @@ int main()
 		
 		input::update();
 
-		scene::update(deltaTime, mainCamera);
+		scene::update(deltaTime);
 
 		
 
-		scene::render(mainCamera);
+		scene::render();
 
 		// Lighting pass
 
@@ -306,7 +305,7 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 
 	if (!showDebug)
 	{
-		mainCamera.ProcessMouseMovement(xoffset, yoffset);
+		//mainCamera.ProcessMouseMovement(xoffset, yoffset);
 	}
 }
 
@@ -314,5 +313,5 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 // ----------------------------------------------------------------------
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
-	mainCamera.ProcessMouseScroll(yoffset);
+	//mainCamera.ProcessMouseScroll(yoffset);
 }

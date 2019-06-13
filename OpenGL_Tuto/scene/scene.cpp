@@ -11,6 +11,8 @@
 #include "directional_light.h"
 #include "gameplay/input.h"
 #include "camera.h"
+#include "gameplay/world/voxel.h"
+
 
 namespace scene
 {
@@ -125,24 +127,27 @@ namespace scene
 		cameraId = camera::add(characterTransformId, 1);
 	}
 
-	void update(float deltaTime, Camera& camera)
+	void update(float deltaTime)
 	{
-		movement::cube::cubeInput[cubeMovementId.id] = -camera.Front * input::movementInput.z + camera.Right * input::movementInput.x;
+		quat camRotation = camera::getCameraRot(cameraId);
+		movement::cube::cubeInput[cubeMovementId.id] = -(camRotation * vec3(0, 0, 1)) * input::movementInput.z + (camRotation * vec3(1, 0, 0)) * input::movementInput.x;
 		rotation::animation::update(deltaTime);
 		rotation::anchor::update();
 		movement::cube::update(chunk, deltaTime);
 	}
 
-	void render(Camera& camera)
+	void render()
 	{
-		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
-		glm::mat4 view = camera.GetViewMatrix();
+		float zoom = camera::getZoom(scene::cameraId);
+		vec3 cameraPosition = camera::getCameraPos(scene::cameraId);
+		glm::mat4 projection = glm::perspective(glm::radians(zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+		glm::mat4 view = camera::getViewMatrix(scene::cameraId);
 		static glm::vec4 testVec(0, 0, 0, 1);
 		// world transformation
 		glm::mat4 model = glm::mat4(1.0f);
 
 		render::clear_frame();
-		render::start_render(camera);
+		render::start_render();
 
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, testTexture);
@@ -171,7 +176,7 @@ namespace scene
 			pointLightShader->setInt("gPosition", 0);
 			pointLightShader->setInt("gNormal", 1);
 			pointLightShader->setInt("gAlbedoSpec", 2);
-			pointLightShader->setVec3("viewPos", camera.Position);
+			pointLightShader->setVec3("viewPos", cameraPosition);
 			vec3 position;
 			position = transform::positions[transform::indexOf(pointLights.transformIds[i])];
 			pointLightShader->setVec3("light.Position", position);
@@ -183,7 +188,7 @@ namespace scene
 		directionalLightShader->setInt("gPosition", 0);
 		directionalLightShader->setInt("gNormal", 1);
 		directionalLightShader->setInt("gAlbedoSpec", 2);
-		directionalLightShader->setVec3("viewPos", camera.Position);
+		directionalLightShader->setVec3("viewPos", cameraPosition);
 		directionalLightShader->setVec3("light.Direction", normalize(sunDirection));
 		directionalLightShader->setVec3("light.Color", vec3(1, 1, 1));
 
@@ -202,7 +207,7 @@ namespace scene
 		lampShader->setMat4("projection", projection);
 		lampShader->setMat4("view", view);
 		lampShader->setMat4("model", model);
-		lampShader->setVec3("viewPos", camera.Position);
+		lampShader->setVec3("viewPos", cameraPosition);
 
 	}
 };
