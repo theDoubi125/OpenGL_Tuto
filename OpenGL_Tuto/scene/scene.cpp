@@ -124,7 +124,7 @@ namespace scene
 
 		camera::init();
 		cameraTransform = transform::add(vec3(0, 0, 0), quat(), vec3(1, 1, 1));
-		cameraId = camera::add(characterTransformId, 1);
+		cameraId = camera::add(cameraTransform, 1);
 	}
 
 	void update(float deltaTime)

@@ -36,7 +36,6 @@
 #include "gameplay/input.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void processInput(GLFWwindow *window);
 
@@ -80,7 +79,7 @@ int main()
 	}
 	glfwMakeContextCurrent(window);
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-	glfwSetCursorPosCallback(window, mouse_callback);
+	glfwSetCursorPosCallback(window, input::mouseMovement);
 	glfwSetScrollCallback(window, scroll_callback);
 
 	// tell GLFW to capture our mouse
@@ -149,6 +148,7 @@ int main()
 			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 
 		}
+		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 
 		// view/projection transformations fixed for all renderers
 		
@@ -187,6 +187,7 @@ int main()
 			ImGui::EndCombo();
 		}
 		ImGui::Image((ImTextureID)displayTexture, ImVec2(400, 300));
+		transform::showDebug();
 		if (showDebug)
 		{
 		/*	if(ImGui::Begin("Debug Window", &showDebug));
@@ -197,7 +198,7 @@ int main()
 				{
 					if (ImGui::BeginTabItem("Transform"))
 					{
-						transform::showDebug();
+						
 						ImGui::EndTabItem();
 
 					}
@@ -283,30 +284,6 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 	// make sure the viewport matches the new window dimensions; note that width and 
 	// height will be significantly larger than specified on retina displays.
 	glViewport(0, 0, width, height);
-}
-
-
-// glfw: whenever the mouse moves, this callback is called
-// -------------------------------------------------------
-void mouse_callback(GLFWwindow* window, double xpos, double ypos)
-{
-	if (firstMouse)
-	{
-		lastX = xpos;
-		lastY = ypos;
-		firstMouse = false;
-	}
-
-	float xoffset = xpos - lastX;
-	float yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top
-
-	lastX = xpos;
-	lastY = ypos;
-
-	if (!showDebug)
-	{
-		//mainCamera.ProcessMouseMovement(xoffset, yoffset);
-	}
 }
 
 // glfw: whenever the mouse scroll wheel scrolls, this callback is called

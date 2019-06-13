@@ -18,4 +18,6 @@ namespace input
 	void update();
 	handle registerKey(int keyCode);
 	KeyState getState(handle key);
+
+	void mouseMovement(GLFWwindow* window, double xpos, double ypos);
 }

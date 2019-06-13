@@ -14,9 +14,14 @@ namespace input
 
 	handle spaceStateHandle;
 
+	vec2 mousePos;
+	vec2 mousePosOffset;
+	bool mousePosInit = false;
+
 	void init()
 	{
 		inputTable.init(50, keys + states);
+		mousePosInit = false;
 	}
 
 	void update()
@@ -68,5 +73,21 @@ namespace input
 	KeyState getState(handle key)
 	{
 		return states[key.id];
+	}
+
+	void mouseMovement(GLFWwindow* window, double xpos, double ypos)
+	{
+		if (!mousePosInit)
+		{
+			mousePos.x = xpos;
+			mousePos.y = ypos;
+			mousePosInit = true;
+		}
+
+		mousePosOffset.x = xpos - mousePos.x;
+		mousePosOffset.y = mousePos.y - ypos; // reversed since y-coordinates go from bottom to top
+
+		mousePos.x = xpos;
+		mousePos.y = ypos;
 	}
 }

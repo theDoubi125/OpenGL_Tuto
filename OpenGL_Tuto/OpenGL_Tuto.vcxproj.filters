@@ -51,6 +51,9 @@
     <Filter Include="Source Files\gameplay\world">
       <UniqueIdentifier>{02a392a1-e9be-4134-b8d1-88f0ec181f2e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\gameplay\movement">
+      <UniqueIdentifier>{4984269a-e0d5-4abc-af06-b7a5165826ff}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
