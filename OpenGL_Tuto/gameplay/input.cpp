@@ -79,15 +79,15 @@ namespace input
 	{
 		if (!mousePosInit)
 		{
-			mousePos.x = xpos;
-			mousePos.y = ypos;
+			mousePos.x = (float)xpos;
+			mousePos.y = (float)ypos;
 			mousePosInit = true;
 		}
 
-		mousePosOffset.x = xpos - mousePos.x;
-		mousePosOffset.y = mousePos.y - ypos; // reversed since y-coordinates go from bottom to top
+		mousePosOffset.x = (float)xpos - mousePos.x;
+		mousePosOffset.y = mousePos.y - (float)ypos; // reversed since y-coordinates go from bottom to top
 
-		mousePos.x = xpos;
-		mousePos.y = ypos;
+		mousePos.x = (float)xpos;
+		mousePos.y = (float)ypos;
 	}
 }

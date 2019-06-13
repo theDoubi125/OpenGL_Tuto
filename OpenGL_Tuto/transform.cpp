@@ -48,7 +48,7 @@ namespace transform
 		int index = bitArray.allocate();
 		handle result = { index };
 		TableElement elt = table.element(index);
-		elt << result << pos << rotation << scale;
+		elt << result << pos << glm::normalize(rotation) << scale;
 		return result;
 	}
 

@@ -4,7 +4,7 @@
 
 void BitArray::init(int capacity)
 {
-	arraySize = capacity / FLAG_PER_INT;
+	arraySize = capacity / FLAG_PER_INT + (capacity % FLAG_PER_INT) > 0 ? 1 : 0;
 	data = new unsigned int[arraySize];
 	for (int i = 0; i < arraySize; i++)
 	{

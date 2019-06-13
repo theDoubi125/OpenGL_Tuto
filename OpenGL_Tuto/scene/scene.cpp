@@ -12,6 +12,7 @@
 #include "gameplay/input.h"
 #include "camera.h"
 #include "gameplay/world/voxel.h"
+#include "gameplay/movement/first_person.h"
 
 
 namespace scene
@@ -123,8 +124,11 @@ namespace scene
 		spaceInputHandle = input::registerKey(GLFW_KEY_SPACE);
 
 		camera::init();
-		cameraTransform = transform::add(vec3(0, 0, 0), quat(), vec3(1, 1, 1));
+		cameraTransform = transform::add(vec3(1, 2, 0), quat(), vec3(1, 1, 1));
 		cameraId = camera::add(cameraTransform, 1);
+
+		movement::first_person::init();
+		movement::first_person::add(cameraTransform, 0.01f, 1);
 	}
 
 	void update(float deltaTime)
@@ -134,6 +138,7 @@ namespace scene
 		rotation::animation::update(deltaTime);
 		rotation::anchor::update();
 		movement::cube::update(chunk, deltaTime);
+		movement::first_person::update(deltaTime);
 	}
 
 	void render()

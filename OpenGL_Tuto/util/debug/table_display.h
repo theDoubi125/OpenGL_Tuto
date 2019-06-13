@@ -24,6 +24,7 @@ namespace debug
 	template<> bool displayElement<float>(const char* title, float& element);
 	template<> bool displayElement<vec3>(const char* title, vec3& element);
 	template<> bool displayElement<handle>(const char* title, handle& element);
+	template<> bool displayElement<quat>(const char* title, quat& element);
 
 	template<typename T>
 	void displayColumn(const char* columnTitle, Column<T> column, int first, int last)

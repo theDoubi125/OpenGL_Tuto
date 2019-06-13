@@ -43,6 +43,16 @@ struct Column
 		return table->column<T>(columnIndex)[index];
 	}
 
+	const T& operator[](handle h) const
+	{
+		return table->column<T>(columnIndex)[h.id];
+	}
+
+	T& operator[](handle h)
+	{
+		return table->column<T>(columnIndex)[h.id];
+	}
+
 	void operator=(const Column<T>& other)
 	{
 		columnIndex = other.columnIndex;

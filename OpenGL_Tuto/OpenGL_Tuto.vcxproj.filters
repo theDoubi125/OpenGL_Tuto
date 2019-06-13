@@ -122,14 +122,17 @@
     <ClCompile Include="gameplay\input.cpp">
       <Filter>Source Files\gameplay</Filter>
     </ClCompile>
-    <ClCompile Include="gameplay\movement\cube_movement.cpp">
-      <Filter>Source Files\gameplay\cube</Filter>
-    </ClCompile>
     <ClCompile Include="gameplay\world\voxel.cpp">
       <Filter>Source Files\gameplay\world</Filter>
     </ClCompile>
     <ClCompile Include="camera.cpp">
       <Filter>Source Files\util</Filter>
+    </ClCompile>
+    <ClCompile Include="gameplay\movement\first_person.cpp">
+      <Filter>Source Files\gameplay\movement</Filter>
+    </ClCompile>
+    <ClCompile Include="gameplay\movement\cube_movement.cpp">
+      <Filter>Source Files\gameplay\movement</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -214,9 +217,6 @@
     <ClInclude Include="gameplay\input.h">
       <Filter>Source Files\gameplay</Filter>
     </ClInclude>
-    <ClInclude Include="gameplay\movement\cube_movement.h">
-      <Filter>Source Files\gameplay\cube</Filter>
-    </ClInclude>
     <ClInclude Include="util\table\join.h">
       <Filter>Source Files\util\container</Filter>
     </ClInclude>
@@ -225,6 +225,12 @@
     </ClInclude>
     <ClInclude Include="types.h">
       <Filter>Source Files\util</Filter>
+    </ClInclude>
+    <ClInclude Include="gameplay\movement\first_person.h">
+      <Filter>Source Files\gameplay\movement</Filter>
+    </ClInclude>
+    <ClInclude Include="gameplay\movement\cube_movement.h">
+      <Filter>Source Files\gameplay\movement</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

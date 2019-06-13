@@ -13,6 +13,8 @@ namespace input
 	extern vec3 movementInput;
 	extern vec3 cameraInput;
 	extern GLFWwindow* window;
+	extern vec2 mousePos;
+	extern vec2 mousePosOffset;
 
 	void init();
 	void update();

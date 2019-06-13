@@ -20,4 +20,11 @@ namespace debug
 	{
 		return ImGui::DragInt(title, &element.id);
 	}
+
+	template<>
+	bool displayElement<quat>(const char* title, quat& element)
+	{
+		vec3 euler = glm::eulerAngles(element);
+		return ImGui::DragFloat3(title, (float*)&euler);
+	}
 }
