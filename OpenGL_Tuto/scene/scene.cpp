@@ -20,7 +20,6 @@
 
 namespace scene
 {
-	MeshLibrary meshLibrary;
 	MeshRenderer boxRenderer, lampRenderer;
 	PointLightManager pointLights;
 	DirectionalLightManager directionalLights;
@@ -68,7 +67,8 @@ namespace scene
 			world::voxel::computeFaceMesh(vec3(0, 0, 0), (world::voxel::FaceDir)i, dataBuffer, 6 * 8 * i * sizeof(float), 1, vec3(0, 0, 0));
 		}
 
-		MeshData cubeMesh = meshLibrary.loadMesh("cube", dataBuffer, 6 * 8 * 6 * sizeof(float));
+		mesh::init();
+		handle cubeMesh = mesh::loadMesh(dataBuffer, 6 * 8 * 6 * sizeof(float));
 
 		world::manager::init();
 		int testSize = CHUNK_SIZE;
@@ -84,8 +84,8 @@ namespace scene
 			}
 		}
 		int chunkMeshSize = 0;
-		world::manager::computeChunksMesh(dataBuffer, chunkMeshSize);
-		MeshData chunkMesh = meshLibrary.loadMesh("chunk", dataBuffer, chunkMeshSize);
+		//world::manager::computeChunksMesh(dataBuffer, chunkMeshSize);
+		//handle chunkMesh = mesh::loadMesh(dataBuffer, chunkMeshSize);
 
 		delete[] dataBuffer;
 
@@ -93,12 +93,8 @@ namespace scene
 		movement::cube::init();
 		rotation::anchor::init();
 		rotation::animation::init();
-		
 
-		handle transformId = transform::add(vec3(0, 0, 0), quat(), vec3(1, 1, 1));
-		boxRenderer.add(transformId, chunkMesh);
-
-		transformId = transform::add(vec3(2, 0, 0), quat(), vec3(1, 1, 1));
+		handle transformId = transform::add(vec3(2, 0, 0), quat(), vec3(1, 1, 1));
 		boxRenderer.add(transformId, cubeMesh);
 
 		transformId = transform::add(vec3(5, 1, 3), quat(), vec3(1, 1, 1));

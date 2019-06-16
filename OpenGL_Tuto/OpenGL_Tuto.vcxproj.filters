@@ -54,6 +54,9 @@
     <Filter Include="Source Files\gameplay\movement">
       <UniqueIdentifier>{4984269a-e0d5-4abc-af06-b7a5165826ff}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\render\world">
+      <UniqueIdentifier>{548f7d62-9322-4200-9457-97ca59c68b6b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -148,6 +151,9 @@
     </ClCompile>
     <ClCompile Include="gameplay\world\world.cpp">
       <Filter>Source Files\gameplay\world</Filter>
+    </ClCompile>
+    <ClCompile Include="render\voxel_render.cpp">
+      <Filter>Source Files\render\world</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -261,6 +267,9 @@
     </ClInclude>
     <ClInclude Include="gameplay\world\world.h">
       <Filter>Source Files\gameplay\world</Filter>
+    </ClInclude>
+    <ClInclude Include="render\voxel_render.h">
+      <Filter>Source Files\render\world</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

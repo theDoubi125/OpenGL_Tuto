@@ -16,16 +16,13 @@ struct MeshData
 	size_t vertexCount;
 };
 
-class MeshLibrary
+namespace mesh
 {
-	std::map<const std::string, MeshData> loadedMeshes;
-	
-public:
-	MeshData loadMesh(const std::string& name, char* data, size_t size);
-	MeshData replaceMesh(const std::string& name, char* data, size_t size);
-
-	MeshData getMesh(const std::string& name);
-};
+	void init();
+	handle loadMesh(char* data, size_t size);
+	void replaceMesh(char* data, size_t size, handle meshId);
+	MeshData getMesh(handle meshId);
+}
 
 class MeshRenderer
 {
@@ -45,7 +42,7 @@ class MeshRenderer
 public:
 	int count = 0;
 
-	handle add(handle transformId, const MeshData& mesh);
+	handle add(handle transformId, handle meshId);
 	void getPositions(vec3* outPos, size_t maxCount) const;
 
 	void render(unsigned int shaderId);

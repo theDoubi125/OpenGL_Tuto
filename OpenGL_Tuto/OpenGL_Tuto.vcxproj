@@ -152,6 +152,7 @@
     <ClCompile Include="point_light.cpp" />
     <ClCompile Include="render\render_pipeline.cpp" />
     <ClCompile Include="render\shader.cpp" />
+    <ClCompile Include="render\voxel_render.cpp" />
     <ClCompile Include="scene\scene.cpp" />
     <ClCompile Include="shadow.cpp" />
     <ClCompile Include="texture.cpp" />
@@ -186,6 +187,7 @@
     <ClInclude Include="point_light.h" />
     <ClInclude Include="render\render_pipeline.h" />
     <ClInclude Include="render\shader.h" />
+    <ClInclude Include="render\voxel_render.h" />
     <ClInclude Include="scene\scene.h" />
     <ClInclude Include="shader_m.h" />
     <ClInclude Include="shadow.h" />

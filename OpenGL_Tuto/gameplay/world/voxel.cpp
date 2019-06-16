@@ -122,7 +122,7 @@ namespace world
 				char *dataBuffer = new char[5000000];
 				int chunkMeshSize = 0;
 				voxel::computeChunkMesh(chunk, dataBuffer, chunkMeshSize, vec3(0, 0, 0));
-				meshLibrary.replaceMesh("chunk", dataBuffer, chunkMeshSize);
+				//mesh::replaceMesh(, dataBuffer, chunkMeshSize);
 				delete[] dataBuffer;
 			}
 		}

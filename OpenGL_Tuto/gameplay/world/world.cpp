@@ -17,6 +17,10 @@ namespace world
 		Column<voxel::Chunk> chunks;
 		BitArray allocation;
 
+		// chunks added this frame
+		handle addedChunks[100];
+		int addedChunksCount = 0;
+
 		void init()
 		{
 			regionTable.init(100, offsets + chunks);
@@ -28,6 +32,8 @@ namespace world
 			handle id = { allocation.allocate() };
 			TableElement element = regionTable.element(id.id);
 			element << offset << voxel::Chunk(data);
+			addedChunks[addedChunksCount] = id;
+			addedChunksCount++;
 		}
 
 		char getCell(ivec3 cell)
@@ -59,6 +65,8 @@ namespace world
 			handle id = { allocation.allocate() };
 			TableElement element = regionTable.element(id.id);
 			element << chunkOffset << newChunk;
+			addedChunks[addedChunksCount] = id;
+			addedChunksCount++;
 		}
 
 		void computeChunksMesh(char* outData, int& outDataSize)
@@ -84,7 +92,19 @@ namespace world
 			handle id = { allocation.allocate() };
 			TableElement element = regionTable.element(id.id);
 			element << chunk << newChunk;
+			addedChunks[addedChunksCount] = id;
+			addedChunksCount++;
 			return chunks[id];
+		}
+
+		voxel::Chunk& getChunk(handle chunkId)
+		{
+			return chunks[chunkId];
+		}
+
+		ivec3 getChunkOffset(handle chunkId)
+		{
+			return offsets[chunkId];
 		}
 	}
 

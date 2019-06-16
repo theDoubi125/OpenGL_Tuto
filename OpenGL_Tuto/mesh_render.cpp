@@ -9,11 +9,22 @@ using vec3 = glm::vec3;
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/transform.hpp>
 #include <glm/gtx/quaternion.hpp>
+#include "util/bit_array.h"
 
-
-MeshData MeshLibrary::loadMesh(const std::string& name, char* data, size_t size)
+namespace mesh
 {
-	if (loadedMeshes.count(name) == 0)
+	Table meshTable;
+	Column<unsigned int> vbos;
+	Column<size_t> sizes;
+	BitArray allocation;
+
+	void init()
+	{
+		meshTable.init(100, vbos + sizes);
+		allocation.init(100);
+	}
+
+	handle loadMesh(char* data, size_t size)
 	{
 		unsigned int VBO;
 		glGenBuffers(1, &VBO);
@@ -21,39 +32,37 @@ MeshData MeshLibrary::loadMesh(const std::string& name, char* data, size_t size)
 		glBindBuffer(GL_ARRAY_BUFFER, VBO);
 		glBufferData(GL_ARRAY_BUFFER, size, data, GL_STATIC_DRAW);
 		glBindBuffer(GL_ARRAY_BUFFER, VBO);
-		loadedMeshes[name] = { VBO, size / 8 / sizeof(float) };
+
+		handle result = { allocation.allocate() };
+		TableElement element = meshTable.element(result.id);
+		element << VBO << size / 8 / sizeof(float);
+		return result;
 	}
 
-	return loadedMeshes[name];
-}
-
-MeshData MeshLibrary::replaceMesh(const std::string& name, char* data, size_t size)
-{
-	if (loadedMeshes.count(name) != 0)
+	void replaceMesh(char* data, size_t size, handle meshId)
 	{
-		unsigned int VBO = loadedMeshes[name].vbo;
+		unsigned int VBO = vbos[meshId];
 
 		glBindBuffer(GL_ARRAY_BUFFER, VBO);
 		glBufferData(GL_ARRAY_BUFFER, size, data, GL_STATIC_DRAW);
 		glBindBuffer(GL_ARRAY_BUFFER, VBO);
-		loadedMeshes[name] = { VBO, size / 8 / sizeof(float) };
+		sizes[meshId] = size / 8 / sizeof(float);
 	}
 
-	return loadedMeshes[name];
+	MeshData getMesh(handle meshId)
+	{
+		return { vbos[meshId], sizes[meshId] };
+	}
 }
 
-MeshData MeshLibrary::getMesh(const std::string& name)
-{
-	return loadedMeshes[name];
-}
-
-handle MeshRenderer::add(handle transformId, const MeshData& mesh)
+handle MeshRenderer::add(handle transformId, handle meshId)
 {
 	unsigned int VAO;
 	glGenVertexArrays(1, &VAO);
 	glBindVertexArray(VAO);
+	MeshData meshData = mesh::getMesh(meshId);
 
-	glBindBuffer(GL_ARRAY_BUFFER, mesh.vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, meshData.vbo);
 
 	// position attribute
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
@@ -69,7 +78,7 @@ handle MeshRenderer::add(handle transformId, const MeshData& mesh)
 	handle result = nextHandle;
 	handles[count] = result;
 	VAOs[count] = VAO;
-	vertexCount[count] = mesh.vertexCount;
+	vertexCount[count] = meshData.vertexCount;
 	transformIds[count] = transformId;
 	count++;
 	nextHandle.id++;
