@@ -18,6 +18,7 @@ namespace input
 
 	void init();
 	void update();
+	void reset();
 	handle registerKey(int keyCode);
 	KeyState getState(handle key);
 

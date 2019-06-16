@@ -13,6 +13,6 @@ namespace movement
 
 		void init();
 		handle add(handle transformId, float cubeSize);
-		void update(const voxel::Chunk& collisionData, float deltaTime);
+		void update(float deltaTime);
 	}
 }

@@ -148,7 +148,6 @@ int main()
 			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 
 		}
-		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 
 		// view/projection transformations fixed for all renderers
 		
@@ -157,9 +156,6 @@ int main()
 		{
 			deltaTime = 0;
 		}
-
-		
-		input::update();
 
 		scene::update(deltaTime);
 

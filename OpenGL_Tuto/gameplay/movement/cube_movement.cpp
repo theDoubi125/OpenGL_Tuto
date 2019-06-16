@@ -6,6 +6,7 @@
 #include "../world/voxel.h"
 #include <cmath>
 #define GRAVITY 10
+#include "gameplay/world/world.h"
 
 namespace movement
 {
@@ -53,7 +54,7 @@ namespace movement
 			return result;
 		}
 
-		void handleActivations(const voxel::Chunk& collisionData, const std::vector<int>& toActivate, const std::vector<vec3>& toActivateDirection)
+		void handleActivations(const std::vector<int>& toActivate, const std::vector<vec3>& toActivateDirection)
 		{
 			for (int index : toActivate)
 			{
@@ -62,7 +63,7 @@ namespace movement
 				vec3 targetPos = pos + direction;
 				ivec3 itargetPos(round(targetPos.x), round(targetPos.y), round(targetPos.z));
 
-				if (collisionData[itargetPos] == 0)
+				if (world::manager::getCell(itargetPos) == 0)
 				{
 					handle activeId = { activeBitArray.allocate() };
 					TableElement elt = activeTable.element(activeId.id);
@@ -87,7 +88,7 @@ namespace movement
 			}
 		}
 
-		void handleFalling(const voxel::Chunk& collisionData, float deltaTime) 
+		void handleFalling(float deltaTime) 
 		{
 			std::vector<int> toRemove;
 			for (int index : fallingBitArray)
@@ -98,7 +99,7 @@ namespace movement
 				float deltaY = fallingSpeeds[fallingIndex] * deltaTime;
 				bool cellChange = floor(pos.y) != floor(pos.y - deltaY);
 				pos.y -= deltaY;
-				if (cellChange && collisionData[pos - vec3(0, deltaY, 0)] != 0)
+				if (cellChange && world::manager::getCell(pos - vec3(0, deltaY, 0)) != 0)
 				{
 					toRemove.push_back(index);
 					pos.y = round(pos.y);
@@ -111,7 +112,7 @@ namespace movement
 			}
 		}
 
-		void update(const voxel::Chunk& collisionData, float deltaTime)
+		void update(float deltaTime)
 		{
 			std::vector<int> toActivate;
 			std::vector<int> toMove;
@@ -124,7 +125,7 @@ namespace movement
 				vec3 input = cubeInput[index];
 				ivec3 igroundPos(round(pos.x), round(pos.y) - 1, round(pos.z));
 
-				if (collisionData[igroundPos] == 0)
+				if (world::manager::getCell(igroundPos) == 0)
 				{
 					int fallingElement = fallingBitArray.allocate();
 					TableElement elt = fallingTable.element(fallingElement);
@@ -142,8 +143,8 @@ namespace movement
 			{
 				inactiveFlags.free(toActivateIndex);
 			}
-			handleActivations(collisionData, toMove, toMoveDirection);
-			handleFalling(collisionData, deltaTime);
+			handleActivations(toMove, toMoveDirection);
+			handleFalling(deltaTime);
 
 			for (int index : activeBitArray)
 			{

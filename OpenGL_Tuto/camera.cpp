@@ -32,7 +32,7 @@ namespace camera
 	{
 		handle transformId = transformIds[cameraHandle.id];
 		vec3 position = transform::positions[transformId.id];
-		vec3 forward = transform::rotations[transformId.id] * vec3(0, 0, 1);
+		vec3 forward = glm::normalize(transform::rotations[transformId.id]) * vec3(0, 0, 1);
 		return glm::lookAt(position, position + forward, vec3(0, 1, 0));
 	}
 

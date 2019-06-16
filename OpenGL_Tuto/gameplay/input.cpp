@@ -33,9 +33,9 @@ namespace input
 		else
 			movementInput.z = 0;
 		if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
-			movementInput.x = -1;
-		else if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
 			movementInput.x = 1;
+		else if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
+			movementInput.x = -1;
 		else
 			movementInput.x = 0;
 
@@ -43,10 +43,10 @@ namespace input
 			glfwSetWindowShouldClose(window, true);
 
 		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-			cameraInput.y = 1;
+			cameraInput.z = -1;
 		else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-			cameraInput.y = -1;
-		else cameraInput.y = 0;
+			cameraInput.z = 1;
+		else cameraInput.z = 0;
 		if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
 			cameraInput.x = -1;
 		else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
@@ -60,6 +60,11 @@ namespace input
 			
 			states[i] = (KeyState)(isDown + (wasDown != isDown ? 2 : 0));
 		}
+	}
+
+	void reset()
+	{
+		mousePosOffset = { 0, 0 };
 	}
 
 	handle registerKey(int keyCode)

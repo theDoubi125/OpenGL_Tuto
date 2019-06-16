@@ -11,7 +11,7 @@ using vec3 = glm::vec3;
 #include <glm/gtx/quaternion.hpp>
 
 
-MeshData MeshLibrary::loadMesh(const std::string& name, float* data, size_t size)
+MeshData MeshLibrary::loadMesh(const std::string& name, char* data, size_t size)
 {
 	if (loadedMeshes.count(name) == 0)
 	{
@@ -27,7 +27,7 @@ MeshData MeshLibrary::loadMesh(const std::string& name, float* data, size_t size
 	return loadedMeshes[name];
 }
 
-MeshData MeshLibrary::replaceMesh(const std::string& name, float* data, size_t size)
+MeshData MeshLibrary::replaceMesh(const std::string& name, char* data, size_t size)
 {
 	if (loadedMeshes.count(name) != 0)
 	{

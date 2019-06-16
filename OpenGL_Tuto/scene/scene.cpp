@@ -12,12 +12,14 @@
 #include "gameplay/input.h"
 #include "camera.h"
 #include "gameplay/world/voxel.h"
+#include "gameplay/world/world.h"
+#include "gameplay/movement/third_person.h"
 #include "gameplay/movement/first_person.h"
+#include "gameplay/input.h"
 
 
 namespace scene
 {
-	voxel::Chunk chunk(0);
 	MeshLibrary meshLibrary;
 	MeshRenderer boxRenderer, lampRenderer;
 	PointLightManager pointLights;
@@ -38,11 +40,15 @@ namespace scene
 	int SCR_WIDTH, SCR_HEIGHT;
 
 	vec3 sunDirection(1, 0.7f, 0.45f);
-	float sunPovDistance = 1;
+	float sunPovDistance = 20;
 	handle spaceInputHandle;
 
 	handle cameraTransform;
 	handle cameraId;
+
+	bool debugMode = false;
+	handle cameraModeHandle;
+	handle characterTransformId;
 
 	void init(int screenWidth, int screenHeight)
 	{
@@ -57,29 +63,28 @@ namespace scene
 		testTexture = loadTexture("./textures/container2.png");
 		specularMap = loadTexture("./textures/container_specular.png");
 
-		float* dataBuffer = new float[5000000];
+		char* dataBuffer = new char[5000000];
 		for (int i = 0; i < 6; i++) {
-			voxel::computeFaceMesh(vec3(0, 0, 0), (voxel::FaceDir)i, dataBuffer, 6 * 8 * i, 1);
+			world::voxel::computeFaceMesh(vec3(0, 0, 0), (world::voxel::FaceDir)i, dataBuffer, 6 * 8 * i * sizeof(float), 1, vec3(0, 0, 0));
 		}
 
 		MeshData cubeMesh = meshLibrary.loadMesh("cube", dataBuffer, 6 * 8 * 6 * sizeof(float));
 
+		world::manager::init();
 		int testSize = CHUNK_SIZE;
-		for (int i = 0; i < testSize; i++)
+		for (int i = 0; i < testSize * 2; i++)
 		{
-			for (int j = 0; j < testSize; j++)
+			for (int j = 0; j < testSize * 2; j++)
 			{
-				chunk[ivec3(i, 0, j)] = 1;
+				world::manager::setCell(ivec3(i, 0, j), 1);
 			}
-			for (int j = i + 1; j < testSize; j++)
+			for (int j = i + 1; j < testSize * 2; j++)
 			{
-				chunk[ivec3(i, 1, j)] = 1;
+				world::manager::setCell(ivec3(i, 1, j), 1);
 			}
-
 		}
 		int chunkMeshSize = 0;
-
-		voxel::computeChunkMesh(chunk, dataBuffer, chunkMeshSize);
+		world::manager::computeChunksMesh(dataBuffer, chunkMeshSize);
 		MeshData chunkMesh = meshLibrary.loadMesh("chunk", dataBuffer, chunkMeshSize);
 
 		delete[] dataBuffer;
@@ -99,7 +104,7 @@ namespace scene
 		transformId = transform::add(vec3(5, 1, 3), quat(), vec3(1, 1, 1));
 		boxRenderer.add(transformId, cubeMesh);
 
-		handle characterTransformId = transform::add(vec3(5, 1, 5), quat(), vec3(1, 1, 1));
+		characterTransformId = transform::add(vec3(5, 1, 5), quat(), vec3(1, 1, 1));
 		boxRenderer.add(characterTransformId, cubeMesh);
 		cubeMovementId = movement::cube::add(characterTransformId, 0.5f);
 		//rotation::animation::add(characterTransformId, vec3(0.5, -0.5, 0), vec3(0.5, -0.5, 0), 3, quat(), quat(vec3(0, 0, -glm::pi<float>() / 2)));
@@ -124,21 +129,41 @@ namespace scene
 		spaceInputHandle = input::registerKey(GLFW_KEY_SPACE);
 
 		camera::init();
-		cameraTransform = transform::add(vec3(1, 2, 0), quat(), vec3(1, 1, 1));
-		cameraId = camera::add(cameraTransform, 1);
+		cameraTransform = transform::add(vec3(-10, 5, 0), quat(), vec3(1, 1, 1));
+		cameraId = camera::add(cameraTransform, 45.0f);
 
+		movement::third_person::init();
 		movement::first_person::init();
-		movement::first_person::add(cameraTransform, 0.01f, 1);
+		cameraModeHandle = movement::third_person::add(cameraTransform, characterTransformId, 0.001f, 10);
 	}
 
 	void update(float deltaTime)
 	{
+		input::update();
 		quat camRotation = camera::getCameraRot(cameraId);
 		movement::cube::cubeInput[cubeMovementId.id] = -(camRotation * vec3(0, 0, 1)) * input::movementInput.z + (camRotation * vec3(1, 0, 0)) * input::movementInput.x;
 		rotation::animation::update(deltaTime);
 		rotation::anchor::update();
-		movement::cube::update(chunk, deltaTime);
+		movement::cube::update(deltaTime);
+		movement::third_person::update(deltaTime);
 		movement::first_person::update(deltaTime);
+
+		if (input::getState(spaceInputHandle) == input::KeyState::PRESSED)
+		{
+			if (debugMode)
+			{
+				movement::first_person::remove(cameraModeHandle);
+				movement::third_person::add(cameraTransform, characterTransformId, 0.001f, 10);
+				debugMode = false;
+			}
+			else
+			{
+				movement::third_person::remove(cameraModeHandle);
+				movement::first_person::add(cameraTransform, 0.001f, 10);
+				debugMode = true;
+			}
+		}
+		input::reset();
 	}
 
 	void render()

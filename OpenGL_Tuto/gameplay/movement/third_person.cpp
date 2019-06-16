@@ -4,26 +4,27 @@
 
 namespace movement
 {
-	namespace first_person
+	namespace third_person
 	{
 		Table table;
 		Column<handle> transforms;
+		Column<handle> targetTransforms;
 		Column<vec3> euler;
 		Column<float> sensitivities;
-		Column<float> movementSpeeds;
+		Column<float> distances;
 		BitArray allocation;
 
 		void init()
 		{
-			table.init(10, transforms + euler + sensitivities + movementSpeeds);
+			table.init(10, transforms + targetTransforms + euler + sensitivities + distances);
 			allocation.init(10);
 		}
 
-		handle add(handle transform, float sensitivity, float movementSpeed)
+		handle add(handle transform, handle targetTransform, float sensitivity, float distance)
 		{
-			handle result = {allocation.allocate()};
+			handle result = { allocation.allocate() };
 			TableElement element = table.element(result.id);
-			element << transform << glm::eulerAngles(transform::rotations[transform]) << sensitivity << movementSpeed;
+			element << transform << targetTransform << glm::eulerAngles(transform::rotations[transform]) << sensitivity << distance;
 			return result;
 		}
 
@@ -31,20 +32,23 @@ namespace movement
 		{
 			allocation.free(id.id);
 		}
-		
+
 		void update(float deltaTime)
 		{
 			for (auto it = allocation.begin(); it.isValid(); it++)
 			{
 				quat& rotation = transform::rotations[transforms[*it]];
+				std::cout << input::mousePosOffset.y * sensitivities[*it] << " " << input::mousePosOffset.x * sensitivities[*it] << std::endl;
 				euler[*it] -= vec3(input::mousePosOffset.y * sensitivities[*it], input::mousePosOffset.x * sensitivities[*it], 0.0f);
+				std::cout << euler[*it].x << std::endl;
 				if (euler[*it].x > glm::pi<float>() / 2 - 0.001f)
 					euler[*it].x = glm::pi<float>() / 2 - 0.001f;
 				if (euler[*it].x < -glm::pi<float>() / 2 + 0.001f)
 					euler[*it].x = -glm::pi<float>() / 2 + 0.001f;
 				rotation = quat(euler[*it]);
 				vec3& position = transform::positions[transforms[*it]];
-				position -= rotation * (input::cameraInput * deltaTime * movementSpeeds[*it]);
+				vec3 targetPosition = transform::positions[targetTransforms[*it]];
+				position = targetPosition - rotation * vec3(0, 0, distances[*it]);
 			}
 		}
 	}

@@ -21,8 +21,8 @@ class MeshLibrary
 	std::map<const std::string, MeshData> loadedMeshes;
 	
 public:
-	MeshData loadMesh(const std::string& name, float* data, size_t size);
-	MeshData replaceMesh(const std::string& name, float* data, size_t size);
+	MeshData loadMesh(const std::string& name, char* data, size_t size);
+	MeshData replaceMesh(const std::string& name, char* data, size_t size);
 
 	MeshData getMesh(const std::string& name);
 };

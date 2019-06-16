@@ -134,6 +134,21 @@
     <ClCompile Include="gameplay\movement\cube_movement.cpp">
       <Filter>Source Files\gameplay\movement</Filter>
     </ClCompile>
+    <ClCompile Include="gameplay\modes\gamemode_editor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gameplay\modes\gamemode_ingame.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gameplay\modes\gamemode_manager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gameplay\movement\third_person.cpp">
+      <Filter>Source Files\gameplay\movement</Filter>
+    </ClCompile>
+    <ClCompile Include="gameplay\world\world.cpp">
+      <Filter>Source Files\gameplay\world</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="material.h">
@@ -231,6 +246,21 @@
     </ClInclude>
     <ClInclude Include="gameplay\movement\cube_movement.h">
       <Filter>Source Files\gameplay\movement</Filter>
+    </ClInclude>
+    <ClInclude Include="gameplay\modes\gamemode_editor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gameplay\modes\gamemode_ingame.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gameplay\modes\gamemode_manager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gameplay\movement\third_person.h">
+      <Filter>Source Files\gameplay\movement</Filter>
+    </ClInclude>
+    <ClInclude Include="gameplay\world\world.h">
+      <Filter>Source Files\gameplay\world</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
