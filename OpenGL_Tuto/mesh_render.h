@@ -18,10 +18,20 @@ struct MeshData
 
 namespace mesh
 {
-	void init();
-	handle loadMesh(char* data, size_t size);
-	void replaceMesh(char* data, size_t size, handle meshId);
-	MeshData getMesh(handle meshId);
+	namespace library
+	{
+		void init();
+		handle loadMesh(char* data, size_t size);
+		void replaceMesh(char* data, size_t size, handle meshId);
+		MeshData getMesh(handle meshId);
+	}
+
+	namespace render
+	{
+		void init();
+		handle add(handle transformId, handle meshId, GLuint shaderId);
+		void render();
+	}
 }
 
 class MeshRenderer

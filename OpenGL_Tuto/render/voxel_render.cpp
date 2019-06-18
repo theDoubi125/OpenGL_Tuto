@@ -60,11 +60,11 @@ namespace render
 				TableElement element = table.element(id.id);
 				handle chunkId = world::manager::addedChunks[i];
 				computeChunkMesh(world::manager::getChunk(chunkId), meshDataBuffer, meshDataSize);
-				handle meshHandle = mesh::loadMesh(meshDataBuffer, meshDataSize);
+				handle meshHandle = mesh::library::loadMesh(meshDataBuffer, meshDataSize);
 
 				handle transformId = transform::add((vec3)(world::manager::getChunkOffset(chunkId) * CHUNK_SIZE), quat(), vec3(1, 1, 1));
 				//TODO : refactor the mesh render system to allow it to be used from here
-				render::
+				
 				element << world::manager::addedChunks[i] << meshHandle << transformId;
 
 			}

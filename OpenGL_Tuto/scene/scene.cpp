@@ -67,8 +67,9 @@ namespace scene
 			world::voxel::computeFaceMesh(vec3(0, 0, 0), (world::voxel::FaceDir)i, dataBuffer, 6 * 8 * i * sizeof(float), 1, vec3(0, 0, 0));
 		}
 
-		mesh::init();
-		handle cubeMesh = mesh::loadMesh(dataBuffer, 6 * 8 * 6 * sizeof(float));
+		mesh::library::init();
+		mesh::render::init();
+		handle cubeMesh = mesh::library::loadMesh(dataBuffer, 6 * 8 * 6 * sizeof(float));
 
 		world::manager::init();
 		int testSize = CHUNK_SIZE;

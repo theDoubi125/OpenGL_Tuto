@@ -13,45 +13,189 @@ using vec3 = glm::vec3;
 
 namespace mesh
 {
-	Table meshTable;
-	Column<unsigned int> vbos;
-	Column<size_t> sizes;
-	BitArray allocation;
-
-	void init()
+	namespace library
 	{
-		meshTable.init(100, vbos + sizes);
-		allocation.init(100);
+		Table meshTable;
+		Column<unsigned int> vbos;
+		Column<size_t> sizes;
+		BitArray allocation;
+
+		void init()
+		{
+			meshTable.init(100, vbos + sizes);
+			allocation.init(100);
+		}
+
+		handle loadMesh(char* data, size_t size)
+		{
+			unsigned int VBO;
+			glGenBuffers(1, &VBO);
+
+			glBindBuffer(GL_ARRAY_BUFFER, VBO);
+			glBufferData(GL_ARRAY_BUFFER, size, data, GL_STATIC_DRAW);
+			glBindBuffer(GL_ARRAY_BUFFER, VBO);
+
+			handle result = { allocation.allocate() };
+			TableElement element = meshTable.element(result.id);
+			element << VBO << size / 8 / sizeof(float);
+			return result;
+		}
+
+		void replaceMesh(char* data, size_t size, handle meshId)
+		{
+			unsigned int VBO = vbos[meshId];
+
+			glBindBuffer(GL_ARRAY_BUFFER, VBO);
+			glBufferData(GL_ARRAY_BUFFER, size, data, GL_STATIC_DRAW);
+			glBindBuffer(GL_ARRAY_BUFFER, VBO);
+			sizes[meshId] = size / 8 / sizeof(float);
+		}
+
+		MeshData getMesh(handle meshId)
+		{
+			return { vbos[meshId], sizes[meshId] };
+		}
 	}
 
-	handle loadMesh(char* data, size_t size)
+	namespace render
 	{
-		unsigned int VBO;
-		glGenBuffers(1, &VBO);
+		namespace main
+		{
+			Table table;
+			BitArray allocation;
+			Column<handle> transformIds;
+			Column<handle> meshIds;
+			Column<GLuint> shaderIds;
+			Column<GLuint> vaos;
+		}
 
-		glBindBuffer(GL_ARRAY_BUFFER, VBO);
-		glBufferData(GL_ARRAY_BUFFER, size, data, GL_STATIC_DRAW);
-		glBindBuffer(GL_ARRAY_BUFFER, VBO);
+		namespace count
+		{
+			// Counts the number of meshes to render for each shader. Used to build the renderDataTable
+			Table table;
+			BitArray allocation;
+			Column<GLuint> shaderIds;
+			Column<unsigned int> counts;
+			// cursors is a column only used during the renderDataTable building process (in the render function)
+			Column<unsigned int> cursors;
+		}
+		
+		namespace render_data
+		{
+			// A table rebuilt each frame that contains tightly packed render data for each shader in the same order as in countTable
+			Table table;
+			Column<handle> transformIds;
+			Column<handle> meshIds;
+			Column<GLuint> vaos;
+		}
 
-		handle result = { allocation.allocate() };
-		TableElement element = meshTable.element(result.id);
-		element << VBO << size / 8 / sizeof(float);
-		return result;
-	}
+		void init()
+		{
+			main::table.init(500, main::transformIds + main::meshIds + main::shaderIds + main::vaos);
+			main::allocation.init(500);
 
-	void replaceMesh(char* data, size_t size, handle meshId)
-	{
-		unsigned int VBO = vbos[meshId];
+			count::table.init(100, count::shaderIds + count::counts + count::cursors);
+			count::allocation.init(100);
 
-		glBindBuffer(GL_ARRAY_BUFFER, VBO);
-		glBufferData(GL_ARRAY_BUFFER, size, data, GL_STATIC_DRAW);
-		glBindBuffer(GL_ARRAY_BUFFER, VBO);
-		sizes[meshId] = size / 8 / sizeof(float);
-	}
+			render_data::table.init(500, render_data::transformIds + render_data::meshIds + render_data::vaos);
+		}
 
-	MeshData getMesh(handle meshId)
-	{
-		return { vbos[meshId], sizes[meshId] };
+		void addToCount(GLuint shaderId)
+		{
+			for (auto it = count::allocation.begin(); it.isValid(); it++)
+			{
+				if (count::shaderIds[*it] == shaderId)
+				{
+					count::counts[*it]++;
+					return;
+				}
+			}
+			TableElement element = count::table.element({ count::allocation.allocate() });
+			element << shaderId << (unsigned int)0;
+		}
+
+		handle add(handle transformId, handle meshId, GLuint shaderId)
+		{
+			handle result = { main::allocation.allocate() };
+			TableElement element = main::table.element(result.id);
+
+			unsigned int VAO;
+			glGenVertexArrays(1, &VAO);
+			glBindVertexArray(VAO);
+			MeshData meshData = library::getMesh(meshId);
+			
+
+			glBindBuffer(GL_ARRAY_BUFFER, meshData.vbo);
+
+			// position attribute
+			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+			glEnableVertexAttribArray(0);
+			glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+			glEnableVertexAttribArray(1);
+			glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+			glEnableVertexAttribArray(2);
+
+			glBindBuffer(GL_ARRAY_BUFFER, 0);
+			glBindVertexArray(0);
+
+			element << transformId << meshId << shaderId << VAO;
+
+			addToCount(shaderId);
+
+			return result;
+		}
+
+		void render()
+		{
+			// reset the cursors column in the count table
+			unsigned int cursor = 0;
+			for(auto it = count::allocation.begin(); it.isValid(); it++)
+			{
+				count::cursors[*it] = cursor;
+				cursor += count::counts[*it];
+			}
+
+			// iterate through the main table to fill the render data
+			for (auto it = main::allocation.begin(); it.isValid(); it++)
+			{
+				GLuint shaderId = main::shaderIds[*it];
+				handle transformId = main::transformIds[*it];
+				
+				unsigned int cursor;
+				for (auto it2 = count::allocation.begin(); it2.isValid(); it++)
+				{
+					if (count::shaderIds[*it2] == shaderId)
+					{
+						cursor = count::cursors[*it2];
+						count::cursors[*it2]++;
+						break;
+					}
+				}
+
+				render_data::transformIds[cursor] = transformId;
+				render_data::meshIds[cursor] = main::meshIds[*it];
+				render_data::vaos[cursor] = main::vaos[*it];
+			}
+
+			// do the actual render shader by shader
+			int renderCursor = 0;
+			for (auto it = count::allocation.begin(); it.isValid(); it++)
+			{
+				GLuint shaderId = count::shaderIds[*it];
+				for (int i = 0; i < count::counts[*it]; i++)
+				{
+					handle transformId = render_data::transformIds[renderCursor];
+					glm::mat4 translation = glm::translate(transform::positions[transformId]);
+					glm::mat4 scale = glm::scale(transform::scales[transformId]);
+					glm::mat4 rotation = glm::toMat4(transform::rotations[transformId]);
+					glm::mat4 model = translation * rotation * scale;
+					glUniformMatrix4fv(glGetUniformLocation(shaderId, "model"), 1, false, (float*)&model);
+					glBindVertexArray(render_data::vaos[i]);
+					glDrawArrays(GL_TRIANGLES, 0, mesh::library::getMesh(render_data::meshIds[i]).vertexCount);
+				}
+				glBindVertexArray(0);
+			}
+		}
 	}
 }
 
@@ -60,7 +204,7 @@ handle MeshRenderer::add(handle transformId, handle meshId)
 	unsigned int VAO;
 	glGenVertexArrays(1, &VAO);
 	glBindVertexArray(VAO);
-	MeshData meshData = mesh::getMesh(meshId);
+	MeshData meshData = mesh::library::getMesh(meshId);
 
 	glBindBuffer(GL_ARRAY_BUFFER, meshData.vbo);
 
