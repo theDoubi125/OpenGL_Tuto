@@ -19,13 +19,15 @@ namespace render
 
 		void init()
 		{
-			table.init(100, chunkIds + meshIds);
+			table.init(100, chunkIds + meshIds + transformIds);
+			allocation.init(100);
 		}
 
 		void computeChunkMesh(const world::voxel::Chunk& chunk, char* outData, int& outDataSize)
 		{
 			int count = 0;
 			int dataCursor = 0;
+			outDataSize = 0;
 			for (int i = 0; i < CHUNK_SIZE; i++)
 			{
 				for (int j = 0; j < CHUNK_SIZE; j++)
@@ -52,18 +54,20 @@ namespace render
 
 		void update()
 		{
-			char meshDataBuffer[500000];
-			int meshDataSize = 500000;
+			char meshDataBuffer[1000000];
 			for (int i = 0; i < world::manager::addedChunksCount; i++)
 			{
+				int meshDataSize = 1000000;
 				handle id = { allocation.allocate() };
 				TableElement element = table.element(id.id);
 				handle chunkId = world::manager::addedChunks[i];
 				computeChunkMesh(world::manager::getChunk(chunkId), meshDataBuffer, meshDataSize);
 				handle meshHandle = mesh::library::loadMesh(meshDataBuffer, meshDataSize);
 
-				handle transformId = transform::add((vec3)(world::manager::getChunkOffset(chunkId) * CHUNK_SIZE), quat(), vec3(1, 1, 1));
+				vec3 chunkOffset = (vec3)(world::manager::getChunkOffset(chunkId) * CHUNK_SIZE);
+				handle transformId = transform::add(chunkOffset, quat(), vec3(1, 1, 1));
 				//TODO : refactor the mesh render system to allow it to be used from here
+				mesh::render::add(transformId, meshHandle, 3);
 				
 				element << world::manager::addedChunks[i] << meshHandle << transformId;
 

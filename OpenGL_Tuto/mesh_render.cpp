@@ -111,7 +111,7 @@ namespace mesh
 				}
 			}
 			TableElement element = count::table.element({ count::allocation.allocate() });
-			element << shaderId << (unsigned int)0;
+			element << shaderId << (unsigned int)1;
 		}
 
 		handle add(handle transformId, handle meshId, GLuint shaderId)
@@ -162,7 +162,7 @@ namespace mesh
 				handle transformId = main::transformIds[*it];
 				
 				unsigned int cursor;
-				for (auto it2 = count::allocation.begin(); it2.isValid(); it++)
+				for (auto it2 = count::allocation.begin(); it2.isValid(); it2++)
 				{
 					if (count::shaderIds[*it2] == shaderId)
 					{
@@ -191,7 +191,9 @@ namespace mesh
 					glm::mat4 model = translation * rotation * scale;
 					glUniformMatrix4fv(glGetUniformLocation(shaderId, "model"), 1, false, (float*)&model);
 					glBindVertexArray(render_data::vaos[i]);
-					glDrawArrays(GL_TRIANGLES, 0, mesh::library::getMesh(render_data::meshIds[i]).vertexCount);
+					unsigned int vertexCount = mesh::library::getMesh(render_data::meshIds[i]).vertexCount;
+					glDrawArrays(GL_TRIANGLES, 0, vertexCount);
+					renderCursor++;
 				}
 				glBindVertexArray(0);
 			}

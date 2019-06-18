@@ -17,6 +17,8 @@
 #include "gameplay/movement/first_person.h"
 #include "gameplay/input.h"
 
+#include "render/voxel_render.h"
+
 
 namespace scene
 {
@@ -73,9 +75,9 @@ namespace scene
 
 		world::manager::init();
 		int testSize = CHUNK_SIZE;
-		for (int i = 0; i < testSize * 2; i++)
+		for (int i = 0; i < testSize; i++)
 		{
-			for (int j = 0; j < testSize * 2; j++)
+			for (int j = 0; j < testSize; j++)
 			{
 				world::manager::setCell(ivec3(i, 0, j), 1);
 			}
@@ -96,13 +98,14 @@ namespace scene
 		rotation::animation::init();
 
 		handle transformId = transform::add(vec3(2, 0, 0), quat(), vec3(1, 1, 1));
-		boxRenderer.add(transformId, cubeMesh);
+		mesh::render::add(transformId, cubeMesh, render::gBufferShader);
 
 		transformId = transform::add(vec3(5, 1, 3), quat(), vec3(1, 1, 1));
-		boxRenderer.add(transformId, cubeMesh);
+		mesh::render::add(transformId, cubeMesh, render::gBufferShader);
 
 		characterTransformId = transform::add(vec3(5, 1, 5), quat(), vec3(1, 1, 1));
-		boxRenderer.add(characterTransformId, cubeMesh);
+		mesh::render::add(characterTransformId, cubeMesh, render::gBufferShader);
+		//boxRenderer.add(characterTransformId, cubeMesh);
 		cubeMovementId = movement::cube::add(characterTransformId, 0.5f);
 		//rotation::animation::add(characterTransformId, vec3(0.5, -0.5, 0), vec3(0.5, -0.5, 0), 3, quat(), quat(vec3(0, 0, -glm::pi<float>() / 2)));
 
@@ -132,6 +135,8 @@ namespace scene
 		movement::third_person::init();
 		movement::first_person::init();
 		cameraModeHandle = movement::third_person::add(cameraTransform, characterTransformId, 0.001f, 10);
+
+		render::voxel::init();
 	}
 
 	void update(float deltaTime)
@@ -144,6 +149,8 @@ namespace scene
 		movement::cube::update(deltaTime);
 		movement::third_person::update(deltaTime);
 		movement::first_person::update(deltaTime);
+
+		render::voxel::update();
 
 		if (input::getState(spaceInputHandle) == input::KeyState::PRESSED)
 		{
@@ -188,7 +195,7 @@ namespace scene
 		glUniform1i(specularAttr, 1);
 		glUniformMatrix4fv(modelAttr, 1, false, (float*)&model);
 
-		boxRenderer.render(render::currentShader);
+		mesh::render::render();
 
 		shadowRenderer.render(shadowShader->ID, getLightMatrix(normalize(sunDirection), sunPovDistance));
 		glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);

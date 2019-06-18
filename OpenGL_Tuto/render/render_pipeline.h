@@ -6,6 +6,8 @@ namespace render
 	extern unsigned int currentShader;
 	extern unsigned int finalTexture;
 
+	extern unsigned int gBufferShader;
+
 	void init(unsigned int SCR_WIDTH, unsigned int SCR_HEIGHT);
 	void clear_frame();
 	void start_render();

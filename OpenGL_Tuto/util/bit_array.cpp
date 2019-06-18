@@ -1,10 +1,11 @@
 #include "bit_array.h"
 
 #define FLAG_PER_INT (sizeof(unsigned int) * 8)
+#define FLAG_PER_CHAR (sizeof(char) * 8)
 
 void BitArray::init(int capacity)
 {
-	arraySize = capacity / FLAG_PER_INT + (capacity % FLAG_PER_INT) > 0 ? 1 : 0;
+	arraySize = capacity / FLAG_PER_INT + ((capacity % FLAG_PER_INT) > 0 ? 1 : 0);
 	data = new unsigned int[arraySize];
 	for (int i = 0; i < arraySize; i++)
 	{
@@ -16,13 +17,13 @@ int BitArray::allocate()
 {
 	for (int i = 0; i < arraySize; i++)
 	{
-		if (data[i] != -1)
+		if (~data[i] > 0)
 		{
 			unsigned int lastData = data[i];
 			data[i] |= (lastData + 1);
 			int j;
 			unsigned int insertPosition = data[i] - lastData;
-			for (j = 0; j < 8 && insertPosition > 0; j++)
+			for (j = 0; j < FLAG_PER_INT && insertPosition > 0; j++)
 			{
 				insertPosition = insertPosition >> 1;
 			}
