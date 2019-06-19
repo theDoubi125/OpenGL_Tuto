@@ -29,7 +29,7 @@ int BitArray::allocate()
 			}
 			if (j - 1 < beginIndex || j - 1 > endIndex)
 				updateBounds();
-			return j - 1;
+			return j - 1 + i * FLAG_PER_INT;
 		}
 	}
 	return -1;

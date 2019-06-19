@@ -74,16 +74,20 @@ namespace scene
 		handle cubeMesh = mesh::library::loadMesh(dataBuffer, 6 * 8 * 6 * sizeof(float));
 
 		world::manager::init();
-		int testSize = CHUNK_SIZE;
+		int testSize = 100;
 		for (int i = 0; i < testSize; i++)
 		{
 			for (int j = 0; j < testSize; j++)
 			{
 				world::manager::setCell(ivec3(i, 0, j), 1);
 			}
-			for (int j = i + 1; j < testSize * 2; j++)
+			for (int j = 0; j < testSize; j++)
 			{
-				world::manager::setCell(ivec3(i, 1, j), 1);
+				float height = 5.0f + cos(j / 10.0f) * cos(i/10.0f) * cos(i / 20.0f) * cos(j / 15.0f) * 5.0f;
+				for (int k = 0; (float)k < height; k++)
+				{
+					world::manager::setCell(ivec3(i, k, j), 1);
+				}
 			}
 		}
 		int chunkMeshSize = 0;
@@ -103,7 +107,7 @@ namespace scene
 		transformId = transform::add(vec3(5, 1, 3), quat(), vec3(1, 1, 1));
 		mesh::render::add(transformId, cubeMesh, render::gBufferShader);
 
-		characterTransformId = transform::add(vec3(5, 1, 5), quat(), vec3(1, 1, 1));
+		characterTransformId = transform::add(vec3(5, 20, 5), quat(), vec3(1, 1, 1));
 		mesh::render::add(characterTransformId, cubeMesh, render::gBufferShader);
 		//boxRenderer.add(characterTransformId, cubeMesh);
 		cubeMovementId = movement::cube::add(characterTransformId, 0.5f);

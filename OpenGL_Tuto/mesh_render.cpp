@@ -94,8 +94,8 @@ namespace mesh
 			main::table.init(500, main::transformIds + main::meshIds + main::shaderIds + main::vaos);
 			main::allocation.init(500);
 
-			count::table.init(100, count::shaderIds + count::counts + count::cursors);
-			count::allocation.init(100);
+			count::table.init(200, count::shaderIds + count::counts + count::cursors);
+			count::allocation.init(200);
 
 			render_data::table.init(500, render_data::transformIds + render_data::meshIds + render_data::vaos);
 		}

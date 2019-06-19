@@ -41,11 +41,11 @@ namespace render
 								if (neighbour.x < 0 || neighbour.y < 0 || neighbour.z < 0 || neighbour.x >= CHUNK_SIZE || neighbour.y >= CHUNK_SIZE || neighbour.z >= CHUNK_SIZE || chunk[neighbour] == 0)
 								{
 									count++;
-									world::voxel::computeFaceMesh(vec3((float)i, (float)j, (float)k), (world::voxel::FaceDir)l, outData, dataCursor + 6 * 8 * l * sizeof(float), 1, vec3(0, 0, 0));
+									world::voxel::computeFaceMesh(vec3((float)i, (float)j, (float)k), (world::voxel::FaceDir)l, outData, dataCursor, 1, vec3(0, 0, 0));
+									dataCursor += 6 * 8 * sizeof(float);
+									outDataSize += 6 * 8 * sizeof(float);
 								}
 							}
-							dataCursor += 6 * 8 * 6 * sizeof(float);
-							outDataSize += 6 * 8 * 6 * sizeof(float);
 						}
 					}
 				}

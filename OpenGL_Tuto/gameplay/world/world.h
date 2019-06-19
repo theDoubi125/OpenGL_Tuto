@@ -1,6 +1,6 @@
 #pragma once
 
-#define CHUNK_SIZE 16
+#define CHUNK_SIZE 32
 #define REGION_SIZE 16
 #include "types.h"
 
