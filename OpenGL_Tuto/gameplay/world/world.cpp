@@ -38,7 +38,19 @@ namespace world
 
 		char getCell(ivec3 cell)
 		{
-			ivec3 chunkOffset = cell / CHUNK_SIZE - ivec3(cell.x < 0 ? 1:0, cell.y < 0 ? 1:0, cell.z < 0 ? 1:0);
+			ivec3 chunkOffset = cell / CHUNK_SIZE - ivec3(cell.x < 0 ? 1 : 0, cell.y < 0 ? 1 : 0, cell.z < 0 ? 1 : 0);
+			for (auto it = allocation.begin(); it.isValid(); it++)
+			{
+				if (chunkOffset == offsets[*it])
+				{
+					return chunks[*it][cell - chunkOffset * CHUNK_SIZE];
+				}
+			}
+			return 0;
+		}
+
+		char getCell(ivec3 cell, ivec3 chunkOffset)
+		{
 			for (auto it = allocation.begin(); it.isValid(); it++)
 			{
 				if (chunkOffset == offsets[*it])

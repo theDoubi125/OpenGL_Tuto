@@ -23,22 +23,24 @@ namespace render
 			allocation.init(100);
 		}
 
-		void computeChunkMesh(const world::voxel::Chunk& chunk, char* outData, int& outDataSize)
+		void computeChunkMesh(handle chunkId, char* outData, int& outDataSize)
 		{
 			int count = 0;
 			int dataCursor = 0;
 			outDataSize = 0;
+			ivec3 chunkOffset = world::manager::getChunkOffset(chunkId);
 			for (int i = 0; i < CHUNK_SIZE; i++)
 			{
 				for (int j = 0; j < CHUNK_SIZE; j++)
 				{
 					for (int k = 0; k < CHUNK_SIZE; k++)
 					{
-						if (chunk[ivec3(i, j, k)] > 0)
+						if (world::manager::getCell(chunkOffset * CHUNK_SIZE + ivec3(i, j, k)) > 0)
 						{
 							for (int l = 0; l < 6; l++) {
 								ivec3 neighbour = ivec3(i, j, k) + inormalVecs[l];
-								if (neighbour.x < 0 || neighbour.y < 0 || neighbour.z < 0 || neighbour.x >= CHUNK_SIZE || neighbour.y >= CHUNK_SIZE || neighbour.z >= CHUNK_SIZE || chunk[neighbour] == 0)
+								char neighbourCell = world::manager::getCell(chunkOffset * CHUNK_SIZE + neighbour);
+								if (neighbourCell == 0)
 								{
 									count++;
 									world::voxel::computeFaceMesh(vec3((float)i, (float)j, (float)k), (world::voxel::FaceDir)l, outData, dataCursor, 1, vec3(0, 0, 0));
@@ -61,7 +63,7 @@ namespace render
 				handle id = { allocation.allocate() };
 				TableElement element = table.element(id.id);
 				handle chunkId = world::manager::addedChunks[i];
-				computeChunkMesh(world::manager::getChunk(chunkId), meshDataBuffer, meshDataSize);
+				computeChunkMesh(chunkId, meshDataBuffer, meshDataSize);
 				handle meshHandle = mesh::library::loadMesh(meshDataBuffer, meshDataSize);
 
 				vec3 chunkOffset = (vec3)(world::manager::getChunkOffset(chunkId) * CHUNK_SIZE);
