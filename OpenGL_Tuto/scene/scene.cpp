@@ -19,6 +19,8 @@
 
 #include "render/voxel_render.h"
 
+#include "util/profiler/profiler.h"
+
 
 namespace scene
 {
@@ -145,6 +147,7 @@ namespace scene
 
 	void update(float deltaTime)
 	{
+		//P_START("Update Scene");
 		input::update();
 		quat camRotation = camera::getCameraRot(cameraId);
 		movement::cube::cubeInput[cubeMovementId.id] = -(camRotation * vec3(0, 0, 1)) * input::movementInput.z + (camRotation * vec3(1, 0, 0)) * input::movementInput.x;

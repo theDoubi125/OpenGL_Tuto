@@ -159,6 +159,7 @@
     <ClCompile Include="transform.cpp" />
     <ClCompile Include="util\bit_array.cpp" />
     <ClCompile Include="util\debug\table_display.cpp" />
+    <ClCompile Include="util\profiler\profiler.cpp" />
     <ClCompile Include="util\table.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -197,6 +198,7 @@
     <ClInclude Include="types.h" />
     <ClInclude Include="util\bit_array.h" />
     <ClInclude Include="util\debug\table_display.h" />
+    <ClInclude Include="util\profiler\profiler.h" />
     <ClInclude Include="util\sort.h" />
     <ClInclude Include="util\table.h" />
     <ClInclude Include="util\table\join.h" />
@@ -221,6 +223,9 @@
     <None Include="shaders\shadows.vert" />
     <None Include="shaders\simple.frag" />
     <None Include="shaders\simple.vert" />
+  </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="table.natvis" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

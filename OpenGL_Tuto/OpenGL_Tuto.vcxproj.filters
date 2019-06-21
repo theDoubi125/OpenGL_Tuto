@@ -57,6 +57,9 @@
     <Filter Include="Source Files\render\world">
       <UniqueIdentifier>{548f7d62-9322-4200-9457-97ca59c68b6b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\util\profiler">
+      <UniqueIdentifier>{99412f8c-5f23-4bcc-8f5c-b85537cd1667}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -154,6 +157,9 @@
     </ClCompile>
     <ClCompile Include="render\voxel_render.cpp">
       <Filter>Source Files\render\world</Filter>
+    </ClCompile>
+    <ClCompile Include="util\profiler\profiler.cpp">
+      <Filter>Source Files\util\profiler</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -271,6 +277,9 @@
     <ClInclude Include="render\voxel_render.h">
       <Filter>Source Files\render\world</Filter>
     </ClInclude>
+    <ClInclude Include="util\profiler\profiler.h">
+      <Filter>Source Files\util\profiler</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\simple.vert">
@@ -330,5 +339,8 @@
     <None Include="shaders\render_silhouette.vert">
       <Filter>Shaders</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="table.natvis" />
   </ItemGroup>
 </Project>

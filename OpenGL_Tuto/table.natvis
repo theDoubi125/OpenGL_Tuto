@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?> 
+<AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
+  <Type Name="Column&lt;*&gt;">
+    <DisplayString>{{ allocatedSize={table->allocatedSize} }}</DisplayString>
+    <Expand>
+      <ArrayItems>
+        <Size>
+          table->allocatedSize
+        </Size>
+        <ValuePointer>
+            ($T1*)table->columns[columnIndex]
+        </ValuePointer>
+      </ArrayItems>
+    </Expand>
+  </Type>
+</AutoVisualizer>
