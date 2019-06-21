@@ -53,8 +53,11 @@ namespace scene
 	handle cameraModeHandle;
 	handle characterTransformId;
 
+
 	void init(int screenWidth, int screenHeight)
 	{
+		P_INIT;
+		P_START("init scene");
 		SCR_WIDTH = screenWidth;
 		SCR_HEIGHT = screenHeight;
 		lightingShader = new Shader("./shaders/color.vert", "./shaders/color.frag");
@@ -67,7 +70,8 @@ namespace scene
 		specularMap = loadTexture("./textures/container_specular.png");
 
 		char* dataBuffer = new char[5000000];
-		for (int i = 0; i < 6; i++) {
+		for (int i = 0; i < 6; i++)
+		{
 			world::voxel::computeFaceMesh(vec3(0, 0, 0), (world::voxel::FaceDir)i, dataBuffer, 6 * 8 * i * sizeof(float), 1, vec3(0, 0, 0));
 		}
 
@@ -79,7 +83,7 @@ namespace scene
 		int testSize = 100;
 		for (int i = 0; i < testSize; i++)
 		{
-			for (int j = 0; j < testSize; j++)
+			for (int j = 0; j < testSize * 2; j++)
 			{
 				world::manager::setCell(ivec3(i, 0, j), 1);
 			}
@@ -109,22 +113,19 @@ namespace scene
 		transformId = transform::add(vec3(5, 1, 3), quat(), vec3(1, 1, 1));
 		mesh::render::add(transformId, cubeMesh, render::gBufferShader);
 
-		characterTransformId = transform::add(vec3(5, 20, 5), quat(), vec3(1, 1, 1));
+		characterTransformId = transform::add(vec3(5, 10, 5), quat(), vec3(1, 1, 1));
 		mesh::render::add(characterTransformId, cubeMesh, render::gBufferShader);
-		//boxRenderer.add(characterTransformId, cubeMesh);
 		cubeMovementId = movement::cube::add(characterTransformId, 0.5f);
 		//rotation::animation::add(characterTransformId, vec3(0.5, -0.5, 0), vec3(0.5, -0.5, 0), 3, quat(), quat(vec3(0, 0, -glm::pi<float>() / 2)));
 
 		handle lampId = transform::add(vec3(0, 2, 0), quat(), vec3(0.1f, 0.1f, 0.1f));
 		lampRenderer.add(lampId, cubeMesh);
-		//pointLights.add(lampId, 1, vec3(1), vec3(1));
 
 		handle sunTransformId = transform::add(vec3(0, 1, 0), quat(vec3(1, 1, 0)), vec3(0.1f, 0.1f, 0.1f));
 		lampRenderer.add(sunTransformId, cubeMesh);
 
 		handle testTransformId = transform::add(vec3(0, 0, 0), quat(), vec3(0.1f, 0.1f, 0.1f));
 		lampRenderer.add(testTransformId, cubeMesh);
-		//pointLights.add(sunTransformId, 1, vec3(1), vec3(1));
 
 
 		directionalLights.add(sunTransformId, 1, vec3(1), vec3(1));
@@ -143,11 +144,13 @@ namespace scene
 		cameraModeHandle = movement::third_person::add(cameraTransform, characterTransformId, 0.001f, 10);
 
 		render::voxel::init();
+		render::voxel::update();
+		P_END;
 	}
 
 	void update(float deltaTime)
 	{
-		//P_START("Update Scene");
+		P_START("update scene");
 		input::update();
 		quat camRotation = camera::getCameraRot(cameraId);
 		movement::cube::cubeInput[cubeMovementId.id] = -(camRotation * vec3(0, 0, 1)) * input::movementInput.z + (camRotation * vec3(1, 0, 0)) * input::movementInput.x;
@@ -175,10 +178,12 @@ namespace scene
 			}
 		}
 		input::reset();
+		P_END;
 	}
 
 	void render()
 	{
+		P_START("render scene");
 		float zoom = camera::getZoom(scene::cameraId);
 		vec3 cameraPosition = camera::getCameraPos(scene::cameraId);
 		glm::mat4 projection = glm::perspective(glm::radians(zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
@@ -249,6 +254,12 @@ namespace scene
 		lampShader->setMat4("view", view);
 		lampShader->setMat4("model", model);
 		lampShader->setVec3("viewPos", cameraPosition);
+		P_END;
+	}
 
+	void showDebug()
+	{
+		profiler::display();
+		P_FRAME_END;
 	}
 };

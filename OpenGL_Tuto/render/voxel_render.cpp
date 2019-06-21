@@ -68,7 +68,6 @@ namespace render
 
 				vec3 chunkOffset = (vec3)(world::manager::getChunkOffset(chunkId) * CHUNK_SIZE);
 				handle transformId = transform::add(chunkOffset, quat(), vec3(1, 1, 1));
-				//TODO : refactor the mesh render system to allow it to be used from here
 				mesh::render::add(transformId, meshHandle, 3);
 				
 				element << world::manager::addedChunks[i] << meshHandle << transformId;

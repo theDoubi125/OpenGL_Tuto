@@ -183,7 +183,7 @@ int main()
 			ImGui::EndCombo();
 		}
 		ImGui::Image((ImTextureID)displayTexture, ImVec2(400, 300));
-		transform::showDebug();
+		scene::showDebug();
 		if (showDebug)
 		{
 		/*	if(ImGui::Begin("Debug Window", &showDebug));

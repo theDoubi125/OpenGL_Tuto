@@ -201,7 +201,7 @@ TableElement& operator<<(TableElement& tableElement, const T& data)
 		std::cerr << "Error on table push : element size mismatch" << std::endl;
 	}
 	T* column = table.column<T>(tableElement.columnCursor);
-	column[tableElement.elementIndex] = data;
+	memcpy(&column[tableElement.elementIndex], &data, sizeof(data));
 	tableElement.columnCursor++;
 	return tableElement;
 }

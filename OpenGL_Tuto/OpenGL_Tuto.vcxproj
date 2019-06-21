@@ -75,8 +75,8 @@
     <SourcePath>$(SourcePath)</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>G:\Documents\Julien\Projets\C++\OpenGL_Tuto\libs;G:\Documents\Julien\Projets\C++\OpenGL_Tuto\libs\glfw-3.2.1.bin.WIN64\include;$(IncludePath)</IncludePath>
-    <LibraryPath>G:\Documents\Julien\Projets\C++\OpenGL_Tuto\libs\glfw-3.2.1.bin.WIN64\lib-vc2015;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)libs;$(SolutionDir)libs\glfw-3.2.1.bin.WIN64\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)libs\glfw-3.2.1.bin.WIN64\lib-vc2015;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -120,6 +120,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(ProjectDir)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>

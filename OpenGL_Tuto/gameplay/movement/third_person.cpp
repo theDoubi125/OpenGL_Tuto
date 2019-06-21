@@ -38,9 +38,7 @@ namespace movement
 			for (auto it = allocation.begin(); it.isValid(); it++)
 			{
 				quat& rotation = transform::rotations[transforms[*it]];
-				std::cout << input::mousePosOffset.y * sensitivities[*it] << " " << input::mousePosOffset.x * sensitivities[*it] << std::endl;
 				euler[*it] -= vec3(input::mousePosOffset.y * sensitivities[*it], input::mousePosOffset.x * sensitivities[*it], 0.0f);
-				std::cout << euler[*it].x << std::endl;
 				if (euler[*it].x > glm::pi<float>() / 2 - 0.001f)
 					euler[*it].x = glm::pi<float>() / 2 - 0.001f;
 				if (euler[*it].x < -glm::pi<float>() / 2 + 0.001f)

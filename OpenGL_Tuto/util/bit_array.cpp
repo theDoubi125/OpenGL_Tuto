@@ -13,6 +13,14 @@ void BitArray::init(int capacity)
 	}
 }
 
+void BitArray::clear()
+{
+	for (int i = 0; i < arraySize; i++)
+	{
+		data[i] = 0;
+	}
+}
+
 int BitArray::allocate()
 {
 	for (int i = 0; i < arraySize; i++)
