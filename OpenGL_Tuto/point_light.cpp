@@ -1,3 +1,4 @@
+#include <glad/glad.h>
 #include "point_light.h"
 
 handle PointLightManager::add(handle transformId, float intensity, vec3 diffuse, vec3 specular)

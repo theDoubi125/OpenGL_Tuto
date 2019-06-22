@@ -1,10 +1,14 @@
 #pragma once
 
+#include "transform.h"
+
 class BitIterator
 {
 public:
 	int index = 0;
 	const struct BitArray& bitArray;
+
+	BitIterator(int element, const BitArray& bitArray) : index(element), bitArray(bitArray) {}
 
 	BitIterator& operator++(int i);
 	BitIterator& operator++();
@@ -30,6 +34,7 @@ struct BitArray
 	void updateBounds();
 
 	BitIterator begin();
+	BitIterator iterator(handle element);
 	BitIterator end();
 
 	int beginIndex = 0, endIndex = -1;

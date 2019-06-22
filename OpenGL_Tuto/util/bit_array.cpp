@@ -80,6 +80,11 @@ BitIterator BitArray::begin()
 	return { beginIndex, *this };
 }
 
+BitIterator BitArray::iterator(handle element)
+{
+	return { element.id, *this };
+}
+
 BitIterator BitArray::end()
 {
 	return { endIndex + 1, *this };

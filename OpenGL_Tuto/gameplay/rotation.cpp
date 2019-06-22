@@ -3,6 +3,7 @@
 #include <iostream>
 
 #include "util/debug/table_display.h"
+#include "util/profiler/profiler.h"
 
 namespace rotation
 {
@@ -25,6 +26,7 @@ namespace rotation
 
 		void update()
 		{
+			P_START("update rotation");
 			for(auto it=bitArray.begin(); it.isValid(); it++)
 			{
 				int transformIndex = transform::indexOf(transformHandles[*it]);
@@ -37,6 +39,7 @@ namespace rotation
 				bitArray.free(element.id);
 			}
 			toRemove.clear();
+			P_END;
 		}
 
 		handle add(handle transformHandle, vec3 offset, vec3 anchorPoint)

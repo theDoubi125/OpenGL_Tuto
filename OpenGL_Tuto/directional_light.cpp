@@ -1,3 +1,4 @@
+#include <glad/glad.h>
 #include "directional_light.h"
 
 handle DirectionalLightManager::add(handle transformId, float intensity, vec3 diffuse, vec3 specular)

@@ -22,8 +22,10 @@ namespace mesh
 	{
 		void init();
 		handle loadMesh(char* data, size_t size);
+		handle loadMesh(std::string name, char* data, size_t size);
 		void replaceMesh(char* data, size_t size, handle meshId);
 		MeshData getMesh(handle meshId);
+		handle findMesh(std::string name);
 	}
 
 	namespace render

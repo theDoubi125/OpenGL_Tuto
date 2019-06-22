@@ -60,6 +60,9 @@
     <Filter Include="Source Files\util\profiler">
       <UniqueIdentifier>{99412f8c-5f23-4bcc-8f5c-b85537cd1667}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\gameplay\modes">
+      <UniqueIdentifier>{9e0db29c-6a76-4f9b-a313-36f036826703}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -140,15 +143,6 @@
     <ClCompile Include="gameplay\movement\cube_movement.cpp">
       <Filter>Source Files\gameplay\movement</Filter>
     </ClCompile>
-    <ClCompile Include="gameplay\modes\gamemode_editor.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="gameplay\modes\gamemode_ingame.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="gameplay\modes\gamemode_manager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="gameplay\movement\third_person.cpp">
       <Filter>Source Files\gameplay\movement</Filter>
     </ClCompile>
@@ -160,6 +154,15 @@
     </ClCompile>
     <ClCompile Include="util\profiler\profiler.cpp">
       <Filter>Source Files\util\profiler</Filter>
+    </ClCompile>
+    <ClCompile Include="gameplay\modes\gamemode_manager.cpp">
+      <Filter>Source Files\gameplay\modes</Filter>
+    </ClCompile>
+    <ClCompile Include="gameplay\modes\gamemode_editor.cpp">
+      <Filter>Source Files\gameplay\modes</Filter>
+    </ClCompile>
+    <ClCompile Include="gameplay\modes\gamemode_ingame.cpp">
+      <Filter>Source Files\gameplay\modes</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

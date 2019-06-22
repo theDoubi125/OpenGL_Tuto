@@ -10,6 +10,7 @@ using vec3 = glm::vec3;
 #include <glm/gtx/transform.hpp>
 #include <glm/gtx/quaternion.hpp>
 #include "util/bit_array.h"
+#include <map>
 
 namespace mesh
 {
@@ -20,12 +21,21 @@ namespace mesh
 		Column<size_t> sizes;
 		BitArray allocation;
 
+		std::map<std::string, handle> registeredMeshes;
+
 		void init()
 		{
 			meshTable.init(100, vbos + sizes);
 			allocation.init(100);
 		}
 
+		handle loadMesh(std::string name, char* data, size_t size)
+		{
+			handle result = loadMesh(data, size);
+			registeredMeshes[name] = result;
+			return result;
+		}
+		
 		handle loadMesh(char* data, size_t size)
 		{
 			unsigned int VBO;
@@ -54,6 +64,15 @@ namespace mesh
 		MeshData getMesh(handle meshId)
 		{
 			return { vbos[meshId], sizes[meshId] };
+		}
+
+		handle findMesh(std::string name)
+		{
+			if (registeredMeshes.count(name) > 0)
+			{
+				return registeredMeshes[name];
+			}
+			return { -1 };
 		}
 	}
 

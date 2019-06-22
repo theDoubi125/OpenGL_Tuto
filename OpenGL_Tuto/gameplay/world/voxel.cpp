@@ -108,7 +108,7 @@ namespace world
 				{
 					int voxelValue = chunk[vec3(x, layer, y)];
 					sprintf_s(nameBuffer, "voxel %d %d", x, y);
-					if (ImGui::SliderInt(nameBuffer, &voxelValue, 0, 1));
+					if (ImGui::SliderInt(nameBuffer, &voxelValue, 0, 1))
 					{
 						chunk[vec3(x, layer, y)] = voxelValue;
 						mustUpdateDisplay = true;

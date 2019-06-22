@@ -9,6 +9,8 @@ namespace camera
 	Column<handle> transformIds;
 	Column<float> zooms;
 
+	handle mainCamera = { -1 };
+
 	void init()
 	{
 		table.init(10, transformIds + zooms);

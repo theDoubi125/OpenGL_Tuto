@@ -48,7 +48,7 @@ const unsigned int SCR_HEIGHT = 1080;
 float lastX = SCR_WIDTH / 2.0f;
 float lastY = SCR_HEIGHT / 2.0f;
 bool firstMouse = true;
-bool showDebug = false;
+bool showDebug = true;
 bool pauseGame = false;
 
 // timing

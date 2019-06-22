@@ -1,7 +1,6 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 
-#include <glad/glad.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include "util/table.h"
@@ -25,6 +24,7 @@ const float ZOOM = 45.0f;
 
 namespace camera
 {
+	extern handle mainCamera;
 	void init();
 	handle add(handle transformId, float zoom);
 	void remove(handle cameraHandle);

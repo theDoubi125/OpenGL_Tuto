@@ -1,3 +1,4 @@
+#include <glad/glad.h>
 #include "../mesh_render.h"
 #include "../render/render_pipeline.h"
 #include "../point_light.h"
@@ -20,6 +21,8 @@
 #include "render/voxel_render.h"
 
 #include "util/profiler/profiler.h"
+
+#include "gameplay/modes/gamemode_manager.h"
 
 
 namespace scene
@@ -44,14 +47,8 @@ namespace scene
 
 	vec3 sunDirection(1, 0.7f, 0.45f);
 	float sunPovDistance = 20;
-	handle spaceInputHandle;
-
-	handle cameraTransform;
-	handle cameraId;
 
 	bool debugMode = false;
-	handle cameraModeHandle;
-	handle characterTransformId;
 
 
 	void init(int screenWidth, int screenHeight)
@@ -77,7 +74,7 @@ namespace scene
 
 		mesh::library::init();
 		mesh::render::init();
-		handle cubeMesh = mesh::library::loadMesh(dataBuffer, 6 * 8 * 6 * sizeof(float));
+		handle cubeMesh = mesh::library::loadMesh("cube", dataBuffer, 6 * 8 * 6 * sizeof(float));
 
 		world::manager::init();
 		int testSize = 100;
@@ -112,10 +109,6 @@ namespace scene
 
 		transformId = transform::add(vec3(5, 1, 3), quat(), vec3(1, 1, 1));
 		mesh::render::add(transformId, cubeMesh, render::gBufferShader);
-
-		characterTransformId = transform::add(vec3(5, 10, 5), quat(), vec3(1, 1, 1));
-		mesh::render::add(characterTransformId, cubeMesh, render::gBufferShader);
-		cubeMovementId = movement::cube::add(characterTransformId, 0.5f);
 		//rotation::animation::add(characterTransformId, vec3(0.5, -0.5, 0), vec3(0.5, -0.5, 0), 3, quat(), quat(vec3(0, 0, -glm::pi<float>() / 2)));
 
 		handle lampId = transform::add(vec3(0, 2, 0), quat(), vec3(0.1f, 0.1f, 0.1f));
@@ -133,18 +126,12 @@ namespace scene
 		shadowRenderer.init();
 
 		input::init();
-		spaceInputHandle = input::registerKey(GLFW_KEY_SPACE);
 
-		camera::init();
-		cameraTransform = transform::add(vec3(-10, 5, 0), quat(), vec3(1, 1, 1));
-		cameraId = camera::add(cameraTransform, 45.0f);
-
-		movement::third_person::init();
-		movement::first_person::init();
-		cameraModeHandle = movement::third_person::add(cameraTransform, characterTransformId, 0.001f, 10);
-
+		
 		render::voxel::init();
 		render::voxel::update();
+
+		gamemode::manager::init(vec3(5, 40, 5));
 		P_END;
 	}
 
@@ -152,8 +139,6 @@ namespace scene
 	{
 		P_START("update scene");
 		input::update();
-		quat camRotation = camera::getCameraRot(cameraId);
-		movement::cube::cubeInput[cubeMovementId.id] = -(camRotation * vec3(0, 0, 1)) * input::movementInput.z + (camRotation * vec3(1, 0, 0)) * input::movementInput.x;
 		rotation::animation::update(deltaTime);
 		rotation::anchor::update();
 		movement::cube::update(deltaTime);
@@ -162,21 +147,7 @@ namespace scene
 
 		render::voxel::update();
 
-		if (input::getState(spaceInputHandle) == input::KeyState::PRESSED)
-		{
-			if (debugMode)
-			{
-				movement::first_person::remove(cameraModeHandle);
-				movement::third_person::add(cameraTransform, characterTransformId, 0.001f, 10);
-				debugMode = false;
-			}
-			else
-			{
-				movement::third_person::remove(cameraModeHandle);
-				movement::first_person::add(cameraTransform, 0.001f, 10);
-				debugMode = true;
-			}
-		}
+		gamemode::manager::update(deltaTime);
 		input::reset();
 		P_END;
 	}
@@ -184,10 +155,10 @@ namespace scene
 	void render()
 	{
 		P_START("render scene");
-		float zoom = camera::getZoom(scene::cameraId);
-		vec3 cameraPosition = camera::getCameraPos(scene::cameraId);
+		float zoom = camera::getZoom(camera::mainCamera);
+		vec3 cameraPosition = camera::getCameraPos(camera::mainCamera);
 		glm::mat4 projection = glm::perspective(glm::radians(zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
-		glm::mat4 view = camera::getViewMatrix(scene::cameraId);
+		glm::mat4 view = camera::getViewMatrix(camera::mainCamera);
 		static glm::vec4 testVec(0, 0, 0, 1);
 		// world transformation
 		glm::mat4 model = glm::mat4(1.0f);

@@ -70,8 +70,6 @@ namespace profiler
 		handle targetId = stack::resultIds[stack::count];
 		std::string displayName = stack::displayNames[stack::count];
 		result::durations[targetId] += endTime - stack::startTimes[stack::count];
-		std::cout << "end time : " << endTime << ", start time : " << stack::startTimes[stack::count] << std::endl;
-		std::cout << "duration of " << displayName.c_str() << " : " << result::durations[targetId] << std::endl;
 	}
 
 	void end_frame()
@@ -79,17 +77,23 @@ namespace profiler
 		result::allocation.clear();
 		result::registeredMap.clear();
 	}
-	void showElementAndChildren(BitIterator element)
+	void showElementAndChildren(handle element, double total)
 	{
 		static char buffer[500];
-		ImGui::Text(result::displayNames[*element]);
-		sprintf_s(buffer, "%f", result::durations[*element]);
+		sprintf_s(buffer, "%f (%d percent)", result::durations[element], (int)(result::durations[element] / total * 100.));
+		bool nodeUnfolded = ImGui::TreeNode(result::displayNames[element]);
+		ImGui::SameLine();
 		ImGui::Text(buffer);
-		for (auto it = element; it.isValid(); it++)
+		if (nodeUnfolded)
 		{
-			if (result::parents[*it].id == *parent)
+			for (auto it = result::allocation.iterator(element); it.isValid(); it++)
 			{
+				if (result::parents[*it] == element)
+				{
+					showElementAndChildren({ *it }, result::durations[*it]);
+				}
 			}
+			ImGui::TreePop();
 		}
 	}
 
@@ -101,17 +105,23 @@ namespace profiler
 			double duration;
 		};
 		char buffer[500];
+		handle toHandle[500];
+		int toHandleCount = 0;
 		if (ImGui::Begin("Profiler"))
 		{
+			double total = 0;
 			for (auto it = result::allocation.begin(); it.isValid(); it++)
 			{
 				if (result::parents[*it].id < 0)
 				{
-					
+					toHandle[toHandleCount] = { *it };
+					total += result::durations[*it];
+					toHandleCount++;
 				}
-				ImGui::Text(result::displayNames[*it]);
-				sprintf_s(buffer, "%f", result::durations[*it]);
-				ImGui::Text(buffer);
+			}
+			for (int i = 0; i < toHandleCount; i++)
+			{
+				showElementAndChildren(toHandle[i], total);
 			}
 			ImGui::End();
 		}

@@ -1,4 +1,5 @@
 #pragma once
+#include "transform.h"
 
 namespace gamemode
 {
@@ -8,5 +9,8 @@ namespace gamemode
 		{
 			INGAME, MENU, EDITOR
 		};
+
+		void init(vec3 characterPos);
+		void update(float deltaTime);
 	}
 }
