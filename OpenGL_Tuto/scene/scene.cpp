@@ -246,7 +246,6 @@ namespace scene
 
 		glDisable(GL_BLEND);
 
-
 		render::render_deferred();
 
 		lampShader->use();
