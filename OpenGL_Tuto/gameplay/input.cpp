@@ -95,4 +95,9 @@ namespace input
 		mousePos.x = (float)xpos;
 		mousePos.y = (float)ypos;
 	}
+
+	void setCursorVisibility(bool visible)
+	{
+		glfwSetInputMode(window, GLFW_CURSOR, visible ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED);
+	}
 }

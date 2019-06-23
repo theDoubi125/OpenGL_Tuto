@@ -23,4 +23,6 @@ namespace input
 	KeyState getState(handle key);
 
 	void mouseMovement(GLFWwindow* window, double xpos, double ypos);
+
+	void setCursorVisibility(bool visible);
 }

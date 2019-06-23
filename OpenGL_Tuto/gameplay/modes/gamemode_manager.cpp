@@ -21,6 +21,7 @@ namespace gamemode
 
 		void init(vec3 startPos)
 		{
+
 			spaceInputHandle = input::registerKey(GLFW_KEY_SPACE);
 			camera::init();
 			cameraTransform = transform::add(vec3(-10, 5, 0), quat(), vec3(1, 1, 1));
@@ -28,10 +29,10 @@ namespace gamemode
 
 			movement::third_person::init();
 			movement::first_person::init();
-			cameraModeHandle = movement::third_person::add(cameraTransform, characterTransformId, 0.001f, 10);
 
 
 			characterTransformId = transform::add(startPos, quat(), vec3(1, 1, 1));
+			cameraModeHandle = movement::third_person::add(cameraTransform, characterTransformId, 0.001f, 10);
 			mesh::render::add(characterTransformId, mesh::library::findMesh("cube"), render::gBufferShader);
 			cubeMovementId = movement::cube::add(characterTransformId, 0.5f);
 		}
@@ -43,22 +44,31 @@ namespace gamemode
 				switch (currentMode)
 				{
 				case GameMode::EDITOR:
-					movement::third_person::remove(cameraModeHandle);
-					movement::first_person::add(cameraTransform, 0.001f, 10);
+					movement::first_person::remove(cameraModeHandle);
+					movement::third_person::add(cameraTransform, characterTransformId, 0.001f, 10);
 					currentMode = GameMode::INGAME;
 					break;
 				case GameMode::INGAME:
-					quat camRotation = camera::getCameraRot(camera::mainCamera);
-					movement::cube::cubeInput[cubeMovementId.id] = -(camRotation * vec3(0, 0, 1)) * input::movementInput.z + (camRotation * vec3(1, 0, 0)) * input::movementInput.x;
-					movement::first_person::remove(cameraModeHandle);
-					movement::third_person::add(cameraTransform, characterTransformId, 0.001f, 10);
-					currentMode = GameMode::EDITOR;
+					movement::third_person::remove(cameraModeHandle);
+					currentMode = GameMode::MENU;
+					input::setCursorVisibility(true);
 					break;
 				case GameMode::MENU:
-
+					input::setCursorVisibility(false);
+					movement::first_person::add(cameraTransform, 0.001f, 10);
+					currentMode = GameMode::EDITOR;
 					break;
 				}
 			}
+			switch (currentMode)
+			{
+			case GameMode::INGAME:
+				quat camRotation = camera::getCameraRot(camera::mainCamera);
+				movement::cube::cubeInput[cubeMovementId.id] = -(camRotation * vec3(0, 0, 1)) * input::movementInput.z + (camRotation * vec3(1, 0, 0)) * input::movementInput.x;
+				break;
+			}
+			movement::third_person::update(deltaTime);
+			movement::first_person::update(deltaTime);
 		}
 	}
 }

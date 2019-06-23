@@ -139,16 +139,6 @@ int main()
 		// -----
 		processInput(window);
 
-		if (!showDebug)
-		{
-			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-		}
-		else
-		{
-			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-
-		}
-
 		// view/projection transformations fixed for all renderers
 		
 

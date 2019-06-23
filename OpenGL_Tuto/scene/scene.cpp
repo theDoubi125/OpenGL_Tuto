@@ -142,8 +142,6 @@ namespace scene
 		rotation::animation::update(deltaTime);
 		rotation::anchor::update();
 		movement::cube::update(deltaTime);
-		movement::third_person::update(deltaTime);
-		movement::first_person::update(deltaTime);
 
 		render::voxel::update();
 
