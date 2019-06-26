@@ -10,6 +10,14 @@
 #include <glm/mat4x4.hpp>
 #include "render/shader.h"
 
+namespace shader
+{
+	struct ShaderData {
+		GLuint vertex, fragment, program;
+	};
+	void loadShader(const char* vertexPath, const char* fragmentPath, GLuint* outVertex, GLuint* outFragment, GLuint* outProgram);
+}
+
 class Shader
 {
 public:

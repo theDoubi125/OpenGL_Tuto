@@ -10,6 +10,9 @@
 #include "../imgui.h"
 
 #include "scene/scene.h"
+#include "util/profiler/profiler.h"
+
+#include <map>
 
 namespace render
 {
@@ -26,6 +29,10 @@ namespace render
 	unsigned int finalTexture;
 
 	unsigned int currentShader = 0;
+
+	int projectionMatrixAttr;
+	int viewMatrixAttr;
+	int viewPosAttr;
 
 	void init_screen_render()
 	{
@@ -128,6 +135,9 @@ namespace render
 		render_width = SCR_WIDTH;
 		render_height = SCR_HEIGHT;
 
+		projectionMatrixAttr = glGetUniformLocation(gBufferShader, "projection");
+		viewMatrixAttr = glGetUniformLocation(gBufferShader, "view");
+		viewPosAttr = glGetUniformLocation(gBufferShader, "viewPos");
 	}
 
 	void clear_frame()
@@ -139,15 +149,12 @@ namespace render
 
 	void start_render()
 	{
+		P_START("start render");
 		glUseProgram(gBufferShader);
 		currentShader = gBufferShader;
 
 		glm::mat4 projection = glm::perspective(glm::radians(camera::getZoom(camera::mainCamera)), (float)render_width / (float)render_height, 0.1f, 100.0f);
 		glm::mat4 view = camera::getViewMatrix(camera::mainCamera);
-
-		int projectionMatrixAttr = glGetUniformLocation(gBufferShader, "projection");
-		int viewMatrixAttr = glGetUniformLocation(gBufferShader, "view");
-		int viewPosAttr = glGetUniformLocation(gBufferShader, "viewPos");
 		glUniformMatrix4fv(projectionMatrixAttr, 1, false, (float*)&projection);
 		glUniformMatrix4fv(viewMatrixAttr, 1, false, (float*)&view);
 		glm::vec3 cameraPos = camera::getCameraPos(camera::mainCamera);
@@ -155,10 +162,12 @@ namespace render
 		glBindFramebuffer(GL_FRAMEBUFFER, gBuffer);
 		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		P_END;
 	}
 
 	void start_lighting()
 	{
+		P_START("start lighting");
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, gPosition);
 		glActiveTexture(GL_TEXTURE1);
@@ -175,10 +184,12 @@ namespace render
 
 		glClearColor(0, 0, 0, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		P_END;
 	}
 
 	void render_deferred()
 	{
+		P_START("render deferred");
 		glBindFramebuffer(GL_FRAMEBUFFER, renderFrameBuffer);
 
 		glUseProgram(deferredLightingShader);
@@ -198,10 +209,12 @@ namespace render
 
 		glEnable(GL_DEPTH_TEST);
 		glDepthMask(true);
+		P_END;
 	}
 
 	void render_screen(int texture)
 	{
+		P_START("render screen");
 		glEnable(GL_FRAMEBUFFER_SRGB);
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glUseProgram(renderQuadShader);
@@ -213,6 +226,7 @@ namespace render
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 		glBindVertexArray(0);
 		glDisable(GL_FRAMEBUFFER_SRGB);
+		P_END;
 	}
 
 	void debug_texture_selector(unsigned int* selectedTexture)

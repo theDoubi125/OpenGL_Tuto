@@ -12,6 +12,8 @@ using vec3 = glm::vec3;
 #include "util/bit_array.h"
 #include <map>
 
+#include "util/profiler/profiler.h"
+
 namespace mesh
 {
 	namespace library
@@ -166,6 +168,7 @@ namespace mesh
 
 		void render()
 		{
+			P_START("mesh render");
 			// reset the cursors column in the count table
 			unsigned int cursor = 0;
 			for(auto it = count::allocation.begin(); it.isValid(); it++)
@@ -216,6 +219,7 @@ namespace mesh
 				}
 				glBindVertexArray(0);
 			}
+			P_END;
 		}
 	}
 }
