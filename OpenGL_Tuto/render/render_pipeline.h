@@ -3,10 +3,21 @@ class Camera;
 
 namespace render
 {
-	extern unsigned int currentShader;
-	extern unsigned int finalTexture;
+	namespace shaders
+	{
+		namespace gBuffer
+		{
+			extern GLuint shader;
+			extern GLuint diffuseAttr;
+			extern GLuint specularAttr;
+			extern GLuint modelAttr;
+			extern GLuint projectionAttr;
+			extern GLuint viewAttr;
+			extern GLuint viewPosAttr;
+		}
+	}
 
-	extern unsigned int gBufferShader;
+	extern unsigned int finalTexture;
 
 	void init(unsigned int SCR_WIDTH, unsigned int SCR_HEIGHT);
 	void clear_frame();

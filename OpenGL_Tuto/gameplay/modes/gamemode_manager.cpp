@@ -33,7 +33,7 @@ namespace gamemode
 
 			characterTransformId = transform::add(startPos, quat(), vec3(1, 1, 1));
 			cameraModeHandle = movement::third_person::add(cameraTransform, characterTransformId, 0.001f, 10);
-			mesh::render::add(characterTransformId, mesh::library::findMesh("cube"), render::gBufferShader);
+			mesh::render::add(characterTransformId, mesh::library::findMesh("cube"), render::shaders::gBuffer::shader);
 			cubeMovementId = movement::cube::add(characterTransformId, 0.5f);
 		}
 		

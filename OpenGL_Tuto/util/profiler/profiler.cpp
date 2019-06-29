@@ -90,7 +90,7 @@ namespace profiler
 			{
 				if (result::parents[*it] == element)
 				{
-					showElementAndChildren({ *it }, result::durations[*it]);
+					showElementAndChildren({ *it }, result::durations[element]);
 				}
 			}
 			ImGui::TreePop();

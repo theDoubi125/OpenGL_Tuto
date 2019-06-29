@@ -16,7 +16,20 @@
 
 namespace render
 {
-	unsigned int gBufferShader = 0, deferredLightingShader = 0;
+	namespace shaders
+	{
+		namespace gBuffer
+		{
+			GLuint shader;
+			GLuint diffuseAttr;
+			GLuint specularAttr;
+			GLuint modelAttr;
+			GLuint projectionAttr;
+			GLuint viewAttr;
+			GLuint viewPosAttr;
+		}
+	}
+	unsigned int deferredLightingShader = 0;
 	unsigned int renderQuadShader = 0;
 
 	unsigned int gBuffer, gLightFrameBuffer, renderFrameBuffer;
@@ -27,8 +40,6 @@ namespace render
 	unsigned int render_width, render_height;
 
 	unsigned int finalTexture;
-
-	unsigned int currentShader = 0;
 
 	int projectionMatrixAttr;
 	int viewMatrixAttr;
@@ -63,9 +74,16 @@ namespace render
 
 	void init(unsigned int SCR_WIDTH, unsigned int SCR_HEIGHT)
 	{
-		gBufferShader = shader::compileShader("./shaders/gbuffer.vert", "./shaders/gbuffer.frag");
+		shaders::gBuffer::shader = shader::compileShader("./shaders/gbuffer.vert", "./shaders/gbuffer.frag");
 		renderQuadShader = shader::compileShader("./shaders/render_quad.vert", "./shaders/render_quad.frag");
 		deferredLightingShader = shader::compileShader("./shaders/deferred_lighting.vert", "./shaders/deferred_lighting.frag");
+
+		shaders::gBuffer::projectionAttr = glGetUniformLocation(shaders::gBuffer::shader, "projection");
+		shaders::gBuffer::viewAttr = glGetUniformLocation(shaders::gBuffer::shader, "view");
+		shaders::gBuffer::viewPosAttr = glGetUniformLocation(shaders::gBuffer::shader, "viewPos");
+		shaders::gBuffer::diffuseAttr = glGetUniformLocation(shaders::gBuffer::shader, "diffuse");
+		shaders::gBuffer::modelAttr = glGetUniformLocation(shaders::gBuffer::shader, "model");
+		shaders::gBuffer::specularAttr = glGetUniformLocation(shaders::gBuffer::shader, "specular");
 
 		init_screen_render();
 
@@ -135,9 +153,9 @@ namespace render
 		render_width = SCR_WIDTH;
 		render_height = SCR_HEIGHT;
 
-		projectionMatrixAttr = glGetUniformLocation(gBufferShader, "projection");
-		viewMatrixAttr = glGetUniformLocation(gBufferShader, "view");
-		viewPosAttr = glGetUniformLocation(gBufferShader, "viewPos");
+		projectionMatrixAttr =	shaders::gBuffer::projectionAttr;
+		viewMatrixAttr = shaders::gBuffer::viewAttr;
+		viewPosAttr =	shaders::gBuffer::viewPosAttr;
 	}
 
 	void clear_frame()
@@ -150,8 +168,7 @@ namespace render
 	void start_render()
 	{
 		P_START("start render");
-		glUseProgram(gBufferShader);
-		currentShader = gBufferShader;
+		glUseProgram(shaders::gBuffer::shader);
 
 		glm::mat4 projection = glm::perspective(glm::radians(camera::getZoom(camera::mainCamera)), (float)render_width / (float)render_height, 0.1f, 100.0f);
 		glm::mat4 view = camera::getViewMatrix(camera::mainCamera);
@@ -193,7 +210,6 @@ namespace render
 		glBindFramebuffer(GL_FRAMEBUFFER, renderFrameBuffer);
 
 		glUseProgram(deferredLightingShader);
-		currentShader = deferredLightingShader;
 
 		int gPositionAttr = glGetUniformLocation(deferredLightingShader, "gPosition");
 		int gNormalAttr = glGetUniformLocation(deferredLightingShader, "gNormal");
@@ -218,7 +234,6 @@ namespace render
 		glEnable(GL_FRAMEBUFFER_SRGB);
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glUseProgram(renderQuadShader);
-		currentShader = renderQuadShader;
 
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, texture);
