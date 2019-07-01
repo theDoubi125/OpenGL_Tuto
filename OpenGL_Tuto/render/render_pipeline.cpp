@@ -28,8 +28,18 @@ namespace render
 			GLuint viewAttr;
 			GLuint viewPosAttr;
 		}
+
+		namespace deferredLighting
+		{
+			GLuint shader;
+			GLuint gPositionAttr, gNormalAttr, gAlbedoSpecAttr, gLightAttr;
+		}
+
+		namespace renderQuad
+		{
+
+		}
 	}
-	unsigned int deferredLightingShader = 0;
 	unsigned int renderQuadShader = 0;
 
 	unsigned int gBuffer, gLightFrameBuffer, renderFrameBuffer;
@@ -76,7 +86,7 @@ namespace render
 	{
 		shaders::gBuffer::shader = shader::compileShader("./shaders/gbuffer.vert", "./shaders/gbuffer.frag");
 		renderQuadShader = shader::compileShader("./shaders/render_quad.vert", "./shaders/render_quad.frag");
-		deferredLightingShader = shader::compileShader("./shaders/deferred_lighting.vert", "./shaders/deferred_lighting.frag");
+		shaders::deferredLighting::shader = shader::compileShader("./shaders/deferred_lighting.vert", "./shaders/deferred_lighting.frag");
 
 		shaders::gBuffer::projectionAttr = glGetUniformLocation(shaders::gBuffer::shader, "projection");
 		shaders::gBuffer::viewAttr = glGetUniformLocation(shaders::gBuffer::shader, "view");
@@ -84,6 +94,10 @@ namespace render
 		shaders::gBuffer::diffuseAttr = glGetUniformLocation(shaders::gBuffer::shader, "diffuse");
 		shaders::gBuffer::modelAttr = glGetUniformLocation(shaders::gBuffer::shader, "model");
 		shaders::gBuffer::specularAttr = glGetUniformLocation(shaders::gBuffer::shader, "specular");
+		shaders::deferredLighting::gPositionAttr = glGetUniformLocation(shaders::deferredLighting::shader, "gPosition");
+		shaders::deferredLighting::gNormalAttr = glGetUniformLocation(shaders::deferredLighting::shader, "gNormal");
+		shaders::deferredLighting::gAlbedoSpecAttr = glGetUniformLocation(shaders::deferredLighting::shader, "gAlbedoSpec");
+		shaders::deferredLighting::gLightAttr = glGetUniformLocation(shaders::deferredLighting::shader, "gLight");
 
 		init_screen_render();
 
@@ -170,7 +184,7 @@ namespace render
 		P_START("start render");
 		glUseProgram(shaders::gBuffer::shader);
 
-		glm::mat4 projection = glm::perspective(glm::radians(camera::getZoom(camera::mainCamera)), (float)render_width / (float)render_height, 0.1f, 100.0f);
+		glm::mat4 projection = glm::perspective(glm::radians(camera::getZoom(camera::mainCamera)), (float)render_width / (float)render_height, 0.1f, 1000.0f);
 		glm::mat4 view = camera::getViewMatrix(camera::mainCamera);
 		glUniformMatrix4fv(projectionMatrixAttr, 1, false, (float*)&projection);
 		glUniformMatrix4fv(viewMatrixAttr, 1, false, (float*)&view);
@@ -209,17 +223,13 @@ namespace render
 		P_START("render deferred");
 		glBindFramebuffer(GL_FRAMEBUFFER, renderFrameBuffer);
 
-		glUseProgram(deferredLightingShader);
+		glUseProgram(shaders::deferredLighting::shader);
 
-		int gPositionAttr = glGetUniformLocation(deferredLightingShader, "gPosition");
-		int gNormalAttr = glGetUniformLocation(deferredLightingShader, "gNormal");
-		int gAlbedoSpecAttr = glGetUniformLocation(deferredLightingShader, "gAlbedoSpec");
-		int gLightAttr = glGetUniformLocation(deferredLightingShader, "gLight");
 		
-		glUniform1i(gPositionAttr, 0);
-		glUniform1i(gNormalAttr, 1);
-		glUniform1i(gAlbedoSpecAttr, 2);
-		glUniform1i(gLightAttr, 3);
+		glUniform1i(shaders::deferredLighting::gPositionAttr, 0);
+		glUniform1i(shaders::deferredLighting::gNormalAttr, 1);
+		glUniform1i(shaders::deferredLighting::gAlbedoSpecAttr, 2);
+		glUniform1i(shaders::deferredLighting::gLightAttr, 3);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 		glBindVertexArray(0);
 

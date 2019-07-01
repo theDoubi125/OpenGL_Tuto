@@ -164,6 +164,9 @@
     <ClCompile Include="gameplay\modes\gamemode_ingame.cpp">
       <Filter>Source Files\gameplay\modes</Filter>
     </ClCompile>
+    <ClCompile Include="gameplay\world\raytracing.cpp">
+      <Filter>Source Files\gameplay\world</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="material.h">
@@ -282,6 +285,9 @@
     </ClInclude>
     <ClInclude Include="util\profiler\profiler.h">
       <Filter>Source Files\util\profiler</Filter>
+    </ClInclude>
+    <ClInclude Include="gameplay\world\raytracing.h">
+      <Filter>Source Files\gameplay\world</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

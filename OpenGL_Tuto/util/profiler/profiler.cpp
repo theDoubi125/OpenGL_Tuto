@@ -80,7 +80,7 @@ namespace profiler
 	void showElementAndChildren(handle element, double total)
 	{
 		static char buffer[500];
-		sprintf_s(buffer, "%f (%d percent)", result::durations[element], (int)(result::durations[element] / total * 100.));
+		sprintf_s(buffer, "%f (%d percent)", result::durations[element] * 60, (int)(result::durations[element] / total * 100.));
 		bool nodeUnfolded = ImGui::TreeNode(result::displayNames[element]);
 		ImGui::SameLine();
 		ImGui::Text(buffer);

@@ -8,7 +8,7 @@ class ShadowRenderManager
 {
 public:
 	void init();
-	void render(unsigned int depthMapShader, const glm::mat4& lightSpaceMatrix);
+	void render(unsigned int depthMapShader, const glm::mat4& lightSpaceMatrix, GLuint lightMatrixAttr);
 
 	MeshRenderer* shadowCasters;
 

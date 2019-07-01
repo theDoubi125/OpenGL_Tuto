@@ -18,13 +18,13 @@ namespace world
 		BitArray allocation;
 
 		// chunks added this frame
-		handle addedChunks[100];
+		handle addedChunks[500];
 		int addedChunksCount = 0;
 
 		void init()
 		{
-			regionTable.init(100, offsets + chunks);
-			allocation.init(100);
+			regionTable.init(500, offsets + chunks);
+			allocation.init(500);
 		}
 
 		void loadChunk(ivec3 offset, char data[CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE])

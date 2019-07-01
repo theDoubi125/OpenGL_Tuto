@@ -5,6 +5,8 @@
 #include "mesh_render.h"
 #include "imgui.h"
 
+#include "util/profiler/profiler.h"
+
 void ShadowRenderManager::init()
 {
 	glGenFramebuffers(1, &depthMapFBO);
@@ -23,12 +25,14 @@ void ShadowRenderManager::init()
 	glDrawBuffer(GL_NONE);
 	glReadBuffer(GL_NONE);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
 }
 
-void ShadowRenderManager::render(unsigned int depthMapShader, const glm::mat4& lightSpaceMatrix)
+void ShadowRenderManager::render(unsigned int depthMapShader, const glm::mat4& lightSpaceMatrix, GLuint lightMatrixAttr)
 {
+	P_START("render shadows");
 	glUseProgram(depthMapShader);
-	glUniformMatrix4fv(glGetUniformLocation(depthMapShader, "lightSpaceMatrix"), 1, GL_FALSE, (float*)(&lightSpaceMatrix));
+	glUniformMatrix4fv(lightMatrixAttr, 1, GL_FALSE, (float*)(&lightSpaceMatrix));
 
 	// 1. first render to depth map
 	glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
@@ -38,6 +42,7 @@ void ShadowRenderManager::render(unsigned int depthMapShader, const glm::mat4& l
 	shadowCasters->render(depthMapShader);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	P_END;
 }
 
 glm::mat4 getLightMatrix(const vec3& lightDirection, float povDistance)

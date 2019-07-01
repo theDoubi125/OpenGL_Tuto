@@ -36,6 +36,12 @@ namespace scene
 
 	namespace shaders
 	{
+		namespace gbuffer
+		{
+			int diffuseAttr;
+			int specularAttr;
+			int modelAttr;
+		}
 		namespace lighting
 		{
 			GLuint shader;
@@ -51,6 +57,7 @@ namespace scene
 		namespace shadow
 		{
 			GLuint shader;
+			GLuint lightMatrixAttr;
 		}
 		namespace pointLight
 		{
@@ -88,7 +95,6 @@ namespace scene
 
 	void initShaders()
 	{
-
 		shaders::lighting::shader = shader::compileShader("./shaders/color.vert", "./shaders/color.frag");
 		shaders::lamp::shader = shader::compileShader("./shaders/color.vert", "./shaders/lamp.frag");
 		shaders::shadow::shader = shader::compileShader("./shaders/shadows.vert", "./shaders/shadows.frag");
@@ -111,10 +117,17 @@ namespace scene
 		shaders::directionalLight::gNormalAttr		 = glGetUniformLocation(shaders::directionalLight::shader, "gNormal");
 		shaders::directionalLight::gAlbedoSpecAttr	 = glGetUniformLocation(shaders::directionalLight::shader, "gAlbedoSpec");
 		shaders::directionalLight::viewPosAttr		 = glGetUniformLocation(shaders::directionalLight::shader, "viewPos");
-		shaders::directionalLight::lightDirectionAttr= glGetUniformLocation(shaders::directionalLight::shader, "lightDirection");
-		shaders::directionalLight::lightColorAttr	 = glGetUniformLocation(shaders::directionalLight::shader, "lightColor");
+		shaders::directionalLight::lightDirectionAttr= glGetUniformLocation(shaders::directionalLight::shader, "light.Direction");
+		shaders::directionalLight::lightColorAttr	 = glGetUniformLocation(shaders::directionalLight::shader, "light.Color");
 		shaders::directionalLight::shadowMapAttr	 = glGetUniformLocation(shaders::directionalLight::shader, "shadowMap");
 		shaders::directionalLight::lightMatrixAttr	 = glGetUniformLocation(shaders::directionalLight::shader, "lightMatrix");
+
+		shaders::gbuffer::diffuseAttr = glGetUniformLocation(render::shaders::gBuffer::shader, "diffuse");
+		shaders::gbuffer::specularAttr = glGetUniformLocation(render::shaders::gBuffer::shader, "specular");
+		shaders::gbuffer::modelAttr = glGetUniformLocation(render::shaders::gBuffer::shader, "model");
+
+
+		shaders::shadow::lightMatrixAttr = glGetUniformLocation(shaders::shadow::shader, "lightSpaceMatrix");
 	}
 
 	void init(int screenWidth, int screenHeight)
@@ -140,16 +153,16 @@ namespace scene
 		handle cubeMesh = mesh::library::loadMesh("cube", dataBuffer, 6 * 8 * 6 * sizeof(float));
 
 		world::manager::init();
-		int testSize = 100;
+		int testSize = 300;
 		for (int i = 0; i < testSize; i++)
 		{
-			for (int j = 0; j < testSize * 2; j++)
+			for (int j = 0; j < testSize; j++)
 			{
 				world::manager::setCell(ivec3(i, 0, j), 1);
 			}
 			for (int j = 0; j < testSize; j++)
 			{
-				float height = 5.0f + cos(j / 10.0f) * cos(i/10.0f) * cos(i / 20.0f) * cos(j / 15.0f) * 5.0f;
+				float height = 5.0f + cos(j / 13.0f) * cos(i/15.0f) * cos(i / 22.0f) * sin(j / 11.0f) * 5.0f + j/20;
 				for (int k = 0; (float)k < height; k++)
 				{
 					world::manager::setCell(ivec3(i, k, j), 1);
@@ -216,9 +229,10 @@ namespace scene
 	void render()
 	{
 		P_START("render scene");
+
 		float zoom = camera::getZoom(camera::mainCamera);
 		vec3 cameraPosition = camera::getCameraPos(camera::mainCamera);
-		glm::mat4 projection = glm::perspective(glm::radians(zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+		glm::mat4 projection = glm::perspective(glm::radians(zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 1.0f, 500.0f);
 		glm::mat4 view = camera::getViewMatrix(camera::mainCamera);
 		static glm::vec4 testVec(0, 0, 0, 1);
 		// world transformation
@@ -232,16 +246,14 @@ namespace scene
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, specularMap);
 
-		int diffuseAttr = glGetUniformLocation(render::shaders::gBuffer::shader, "diffuse");
-		int specularAttr = glGetUniformLocation(render::shaders::gBuffer::shader, "specular");
-		int modelAttr = glGetUniformLocation(render::shaders::gBuffer::shader, "model");
-		glUniform1i(diffuseAttr, 0);
-		glUniform1i(specularAttr, 1);
-		glUniformMatrix4fv(modelAttr, 1, false, (float*)&model);
+		
+		glUniform1i(shaders::gbuffer::diffuseAttr, 0);
+		glUniform1i(shaders::gbuffer::specularAttr, 1);
+		glUniformMatrix4fv(shaders::gbuffer::modelAttr, 1, false, (float*)&model);
 
 		mesh::render::render();
 
-		shadowRenderer.render(shaders::shadow::shader, getLightMatrix(normalize(sunDirection), sunPovDistance));
+		shadowRenderer.render(shaders::shadow::shader, getLightMatrix(normalize(sunDirection), sunPovDistance), shaders::shadow::lightMatrixAttr);
 		glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
 
 		render::start_lighting();

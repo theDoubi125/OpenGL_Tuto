@@ -97,6 +97,7 @@ namespace mesh
 			BitArray allocation;
 			Column<GLuint> shaderIds;
 			Column<unsigned int> counts;
+			Column<GLuint> modelAttrs;
 			// cursors is a column only used during the renderDataTable building process (in the render function)
 			Column<unsigned int> cursors;
 		}
@@ -115,7 +116,7 @@ namespace mesh
 			main::table.init(500, main::transformIds + main::meshIds + main::shaderIds + main::vaos);
 			main::allocation.init(500);
 
-			count::table.init(200, count::shaderIds + count::counts + count::cursors);
+			count::table.init(200, count::shaderIds + count::counts + count::modelAttrs + count::cursors);
 			count::allocation.init(200);
 
 			render_data::table.init(500, render_data::transformIds + render_data::meshIds + render_data::vaos);
@@ -132,7 +133,7 @@ namespace mesh
 				}
 			}
 			TableElement element = count::table.element({ count::allocation.allocate() });
-			element << shaderId << (unsigned int)1;
+			element << shaderId << (unsigned int)1 << glGetUniformLocation(shaderId, "model");
 		}
 
 		handle add(handle transformId, handle meshId, GLuint shaderId)
@@ -211,7 +212,7 @@ namespace mesh
 					glm::mat4 scale = glm::scale(transform::scales[transformId]);
 					glm::mat4 rotation = glm::toMat4(transform::rotations[transformId]);
 					glm::mat4 model = translation * rotation * scale;
-					glUniformMatrix4fv(glGetUniformLocation(shaderId, "model"), 1, false, (float*)&model);
+					glUniformMatrix4fv(count::modelAttrs[*it], 1, false, (float*)&model);
 					glBindVertexArray(render_data::vaos[i]);
 					unsigned int vertexCount = mesh::library::getMesh(render_data::meshIds[i]).vertexCount;
 					glDrawArrays(GL_TRIANGLES, 0, vertexCount);
