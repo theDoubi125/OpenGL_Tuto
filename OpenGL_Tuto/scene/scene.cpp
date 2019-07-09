@@ -24,6 +24,9 @@
 
 #include "gameplay/modes/gamemode_manager.h"
 
+#include "gameplay/world/raytracing.h"
+#include "imgui.h"
+
 
 namespace scene
 {
@@ -93,6 +96,9 @@ namespace scene
 
 	bool debugMode = false;
 
+	handle raytraceTransformIds[10];
+	ivec3 raytraceCells[10];
+
 	void initShaders()
 	{
 		shaders::lighting::shader = shader::compileShader("./shaders/color.vert", "./shaders/color.frag");
@@ -153,7 +159,7 @@ namespace scene
 		handle cubeMesh = mesh::library::loadMesh("cube", dataBuffer, 6 * 8 * 6 * sizeof(float));
 
 		world::manager::init();
-		int testSize = 300;
+		int testSize = 10;
 		for (int i = 0; i < testSize; i++)
 		{
 			for (int j = 0; j < testSize; j++)
@@ -204,6 +210,13 @@ namespace scene
 		input::init();
 
 		
+		for (int i = 0; i < 10; i++)
+		{
+			raytraceTransformIds[i] = transform::add(vec3(0, 0, 0), quat(), vec3(0.3f, 0.3f, 0.3f));
+			mesh::render::add(raytraceTransformIds[i], cubeMesh, render::shaders::gBuffer::shader);
+		}
+
+		
 		render::voxel::init();
 		render::voxel::update();
 
@@ -223,6 +236,16 @@ namespace scene
 
 		gamemode::manager::update(deltaTime);
 		input::reset();
+		static vec3 direction = vec3(0.5f, 1, 0);
+		static vec3 position = vec3(0, 0, 0);
+		ImGui::DragFloat3("Raytrace Direction", (float*)&direction, 0.1f);
+		ImGui::DragFloat3("Raytrace Position", (float*)&position, 0.1f);
+
+		world::raytracing::raytrace(position, direction, raytraceCells, 9);
+		for (int i = 0; i < 10; i++)
+		{
+			transform::positions[raytraceTransformIds[i]] = (vec3)raytraceCells[i];
+		}
 		P_END;
 	}
 

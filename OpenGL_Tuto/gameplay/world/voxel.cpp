@@ -12,15 +12,6 @@ namespace world
 	{
 		// A region is a x*x*x chunks zone that is save in a single file
 		// File structure : list of headers (coords of the chunk) + data array
-		struct Region
-		{
-			struct RegionData {
-				Chunk* chunk;
-				ivec3 offset;
-			};
-			RegionData chunks[REGION_SIZE * REGION_SIZE * REGION_SIZE];
-			int chunkCount;
-		};
 
 		Chunk::Chunk(char voxel)
 		{
