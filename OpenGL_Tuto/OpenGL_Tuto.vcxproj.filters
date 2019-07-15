@@ -63,6 +63,9 @@
     <Filter Include="Source Files\gameplay\modes">
       <UniqueIdentifier>{9e0db29c-6a76-4f9b-a313-36f036826703}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\render\debug">
+      <UniqueIdentifier>{706c5f82-0203-423a-ab5e-1c9f32d01a39}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -166,6 +169,12 @@
     </ClCompile>
     <ClCompile Include="gameplay\world\raytracing.cpp">
       <Filter>Source Files\gameplay\world</Filter>
+    </ClCompile>
+    <ClCompile Include="gameplay\collision\collision.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="render\debug\render_debug_line.cpp">
+      <Filter>Source Files\render\debug</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -289,14 +298,14 @@
     <ClInclude Include="gameplay\world\raytracing.h">
       <Filter>Source Files\gameplay\world</Filter>
     </ClInclude>
+    <ClInclude Include="gameplay\collision\collision.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="render\debug\render_debug_line.h">
+      <Filter>Source Files\render\debug</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="shaders\simple.vert">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="shaders\simple.frag">
-      <Filter>Shaders</Filter>
-    </None>
     <None Include="shaders\color.vert">
       <Filter>Shaders</Filter>
     </None>
@@ -346,6 +355,12 @@
       <Filter>Shaders</Filter>
     </None>
     <None Include="shaders\render_silhouette.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="shaders\debug.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="shaders\debug.frag">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>

@@ -1,6 +1,10 @@
 #include "raytracing.h"
 #include <algorithm>
 
+#include "render/debug/render_debug_line.h"
+
+#define PRC 0.001f
+
 namespace world
 {
 	namespace raytracing
@@ -14,21 +18,50 @@ namespace world
 		{
 			dir = glm::normalize(dir);
 			vec3 currentPos = pos;
-			ivec3 currentCell = (ivec3)currentPos;
-			float x1 = (float)currentCell.x / dir.x - currentPos.x;
-			float x2 = (float)(currentCell.x + 1) / dir.x - currentPos.x;
-			float x = x1 > x2 ? x1 : x2;
-			float y1 = (float)currentCell.y / dir.y - currentPos.y;
-			float y2 = (float)(currentCell.y + 1) / dir.y - currentPos.y;
-			float y = y1 > y2 ? y1 : y2;
-			float z1 = (float)currentCell.z / dir.z - currentPos.z;
-			float z2 = (float)(currentCell.z + 1) / dir.z - currentPos.z;
-			float z = z1 > z2 ? z1 : z2;
+			ivec3 currentCell = (ivec3)(currentPos + 0.5f);
+			if (currentPos.x < 0)
+				currentCell.x--;
+			if (currentPos.y < 0)
+				currentCell.y--;
+			if (currentPos.z < 0)
+				currentCell.z--;
+			float x = ((float)(currentCell.x + 0.5f) - currentPos.x) / dir.x;
+			if (dir.x < 0)
+				x = (currentPos.x - (float)currentCell.x + 0.5f) / -dir.x;
+			float y = ((float)(currentCell.y + 0.5f) - currentPos.y) / dir.y;
+			if (dir.y < 0)
+				y = (currentPos.y - (float)currentCell.y + 0.5f) / -dir.y;
+			float z = ((float)(currentCell.z + 0.5f) - currentPos.z) / dir.z;
+			if (dir.z < 0)
+				z = (currentPos.z - (float)currentCell.z + 0.5f) / -dir.z;
 			float f = std::min(std::min(x, y), z);
-			vec3 nextPos = pos + dir * f;
+			vec3 nextPos = pos + dir * (f + PRC);
 			*result = (ivec3)nextPos;
+			
+			render::debug::drawCube((vec3)currentCell, vec3(1, 1, 1), vec4(1, 0, 0, 0.4f));
 			if (resultSize > 0)
 				raytrace(nextPos, dir, result + 1, resultSize - 1);
+		}
+
+		ivec3 raytraceNext(ray& r)
+		{
+			vec3 dir = glm::normalize(r.dir);
+			vec3 currentPos = r.pos;
+			ivec3 currentCell = (ivec3)(currentPos + 0.5f);
+			float x = ((float)(currentCell.x + 0.5f) - currentPos.x) / dir.x;
+			if (dir.x < 0)
+				x = (currentPos.x - (float)currentCell.x + 0.5f) / -dir.x;
+			float y = ((float)(currentCell.y + 0.5f) - currentPos.y) / dir.y;
+			if (dir.y < 0)
+				y = (currentPos.y - (float)currentCell.y + 0.5f) / -dir.y;
+			float z = ((float)(currentCell.z + 0.5f) - currentPos.z) / dir.z;
+			if (dir.z < 0)
+				z = (currentPos.z - (float)currentCell.z + 0.5f) / -dir.z;
+			float f = std::min(std::min(x, y), z);
+			
+			// assign next pos
+			r.pos = currentPos + dir * (f + PRC);
+			return r.getCell();
 		}
 	}
 }

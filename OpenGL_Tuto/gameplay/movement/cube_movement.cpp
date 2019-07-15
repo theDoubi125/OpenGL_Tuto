@@ -37,7 +37,6 @@ namespace movement
 			bitArray.init(32);
 			inactiveFlags.init(32);
 			activeBitArray.init(32);
-			cubeDataTable.allocate(32);
 
 			activeTable.init(10, activeCubeIds + rotationAnimIds);
 

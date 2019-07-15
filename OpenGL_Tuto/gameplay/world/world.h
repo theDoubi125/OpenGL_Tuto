@@ -23,5 +23,9 @@ namespace world
 		// chunks added this frame. Set count to 0 when treatment finished
 		extern handle addedChunks[100];
 		extern int addedChunksCount;
+
+		// chunks modified this frame. Set count to 0 when treatment finished
+		extern handle modifiedChunks[100];
+		extern int modifiedChunksCount;
 	}
 }

@@ -32,6 +32,7 @@ namespace mesh
 	{
 		void init();
 		handle add(handle transformId, handle meshId, GLuint shaderId);
+		void updateMesh(handle elementId, handle meshId, GLuint shaderId);
 		void render();
 	}
 }

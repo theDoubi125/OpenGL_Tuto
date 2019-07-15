@@ -11,6 +11,7 @@
 
 #include "scene/scene.h"
 #include "util/profiler/profiler.h"
+#include "render/debug/render_debug_line.h"
 
 #include <map>
 
@@ -240,6 +241,7 @@ namespace render
 
 	void render_screen(int texture)
 	{
+		glDisable(GL_DEPTH_TEST);
 		P_START("render screen");
 		glEnable(GL_FRAMEBUFFER_SRGB);
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -251,6 +253,18 @@ namespace render
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 		glBindVertexArray(0);
 		glDisable(GL_FRAMEBUFFER_SRGB);
+		glEnable(GL_DEPTH_TEST);
+		glBindFramebuffer(GL_READ_FRAMEBUFFER, gBuffer);
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0); // write to default framebuffer
+		glBlitFramebuffer(
+			0, 0, render_width, render_height, 0, 0, render_width, render_height, GL_DEPTH_BUFFER_BIT, GL_NEAREST
+		);
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		glLineWidth(20);
+		render::debug::render();
+		glDisable(GL_BLEND);
 		P_END;
 	}
 

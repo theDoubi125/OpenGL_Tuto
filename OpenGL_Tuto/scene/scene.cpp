@@ -26,6 +26,7 @@
 
 #include "gameplay/world/raytracing.h"
 #include "imgui.h"
+#include "render/debug/render_debug_line.h"
 
 
 namespace scene
@@ -95,9 +96,6 @@ namespace scene
 	float sunPovDistance = 20;
 
 	bool debugMode = false;
-
-	handle raytraceTransformIds[10];
-	ivec3 raytraceCells[10];
 
 	void initShaders()
 	{
@@ -207,20 +205,14 @@ namespace scene
 		shadowRenderer.shadowCasters = &boxRenderer;
 		shadowRenderer.init();
 
+		render::debug::init(screenWidth, screenHeight);
+
 		input::init();
-
-		
-		for (int i = 0; i < 10; i++)
-		{
-			raytraceTransformIds[i] = transform::add(vec3(0, 0, 0), quat(), vec3(0.3f, 0.3f, 0.3f));
-			mesh::render::add(raytraceTransformIds[i], cubeMesh, render::shaders::gBuffer::shader);
-		}
-
 		
 		render::voxel::init();
 		render::voxel::update();
 
-		gamemode::manager::init(vec3(5, 40, 5));
+		gamemode::manager::init(vec3(5, 10, 5));
 		P_END;
 	}
 
@@ -236,15 +228,33 @@ namespace scene
 
 		gamemode::manager::update(deltaTime);
 		input::reset();
-		static vec3 direction = vec3(0.5f, 1, 0);
-		static vec3 position = vec3(0, 0, 0);
+		vec3 direction = camera::getCameraRot(camera::mainCamera) * vec3(0, 0, 1);
+		vec3 position = camera::getCameraPos(camera::mainCamera);
 		ImGui::DragFloat3("Raytrace Direction", (float*)&direction, 0.1f);
 		ImGui::DragFloat3("Raytrace Position", (float*)&position, 0.1f);
 
-		world::raytracing::raytrace(position, direction, raytraceCells, 9);
-		for (int i = 0; i < 10; i++)
+		world::raytracing::ray ray = { position, direction };
+		//world::raytracing::raytrace(position, direction, raytraceCells, 9);
+		//render::debug::drawLine(camera::getCameraPos(camera::mainCamera), direction * 100.0f, vec4(1, 0, 0, 0.5f));
+		char buffer[100];
+		for (int i = 0; i < 30; i++)
 		{
-			transform::positions[raytraceTransformIds[i]] = (vec3)raytraceCells[i];
+			ivec3 lastCell = ray.getCell();
+			ivec3 cell = world::raytracing::raytraceNext(ray);
+			if (world::manager::getCell(cell))
+			{
+				render::debug::drawCube((vec3)cell, vec3(1, 1, 1), vec4(1, 0, 0, 0.5f));
+				render::debug::drawCube((vec3)lastCell, vec3(1, 1, 1), vec4(0, 0, 1, 0.5f));
+				sprintf_s(buffer, "%i, %i, %i (%i)", cell.x, cell.y, cell.z, i);
+				ImGui::Text(buffer);
+				break;
+			}
+			else
+			{
+				//render::debug::drawCube((vec3)cell, vec3(1, 1, 1), vec4(0, 1, 0, 0.2f));
+				sprintf_s(buffer, "%i, %i, %i", cell.x, cell.y, cell.z, i);
+				ImGui::Text(buffer);
+			}
 		}
 		P_END;
 	}
@@ -322,6 +332,7 @@ namespace scene
 		glUniform4fv(shaders::lamp::viewAttr, 1, (float*)&view);
 		glUniform4fv(shaders::lamp::modelAttr, 1, (float*)&model);
 		glUniform4fv(shaders::lamp::viewPosAttr, 1, (float*)&cameraPosition);
+
 		P_END;
 	}
 

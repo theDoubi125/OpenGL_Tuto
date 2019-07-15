@@ -13,6 +13,7 @@ using vec3 = glm::vec3;
 #include <map>
 
 #include "util/profiler/profiler.h"
+#include "shader_m.h"
 
 namespace mesh
 {
@@ -56,7 +57,6 @@ namespace mesh
 		void replaceMesh(char* data, size_t size, handle meshId)
 		{
 			unsigned int VBO = vbos[meshId];
-
 			glBindBuffer(GL_ARRAY_BUFFER, VBO);
 			glBufferData(GL_ARRAY_BUFFER, size, data, GL_STATIC_DRAW);
 			glBindBuffer(GL_ARRAY_BUFFER, VBO);
@@ -145,7 +145,7 @@ namespace mesh
 			glGenVertexArrays(1, &VAO);
 			glBindVertexArray(VAO);
 			MeshData meshData = library::getMesh(meshId);
-			
+
 
 			glBindBuffer(GL_ARRAY_BUFFER, meshData.vbo);
 
@@ -165,6 +165,32 @@ namespace mesh
 			addToCount(shaderId);
 
 			return result;
+		}
+
+		void updateMesh(handle elementId, handle meshId, GLuint shaderId)
+		{
+
+			unsigned int VAO = main::vaos[elementId];
+			main::meshIds[elementId] = meshId;
+			main::shaderIds[elementId] = shaderId;
+			// free the old mesh data
+			glBindVertexArray(VAO);
+			MeshData meshData = library::getMesh(meshId);
+
+
+			glBindBuffer(GL_ARRAY_BUFFER, meshData.vbo);
+
+			// position attribute
+			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+			glEnableVertexAttribArray(0);
+			glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+			glEnableVertexAttribArray(1);
+			glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+			glEnableVertexAttribArray(2);
+
+			glBindBuffer(GL_ARRAY_BUFFER, 0);
+			glBindVertexArray(0);
+
 		}
 
 		void render()
@@ -271,6 +297,8 @@ void MeshRenderer::getPositions(vec3* outPos, size_t maxCount) const
 
 void MeshRenderer::render(unsigned int shaderId)
 {
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	for (int i = 0; i < count; i++)
 	{
 		int transformIndex = transform::indexOf(transformIds[i]);
@@ -285,6 +313,7 @@ void MeshRenderer::render(unsigned int shaderId)
 		glDrawArrays(GL_TRIANGLES, 0, vertexCount[i]);
 	}
 	glBindVertexArray(0);
+	glDisable(GL_BLEND);
 }
 
 namespace screen_effect

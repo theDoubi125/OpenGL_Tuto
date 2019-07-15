@@ -18,8 +18,11 @@ namespace world
 		BitArray allocation;
 
 		// chunks added this frame
-		handle addedChunks[500];
+		handle addedChunks[100];
 		int addedChunksCount = 0;
+
+		handle modifiedChunks[100];
+		int modifiedChunksCount = 0;
 
 		void init()
 		{
@@ -61,6 +64,24 @@ namespace world
 			return 0;
 		}
 
+		void addModifiedChunk(handle chunk)
+		{
+
+			for (int i = 0; i < addedChunksCount; i++)
+			{
+				if (addedChunks[addedChunksCount] == chunk)
+					return;
+			}
+			for (int i = 0; i < modifiedChunksCount; i++)
+			{
+				if (modifiedChunks[modifiedChunksCount] == chunk)
+					return;
+			}
+
+			modifiedChunks[modifiedChunksCount] = chunk;
+			modifiedChunksCount++;
+		}
+
 		void setCell(ivec3 cell, char content)
 		{
 			ivec3 chunkOffset = cell / CHUNK_SIZE - ivec3(cell.x < 0 ? 1 : 0, cell.y < 0 ? 1 : 0, cell.z < 0 ? 1 : 0);
@@ -69,6 +90,8 @@ namespace world
 				if (chunkOffset == offsets[*it])
 				{
 					chunks[*it][cell - chunkOffset * CHUNK_SIZE] = content;
+					addModifiedChunk({ *it });
+					
 					return;
 				}
 			}
@@ -91,6 +114,22 @@ namespace world
 				dataCursor += dataSize;
 			}
 			outDataSize = dataCursor;
+		}
+
+		handle getChunkHandle(ivec3 chunk)
+		{
+			for (auto it = allocation.begin(); it.isValid(); it++)
+			{
+				if (offsets[*it] == chunk)
+					return {*it};
+			}
+			voxel::Chunk newChunk((char)0);
+			handle id = { allocation.allocate() };
+			TableElement element = regionTable.element(id.id);
+			element << chunk << newChunk;
+			addedChunks[addedChunksCount] = id;
+			addedChunksCount++;
+			return id;
 		}
 
 		voxel::Chunk& getChunk(ivec3 chunk)

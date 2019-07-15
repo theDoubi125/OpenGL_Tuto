@@ -153,6 +153,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="mesh_render.cpp" />
     <ClCompile Include="point_light.cpp" />
+    <ClCompile Include="render\debug\render_debug_line.cpp" />
     <ClCompile Include="render\render_pipeline.cpp" />
     <ClCompile Include="render\shader.cpp" />
     <ClCompile Include="render\voxel_render.cpp" />
@@ -191,6 +192,7 @@
     <ClInclude Include="material.h" />
     <ClInclude Include="mesh_render.h" />
     <ClInclude Include="point_light.h" />
+    <ClInclude Include="render\debug\render_debug_line.h" />
     <ClInclude Include="render\render_pipeline.h" />
     <ClInclude Include="render\shader.h" />
     <ClInclude Include="render\voxel_render.h" />
@@ -226,8 +228,8 @@
     <None Include="shaders\render_silhouette.vert" />
     <None Include="shaders\shadows.frag" />
     <None Include="shaders\shadows.vert" />
-    <None Include="shaders\simple.frag" />
-    <None Include="shaders\simple.vert" />
+    <None Include="shaders\debug.frag" />
+    <None Include="shaders\debug.vert" />
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="table.natvis" />

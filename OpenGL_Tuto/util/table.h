@@ -76,62 +76,12 @@ struct Table
 
 	int allocatedSize = 0;
 
-	void allocate(int size)
-	{
-		allocatedSize = size;
-		for (int i = 0; i < columnCount; i++)
-		{
-			columns[i] = new char[allocatedSize * columnElementSize[i]];
-		}
-	}
-
-	void reallocate(int allocSize)
-	{
-		char* columnsBackup[MAX_COLUMN_COUNT];
-		memcpy(columnsBackup, columns, sizeof(columns));
-		allocate(allocSize);
-		for (int i = 0; i < columnCount; i++)
-		{
-			memcpy(columns[i], columnsBackup[i], count * columnElementSize[i]);
-		}
-		for (int i = 0; i < columnCount; i++)
-		{
-			delete columnsBackup[i];
-		}
-	}
-
 	void init(int allocSize, ColumnTypeList columnList)
 	{
 		addColumns(columnList);
 		allocate(allocSize);
 	}
 
-	void addColumns(ColumnTypeList typeList)
-	{
-		for (int i = 0; i < typeList.count; i++)
-		{
-			AnonymousColumn addedColumn = addColumn(typeList.sizes[i]);
-			((AnonymousColumn*)typeList.outputColumns[i])->columnIndex = addedColumn.columnIndex;
-			((AnonymousColumn*)typeList.outputColumns[i])->table = addedColumn.table;
-		}
-	}
-
-	template<typename T>
-	Column<T> addColumn()
-	{
-		int columnIndex = columnCount;
-		columnElementSize[columnCount] = sizeof(T);
-		columnCount++;
-		return { columnIndex, this };
-	}
-
-	AnonymousColumn addColumn(unsigned int size)
-	{
-		int columnIndex = columnCount;
-		columnElementSize[columnCount] = size;
-		columnCount++;
-		return { columnIndex, this };
-	}
 
 	template<typename T>
 	T& element(int column, int index)
@@ -171,6 +121,63 @@ struct Table
 	T* column(int columnIndex)
 	{
 		return (T*)columns[columnIndex];
+	}
+
+	void clear()
+	{
+		count = 0;
+	}
+private:
+
+	void allocate(int size)
+	{
+		allocatedSize = size;
+		for (int i = 0; i < columnCount; i++)
+		{
+			columns[i] = new char[allocatedSize * columnElementSize[i]];
+		}
+	}
+
+	void reallocate(int allocSize)
+	{
+		char* columnsBackup[MAX_COLUMN_COUNT];
+		memcpy(columnsBackup, columns, sizeof(columns));
+		allocate(allocSize);
+		for (int i = 0; i < columnCount; i++)
+		{
+			memcpy(columns[i], columnsBackup[i], count * columnElementSize[i]);
+		}
+		for (int i = 0; i < columnCount; i++)
+		{
+			delete columnsBackup[i];
+		}
+	}
+
+	void addColumns(ColumnTypeList typeList)
+	{
+		for (int i = 0; i < typeList.count; i++)
+		{
+			AnonymousColumn addedColumn = addColumn(typeList.sizes[i]);
+			((AnonymousColumn*)typeList.outputColumns[i])->columnIndex = addedColumn.columnIndex;
+			((AnonymousColumn*)typeList.outputColumns[i])->table = addedColumn.table;
+		}
+	}
+
+	template<typename T>
+	Column<T> addColumn()
+	{
+		int columnIndex = columnCount;
+		columnElementSize[columnCount] = sizeof(T);
+		columnCount++;
+		return { columnIndex, this };
+	}
+
+	AnonymousColumn addColumn(unsigned int size)
+	{
+		int columnIndex = columnCount;
+		columnElementSize[columnCount] = size;
+		columnCount++;
+		return { columnIndex, this };
 	}
 
 	template<typename T>

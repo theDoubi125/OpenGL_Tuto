@@ -12,6 +12,10 @@ namespace input
 	Column<int> keys;
 	Column<KeyState> states;
 
+	Table buttonsTable;
+	Column<int> buttons;
+	Column<KeyState> buttonStates;
+
 	handle spaceStateHandle;
 
 	vec2 mousePos;
@@ -21,6 +25,7 @@ namespace input
 	void init()
 	{
 		inputTable.init(50, keys + states);
+		buttonsTable.init(GLFW_MOUSE_BUTTON_LAST, buttons + buttonStates);
 		mousePosInit = false;
 	}
 
@@ -53,12 +58,18 @@ namespace input
 			cameraInput.x = 1;
 		else cameraInput.x = 0;
 
+
 		for (int i = 0; i < inputTable.count; i++)
 		{
 			int isDown = (glfwGetKey(window, keys[i]) == GLFW_PRESS) ? 1 : 0;
 			int wasDown = ((int)states[i] & 1);
-			
 			states[i] = (KeyState)(isDown + (wasDown != isDown ? 2 : 0));
+		}
+		for (int i = 0; i < GLFW_MOUSE_BUTTON_LAST; i++)
+		{
+			int isDown = (glfwGetMouseButton(window, i) == GLFW_PRESS) ? 1 : 0;
+			int wasDown = ((int)buttonStates[i] & 1);
+			buttonStates[i] = (KeyState)(isDown + (wasDown != isDown ? 2 : 0));
 		}
 	}
 
@@ -78,6 +89,11 @@ namespace input
 	KeyState getState(handle key)
 	{
 		return states[key.id];
+	}
+
+	KeyState getButtonState(int button)
+	{
+		return buttonStates[button];
 	}
 
 	void mouseMovement(GLFWwindow* window, double xpos, double ypos)

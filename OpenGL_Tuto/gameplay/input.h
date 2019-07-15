@@ -21,6 +21,7 @@ namespace input
 	void reset();
 	handle registerKey(int keyCode);
 	KeyState getState(handle key);
+	KeyState getButtonState(int button);
 
 	void mouseMovement(GLFWwindow* window, double xpos, double ypos);
 

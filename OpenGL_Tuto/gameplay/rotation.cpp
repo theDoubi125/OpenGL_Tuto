@@ -19,8 +19,7 @@ namespace rotation
 
 		void init()
 		{
-			dataTable >> transformHandles >> offsets >> anchorPoints;
-			dataTable.allocate(100);
+			dataTable.init(100, transformHandles + offsets + anchorPoints);
 			bitArray.init(100);
 		}
 

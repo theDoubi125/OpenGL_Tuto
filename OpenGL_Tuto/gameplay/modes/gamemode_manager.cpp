@@ -7,6 +7,8 @@
 #include "gameplay/movement/third_person.h"
 #include "camera.h"
 #include "mesh_render.h"
+#include "gameplay/world/raytracing.h"
+#include "gameplay/world/world.h"
 
 namespace gamemode
 {
@@ -14,6 +16,7 @@ namespace gamemode
 	{
 		GameMode currentMode = GameMode::INGAME;
 		handle spaceInputHandle;
+		handle altInputHandle;
 		handle cameraModeHandle;
 		handle cameraTransform;
 		handle characterTransformId;
@@ -23,6 +26,7 @@ namespace gamemode
 		{
 
 			spaceInputHandle = input::registerKey(GLFW_KEY_SPACE);
+			altInputHandle = input::registerKey(GLFW_KEY_LEFT_ALT);
 			camera::init();
 			cameraTransform = transform::add(vec3(-10, 5, 0), quat(), vec3(1, 1, 1));
 			camera::mainCamera = camera::add(cameraTransform, 45.0f);
@@ -41,7 +45,7 @@ namespace gamemode
 		{
 			if (input::getState(spaceInputHandle) == input::KeyState::PRESSED)
 			{
-				switch (currentMode)
+     			switch (currentMode)
 				{
 				case GameMode::EDITOR:
 					movement::first_person::remove(cameraModeHandle);
@@ -49,14 +53,36 @@ namespace gamemode
 					currentMode = GameMode::INGAME;
 					break;
 				case GameMode::INGAME:
-					movement::third_person::remove(cameraModeHandle);
-					currentMode = GameMode::MENU;
-					input::setCursorVisibility(true);
-					break;
-				case GameMode::MENU:
 					input::setCursorVisibility(false);
+					movement::third_person::remove(cameraModeHandle);
 					movement::first_person::add(cameraTransform, 0.001f, 10);
 					currentMode = GameMode::EDITOR;
+					break;
+				}
+			}
+			if (input::getState(altInputHandle) == input::KeyState::PRESSED)
+			{
+				input::setCursorVisibility(true);
+				switch (currentMode)
+				{
+				case GameMode::EDITOR:
+					movement::first_person::remove(cameraModeHandle);
+					break;
+				case GameMode::INGAME:
+					movement::third_person::remove(cameraModeHandle);
+					break;
+				}
+			}
+			else if (input::getState(altInputHandle) == input::KeyState::RELEASED)
+			{
+				input::setCursorVisibility(false);
+				switch (currentMode)
+				{
+				case GameMode::EDITOR:
+					cameraModeHandle = movement::first_person::add(cameraTransform, 0.001f, 10);
+					break;
+				case GameMode::INGAME:
+					cameraModeHandle = movement::third_person::add(cameraTransform, characterTransformId, 0.001f, 10);
 					break;
 				}
 			}
@@ -65,7 +91,26 @@ namespace gamemode
 			case GameMode::INGAME:
 				quat camRotation = camera::getCameraRot(camera::mainCamera);
 				movement::cube::cubeInput[cubeMovementId.id] = -(camRotation * vec3(0, 0, 1)) * input::movementInput.z + (camRotation * vec3(1, 0, 0)) * input::movementInput.x;
+				
 				break;
+			case GameMode::EDITOR:
+				vec3 direction = camera::getCameraRot(camera::mainCamera) * vec3(0, 0, 1);
+				vec3 position = camera::getCameraPos(camera::mainCamera);
+
+				world::raytracing::ray ray = { position, direction };
+				if (input::getButtonState(0) == input::KeyState::PRESSED)
+				{
+					for (int i = 0; i < 30; i++)
+					{
+						ivec3 lastCell = ray.getCell();
+						ivec3 cell = world::raytracing::raytraceNext(ray);
+						if (world::manager::getCell(cell))
+						{
+							world::manager::setCell(lastCell, 1);
+							break;
+						}
+					}
+				}
 			}
 			movement::third_person::update(deltaTime);
 			movement::first_person::update(deltaTime);

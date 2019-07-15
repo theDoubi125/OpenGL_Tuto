@@ -16,11 +16,12 @@ namespace render
 		Column<handle> chunkIds;
 		Column<handle> meshIds;
 		Column<handle> transformIds;
+		Column<handle> renderIds;
 		BitArray allocation;
 
 		void init()
 		{
-			table.init(100, chunkIds + meshIds + transformIds);
+			table.init(100, chunkIds + meshIds + transformIds + renderIds);
 			allocation.init(100);
 		}
 
@@ -58,6 +59,22 @@ namespace render
 		void update()
 		{
 			char meshDataBuffer[1000000];
+
+			for (int i = 0; i < world::manager::modifiedChunksCount; i++)
+			{
+				int meshDataSize = 1000000;
+				handle id = { allocation.allocate() };
+				TableElement element = table.element(id.id);
+				handle chunkId = world::manager::modifiedChunks[i];
+				computeChunkMesh(chunkId, meshDataBuffer, meshDataSize);
+				mesh::library::replaceMesh(meshDataBuffer, meshDataSize, meshIds[chunkId]);
+
+				vec3 chunkOffset = (vec3)(world::manager::getChunkOffset(chunkId) * CHUNK_SIZE);
+				handle transformId = transform::add(chunkOffset, quat(), vec3(1, 1, 1));
+				mesh::render::updateMesh(renderIds[chunkId], meshIds[chunkId], 3);
+			}
+			world::manager::modifiedChunksCount = 0;
+
 			for (int i = 0; i < world::manager::addedChunksCount; i++)
 			{
 				int meshDataSize = 1000000;
@@ -69,9 +86,9 @@ namespace render
 
 				vec3 chunkOffset = (vec3)(world::manager::getChunkOffset(chunkId) * CHUNK_SIZE);
 				handle transformId = transform::add(chunkOffset, quat(), vec3(1, 1, 1));
-				mesh::render::add(transformId, meshHandle, 3);
-				
-				element << world::manager::addedChunks[i] << meshHandle << transformId;
+				handle renderId = mesh::render::add(transformId, meshHandle, 3);
+
+				element << world::manager::addedChunks[i] << meshHandle << transformId << renderId;
 
 			}
 			world::manager::addedChunksCount = 0;
