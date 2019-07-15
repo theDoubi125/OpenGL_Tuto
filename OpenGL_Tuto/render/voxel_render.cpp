@@ -63,8 +63,6 @@ namespace render
 			for (int i = 0; i < world::manager::modifiedChunksCount; i++)
 			{
 				int meshDataSize = 1000000;
-				handle id = { allocation.allocate() };
-				TableElement element = table.element(id.id);
 				handle chunkId = world::manager::modifiedChunks[i];
 				computeChunkMesh(chunkId, meshDataBuffer, meshDataSize);
 				mesh::library::replaceMesh(meshDataBuffer, meshDataSize, meshIds[chunkId]);

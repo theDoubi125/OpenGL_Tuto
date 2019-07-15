@@ -110,6 +110,18 @@ namespace gamemode
 							break;
 						}
 					}
+				}if (input::getButtonState(1) == input::KeyState::PRESSED)
+				{
+					for (int i = 0; i < 30; i++)
+					{
+						ivec3 lastCell = ray.getCell();
+						ivec3 cell = world::raytracing::raytraceNext(ray);
+						if (world::manager::getCell(cell))
+						{
+							world::manager::setCell(cell, 0);
+							break;
+						}
+					}
 				}
 			}
 			movement::third_person::update(deltaTime);
