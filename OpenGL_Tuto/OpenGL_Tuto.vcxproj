@@ -132,6 +132,7 @@
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="directional_light.cpp" />
     <ClCompile Include="gameplay\collision\collision.cpp" />
+    <ClCompile Include="gameplay\entities\walker.cpp" />
     <ClCompile Include="gameplay\input.cpp" />
     <ClCompile Include="gameplay\modes\gamemode_editor.cpp" />
     <ClCompile Include="gameplay\modes\gamemode_ingame.cpp" />
@@ -140,6 +141,7 @@
     <ClCompile Include="gameplay\movement\first_person.cpp" />
     <ClCompile Include="gameplay\movement\third_person.cpp" />
     <ClCompile Include="gameplay\rotation.cpp" />
+    <ClCompile Include="gameplay\world\cell_transform.cpp" />
     <ClCompile Include="gameplay\world\raytracing.cpp" />
     <ClCompile Include="gameplay\world\voxel.cpp" />
     <ClCompile Include="gameplay\world\world.cpp" />
@@ -170,6 +172,7 @@
     <ClInclude Include="camera.h" />
     <ClInclude Include="directional_light.h" />
     <ClInclude Include="gameplay\collision\collision.h" />
+    <ClInclude Include="gameplay\entities\walker.h" />
     <ClInclude Include="gameplay\input.h" />
     <ClInclude Include="gameplay\modes\gamemode_editor.h" />
     <ClInclude Include="gameplay\modes\gamemode_ingame.h" />
@@ -178,6 +181,7 @@
     <ClInclude Include="gameplay\movement\first_person.h" />
     <ClInclude Include="gameplay\movement\third_person.h" />
     <ClInclude Include="gameplay\rotation.h" />
+    <ClInclude Include="gameplay\world\cell_transform.h" />
     <ClInclude Include="gameplay\world\raytracing.h" />
     <ClInclude Include="gameplay\world\voxel.h" />
     <ClInclude Include="gameplay\world\world.h" />

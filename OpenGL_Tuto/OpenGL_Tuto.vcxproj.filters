@@ -66,6 +66,9 @@
     <Filter Include="Source Files\render\debug">
       <UniqueIdentifier>{706c5f82-0203-423a-ab5e-1c9f32d01a39}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\gameplay\entities">
+      <UniqueIdentifier>{f3ffe2c9-7367-4891-9351-c5a4df2d12db}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -175,6 +178,12 @@
     </ClCompile>
     <ClCompile Include="render\debug\render_debug_line.cpp">
       <Filter>Source Files\render\debug</Filter>
+    </ClCompile>
+    <ClCompile Include="gameplay\entities\walker.cpp">
+      <Filter>Source Files\gameplay\entities</Filter>
+    </ClCompile>
+    <ClCompile Include="gameplay\world\cell_transform.cpp">
+      <Filter>Source Files\gameplay\world</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -303,6 +312,12 @@
     </ClInclude>
     <ClInclude Include="render\debug\render_debug_line.h">
       <Filter>Source Files\render\debug</Filter>
+    </ClInclude>
+    <ClInclude Include="gameplay\entities\walker.h">
+      <Filter>Source Files\gameplay\entities</Filter>
+    </ClInclude>
+    <ClInclude Include="gameplay\world\cell_transform.h">
+      <Filter>Source Files\gameplay\world</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

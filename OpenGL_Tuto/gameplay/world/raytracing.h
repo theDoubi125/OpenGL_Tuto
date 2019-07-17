@@ -13,7 +13,8 @@ namespace world
 
 			ivec3 getCell()
 			{
-				return (ivec3)(pos + 0.5f);
+				ivec3 cell = (ivec3)(pos + 0.5f);
+				return cell;
 			}
 		};
 

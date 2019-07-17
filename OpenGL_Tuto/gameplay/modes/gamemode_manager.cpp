@@ -112,7 +112,7 @@ namespace gamemode
 					}
 				}if (input::getButtonState(1) == input::KeyState::PRESSED)
 				{
-					for (int i = 0; i < 30; i++)
+					for (int i = 0; i < 50; i++)
 					{
 						ivec3 lastCell = ray.getCell();
 						ivec3 cell = world::raytracing::raytraceNext(ray);
