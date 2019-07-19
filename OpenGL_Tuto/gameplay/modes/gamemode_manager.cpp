@@ -9,6 +9,7 @@
 #include "mesh_render.h"
 #include "gameplay/world/raytracing.h"
 #include "gameplay/world/world.h"
+#include "gameplay/entities/walker.h"
 
 namespace gamemode
 {
@@ -91,7 +92,10 @@ namespace gamemode
 			case GameMode::INGAME:
 				quat camRotation = camera::getCameraRot(camera::mainCamera);
 				movement::cube::cubeInput[cubeMovementId.id] = -(camRotation * vec3(0, 0, 1)) * input::movementInput.z + (camRotation * vec3(1, 0, 0)) * input::movementInput.x;
-				
+				if (input::getButtonState(1) == input::KeyState::PRESSED)
+				{
+					entities::walker::update();
+				}
 				break;
 			case GameMode::EDITOR:
 				vec3 direction = camera::getCameraRot(camera::mainCamera) * vec3(0, 0, 1);

@@ -25,6 +25,7 @@ struct BitArray
 	void allocate(int index);
 	void free(int index);
 	void clear();
+	void set(int index, bool value);
 
 	unsigned int* data;
 	int arraySize;

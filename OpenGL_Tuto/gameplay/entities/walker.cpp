@@ -38,16 +38,16 @@ namespace entities
 				switch (directions[*it])
 				{
 				case Direction::East:
-					world::voxel_transform::cells[cellTransformIds[*it]] += ivec3(1, 0, 0);
+					world::voxel_transform::move(cellTransformIds[*it], ivec3(1, 0, 0));
 					break;
 				case Direction::West:
-					world::voxel_transform::cells[cellTransformIds[*it]] += ivec3(-1, 0, 0);
+					world::voxel_transform::move(cellTransformIds[*it], ivec3(-1, 0, 0));
 					break;
 				case Direction::North:
-					world::voxel_transform::cells[cellTransformIds[*it]] += ivec3(0, 0, -1);
+					world::voxel_transform::move(cellTransformIds[*it], ivec3(0, 0, -1));
 					break;
 				case Direction::South:
-					world::voxel_transform::cells[cellTransformIds[*it]] += ivec3(0, 0, 1);
+					world::voxel_transform::move(cellTransformIds[*it], ivec3(0, 0, 1));
 					break;
 				}
 

@@ -11,6 +11,7 @@ namespace entities
 
 	namespace walker
 	{
+		void init();
 		handle add(handle cellTransformId, Direction dir);
 		void remove(handle element);
 		void update(); // to call every step

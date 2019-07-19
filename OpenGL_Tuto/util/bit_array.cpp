@@ -51,6 +51,14 @@ void BitArray::allocate(int index)
 		updateBounds();
 }
 
+void BitArray::set(int index, bool value)
+{
+	unsigned int x = 1 << (index % FLAG_PER_INT);
+	data[index / FLAG_PER_INT] == (value ? (data[index / FLAG_PER_INT] | x) : (data[index / FLAG_PER_INT] & ~x));
+	if (index < beginIndex || index > endIndex)
+		updateBounds();
+}
+
 void BitArray::free(int index)
 {
 	unsigned int x = ~(1 << (index % FLAG_PER_INT));
