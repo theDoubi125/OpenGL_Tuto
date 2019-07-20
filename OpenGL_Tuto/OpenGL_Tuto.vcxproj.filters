@@ -185,6 +185,12 @@
     <ClCompile Include="gameplay\world\cell_transform.cpp">
       <Filter>Source Files\gameplay\world</Filter>
     </ClCompile>
+    <ClCompile Include="gameplay\entities\turning.cpp">
+      <Filter>Source Files\gameplay\entities</Filter>
+    </ClCompile>
+    <ClCompile Include="util\alloc_table.cpp">
+      <Filter>Source Files\util\container</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="material.h">
@@ -318,6 +324,12 @@
     </ClInclude>
     <ClInclude Include="gameplay\world\cell_transform.h">
       <Filter>Source Files\gameplay\world</Filter>
+    </ClInclude>
+    <ClInclude Include="gameplay\entities\turning.h">
+      <Filter>Source Files\gameplay\entities</Filter>
+    </ClInclude>
+    <ClInclude Include="util\alloc_table.h">
+      <Filter>Source Files\util\container</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

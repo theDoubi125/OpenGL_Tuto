@@ -132,6 +132,7 @@
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="directional_light.cpp" />
     <ClCompile Include="gameplay\collision\collision.cpp" />
+    <ClCompile Include="gameplay\entities\turning.cpp" />
     <ClCompile Include="gameplay\entities\walker.cpp" />
     <ClCompile Include="gameplay\input.cpp" />
     <ClCompile Include="gameplay\modes\gamemode_editor.cpp" />
@@ -163,6 +164,7 @@
     <ClCompile Include="shadow.cpp" />
     <ClCompile Include="texture.cpp" />
     <ClCompile Include="transform.cpp" />
+    <ClCompile Include="util\alloc_table.cpp" />
     <ClCompile Include="util\bit_array.cpp" />
     <ClCompile Include="util\debug\table_display.cpp" />
     <ClCompile Include="util\profiler\profiler.cpp" />
@@ -172,6 +174,7 @@
     <ClInclude Include="camera.h" />
     <ClInclude Include="directional_light.h" />
     <ClInclude Include="gameplay\collision\collision.h" />
+    <ClInclude Include="gameplay\entities\turning.h" />
     <ClInclude Include="gameplay\entities\walker.h" />
     <ClInclude Include="gameplay\input.h" />
     <ClInclude Include="gameplay\modes\gamemode_editor.h" />
@@ -207,6 +210,7 @@
     <ClInclude Include="texture.h" />
     <ClInclude Include="transform.h" />
     <ClInclude Include="types.h" />
+    <ClInclude Include="util\alloc_table.h" />
     <ClInclude Include="util\bit_array.h" />
     <ClInclude Include="util\debug\table_display.h" />
     <ClInclude Include="util\profiler\profiler.h" />

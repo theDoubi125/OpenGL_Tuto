@@ -30,6 +30,7 @@
 
 #include "gameplay/world/cell_transform.h"
 #include "gameplay/entities/walker.h"
+#include "gameplay/entities/turning.h"
 
 
 namespace scene
@@ -187,8 +188,9 @@ namespace scene
 		rotation::anchor::init();
 		rotation::animation::init();
 
-		world::voxel_transform::init();
+		world::cellTransform::init();
 		entities::walker::init();
+		entities::turning::init();
 
 		handle transformId = transform::add(vec3(2, 0, 0), quat(), vec3(1, 1, 1));
 		mesh::render::add(transformId, cubeMesh, render::shaders::gBuffer::shader);
@@ -206,10 +208,11 @@ namespace scene
 		handle testTransformId = transform::add(vec3(0, 0, 0), quat(), vec3(0.1f, 0.1f, 0.1f));
 		lampRenderer.add(testTransformId, cubeMesh);
 
-		transformId = transform::add(vec3(1, 10, 1), quat(), vec3(1, 1, 1));
+		transformId = transform::add(vec3(5, 6, 1), quat(), vec3(1, 1, 1));
 		mesh::render::add(transformId, cubeMesh, render::shaders::gBuffer::shader);
-		handle cellTransformId = world::voxel_transform::add(transformId, vec3(5, 10, 1));
-		entities::walker::add(cellTransformId, entities::Direction::East);
+		handle cellTransformId = world::cellTransform::add(transformId, vec3(5, 6, 1), world::Direction::East);
+		//entities::walker::add(cellTransformId, entities::Direction::East);
+		entities::turning::add(cellTransformId, 1);
 
 		directionalLights.add(sunTransformId, 1, vec3(1), vec3(1));
 		shadowRenderer.shadowCasters = &boxRenderer;
@@ -238,7 +241,7 @@ namespace scene
 
 		render::voxel::update();
 
-		world::voxel_transform::update(deltaTime);
+		world::cellTransform::update(deltaTime);
 
 		gamemode::manager::update(deltaTime);
 		input::reset();

@@ -9,7 +9,7 @@
 #include "mesh_render.h"
 #include "gameplay/world/raytracing.h"
 #include "gameplay/world/world.h"
-#include "gameplay/entities/walker.h"
+#include "gameplay/world/cell_transform.h"
 
 namespace gamemode
 {
@@ -94,7 +94,7 @@ namespace gamemode
 				movement::cube::cubeInput[cubeMovementId.id] = -(camRotation * vec3(0, 0, 1)) * input::movementInput.z + (camRotation * vec3(1, 0, 0)) * input::movementInput.x;
 				if (input::getButtonState(1) == input::KeyState::PRESSED)
 				{
-					entities::walker::update();
+					world::cellTransform::playStep();
 				}
 				break;
 			case GameMode::EDITOR:
